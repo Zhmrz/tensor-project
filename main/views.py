@@ -1,12 +1,22 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+
+from .decorators import unathenticated_user
 from .forms import CreateUserForm
 from .models import Freelancer, Company
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
+
+@login_required(login_url='login')
 def index(request):
-    return render(request, 'main/index.html',)
+    return render(request, 'main/index.html')
 
-def register(request):
+
+@unathenticated_user
+def registerPage(request):
+
     form = CreateUserForm()
 
     if request.method == 'POST':
@@ -16,11 +26,37 @@ def register(request):
             group = form.cleaned_data.get('group')
             username = form.cleaned_data.get('username')
             user = User.objects.get(username=username)
-            print(group)
             if group == '0':
                 Freelancer.objects.create(user_id=user, name=username)
             else:
                 Company.objects.create(user_id=user, name='Компания')
+            messages.success(request, 'Регистрация прошла успешно!')
+            return redirect('login')
 
     context = {'form': form}
     return render(request, 'main/register.html', context)
+
+
+@unathenticated_user
+def loginPage(request):
+
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.info(request, 'Логин или пароль неверный')
+
+    context = {}
+    return render(request, 'main/login.html', context)
+
+
+def logoutUser(request):
+
+    logout(request)
+    return redirect('login')

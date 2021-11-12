@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Freelancer(models.Model):
 
-    user_id = models.ForeignKey(User, verbose_name="id аккаунта", on_delete=models.CASCADE, null=True, blank=True)
+    user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name='Имя пользователя')
     #rating = models.IntegerField()
     description = models.TextField(verbose_name='О себе')
@@ -15,7 +16,7 @@ class Freelancer(models.Model):
 
 class Company(models.Model):
 
-    user_id = models.ForeignKey(User, verbose_name="id аккаунта", on_delete=models.CASCADE, null=True, blank=True)
+    user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE)
     name = models.CharField(max_length=100, verbose_name='Название компании')
     # rating
     description = models.TextField(verbose_name='Описание компании')
@@ -30,14 +31,13 @@ class Order(models.Model):
     customer = models.ForeignKey(Company, verbose_name="Заказчик", on_delete=models.CASCADE)
     title = models.CharField(max_length=100, verbose_name='Название заказа')
     description = models.TextField(verbose_name='Описание заказа')
-    price = models.FloatField(verbose_name='Стоимость заказа')
+    price = models.DecimalField(verbose_name='Стоимость заказа', max_digits=9, decimal_places=2)
     deadline = models.DateField(verbose_name='Дата сдачи заказа')
     status = models.BooleanField(default=False)  # 0 - заказ свободен, 1 - если performer != Null
     performer = models.ForeignKey('RespondingFreelancers', verbose_name='Исполнитель заказа',
                                   on_delete=models.CASCADE, related_name='related_performer', null=True, blank=True)
 
     # Можно предусмотреть разрешение создания заказа только для компании (permissions)
-
 
     def __str__(self):
         return f"Заказчик: {self.customer} - заказ: {self.title}"

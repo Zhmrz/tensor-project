@@ -8,6 +8,10 @@
 <form action="" method="POST">
     {% csrf_token %}
     {{ form.as_p }}
+    {{ form.errors }}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
 
     <input type="submit" name="Create user">
 </form>

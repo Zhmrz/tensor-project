@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+</head>
+<body>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Введите логин" class="form-control">
+        <input type="password" name="password" placeholder="Введите пароль" class="form-control">
+        <input type="submit" name="Login user">
+    </form>
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    <p></p>
+    <a href="{% url 'register' %}">Зарегистрироваться</a>
+
+</body>
+</html>
