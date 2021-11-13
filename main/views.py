@@ -8,6 +8,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from .serializers import FreelancerSerializer
+
 
 @login_required(login_url='login')
 def index(request):
@@ -60,3 +65,10 @@ def logoutUser(request):
 
     logout(request)
     return redirect('login')
+
+
+class FreelancerView(ModelViewSet):
+
+    queryset = Freelancer.objects.get(user_id=)
+    serializer_class = FreelancerSerializer
+    permission_classes = [IsAuthenticated]
