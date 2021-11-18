@@ -4,7 +4,12 @@ from rest_framework import routers
 
 
 router = routers.DefaultRouter()
-router.register('freelancer', FreelancerView)
+router.register('freelancer', FreelancerView, basename='freelancer')
+router.register('company', CompanyView, basename='company')
+router.register('freelancers', AllFreelancerView, basename='freelancers')
+router.register('companies', AllCompanyView, basename='companies')
+router.register('orders', AllOrderView, basename='orders')
+router.register('order', OrderView, basename='order')
 
 urlpatterns = [
     path('', index, name='home'),

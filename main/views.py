@@ -3,15 +3,15 @@ from django.contrib.auth.models import User
 
 from .decorators import unathenticated_user
 from .forms import CreateUserForm
-from .models import Freelancer, Company
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
-from .serializers import FreelancerSerializer
+
+from .permissions import IsOwner
+from .serializers import *
 
 
 @login_required(login_url='login')
@@ -69,6 +69,55 @@ def logoutUser(request):
 
 class FreelancerView(ModelViewSet):
 
-    queryset = Freelancer.objects.get(user_id=)
+    #queryset = Freelancer.objects.all()
+    serializer_class = FreelancerSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+
+        user = self.request.user
+        return Freelancer.objects.filter(user_id=user)
+
+
+class CompanyView(ModelViewSet):
+
+    serializer_class = CompanySerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+
+        user = self.request.user
+        return Company.objects.filter(user_id=user)
+
+
+class AllFreelancerView(ModelViewSet):
+
+    queryset = Freelancer.objects.all()
     serializer_class = FreelancerSerializer
     permission_classes = [IsAuthenticated]
+
+
+class AllCompanyView(ModelViewSet):
+
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    permission_classes = [IsAuthenticated]
+
+
+class AllOrderView(ModelViewSet):
+
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class OrderView(ModelViewSet):
+
+    serializer_class = OrderSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+
+        user = self.request.user
+        company = Company.objects.get(user_id=user)
+        return Order.objects.filter(customer=company)
