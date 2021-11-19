@@ -9,5 +9,5 @@ class IsOwner(BasePermission):
         return bool(
             request.method in SAFE_METHODS or
             request.user and
-            request.user.is_authenticated and obj.user_id == request.user
+            request.user.is_authenticated and obj.customer.user_id == request.user
         )

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .decorators import unathenticated_user
 from .forms import CreateUserForm
@@ -109,6 +110,8 @@ class AllOrderView(ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = ['topic']
 
 
 class OrderView(ModelViewSet):
@@ -121,3 +124,8 @@ class OrderView(ModelViewSet):
         user = self.request.user
         company = Company.objects.get(user_id=user)
         return Order.objects.filter(customer=company)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        serializer.validated_data['customer'] = Company.objects.get(user_id=user)
+        serializer.save()
