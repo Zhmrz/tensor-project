@@ -13,8 +13,8 @@ router.register('order', OrderView, basename='order')
 
 urlpatterns = [
     path('', index, name='home'),
-    path('register/', registerPage, name='register'),
-    path('login/', loginPage, name='login'),
-    path('logout/', logoutUser, name='logout'),
+    #path('register/', registerPage, name='register'),
+    #path('login/', loginPage, name='login'),
+    #path('logout/', logoutUser, name='logout'),
     path('api/', include(router.urls))
 ]

@@ -15,12 +15,12 @@ from .permissions import IsOwner
 from .serializers import *
 
 
-@login_required(login_url='login')
+#@login_required(login_url='login')
 def index(request):
     return render(request, 'index.html')
 
 
-@unathenticated_user
+#@unathenticated_user
 def registerPage(request):
 
     form = CreateUserForm()
@@ -37,13 +37,13 @@ def registerPage(request):
             else:
                 Company.objects.create(user_id=user, name='Компания')
             messages.success(request, 'Регистрация прошла успешно!')
-            return redirect('login')
+            #return ыфва Вернуть либо ошибку, либо результат API
 
     context = {'form': form}
     return render(request, 'main/register.html', context)
 
 
-@unathenticated_user
+#@unathenticated_user
 def loginPage(request):
 
     if request.method == "POST":
@@ -109,9 +109,9 @@ class AllOrderView(ModelViewSet):
 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend]
-    filter_fields = ['topic']
+    filter_fields = ['topic', 'id']
 
 
 class OrderView(ModelViewSet):
