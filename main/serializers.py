@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Freelancer, Company, Order, Topic
+from .models import Freelancer, Company, Order
+from django.contrib.auth.models import User
 
 
 class FreelancerSerializer(serializers.ModelSerializer):
@@ -25,3 +26,10 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         fields = ('id', 'customer', 'title', 'description', 'price',
                   'deadline', 'status', 'performer', 'publication_date', 'topic')
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ['username', 'password']
