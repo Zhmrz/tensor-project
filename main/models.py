@@ -5,14 +5,16 @@ from django.contrib.auth.models import User
 class Freelancer(models.Model):
 
     user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE)
-    name = models.CharField(max_length=100, verbose_name='Имя пользователя')
+    first_name = models.CharField(max_length=100, verbose_name='Имя пользователя')
+    last_name = models.CharField(max_length=100, verbose_name='Фамилия пользователя')
     # rating
     description = models.TextField(verbose_name='О себе')
     image = models.ImageField(verbose_name='Аватар')
+    topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
 
     def __str__(self):
-        return self.name
+        return f"{self.first_name} {self.last_name}"
 
 
 class Company(models.Model):
@@ -22,6 +24,7 @@ class Company(models.Model):
     # rating
     description = models.TextField(verbose_name='Описание компании')
     image = models.ImageField(verbose_name='Аватар')
+    topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
 
     def __str__(self):
@@ -50,7 +53,6 @@ class RespondingFreelancers(models.Model):
     freelancer = models.ForeignKey(Freelancer, verbose_name="Пользователь", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
     responding_date = models.DateTimeField(auto_now=True, verbose_name='Время отклика')
-    # Статус отклика?
 
     def __str__(self):
         return f"{self.order} - откликнулся {self.freelancer}"

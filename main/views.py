@@ -2,8 +2,9 @@ import django_filters
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
-
+from rest_framework.response import Response
 
 from .forms import CreateUserForm
 from django.contrib import messages
@@ -17,8 +18,7 @@ from .serializers import *
 def index(request):
     return render(request, 'index.html')
 
-
-
+"""
 def registerPage(request):
 
     form = CreateUserForm()
@@ -35,11 +35,8 @@ def registerPage(request):
             else:
                 Company.objects.create(user_id=user, name='Компания')
             messages.success(request, 'Регистрация прошла успешно!')
-            #return ыфва Вернуть либо ошибку, либо результат API
-
     context = {'form': form}
     return render(request, 'main/register.html', context)
-
 
 
 def loginPage(request):
@@ -64,7 +61,7 @@ def logoutUser(request):
 
     logout(request)
     return redirect('login')
-
+"""
 
 class FreelancerView(ModelViewSet):
 
@@ -154,3 +151,25 @@ class UserView(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        user = User.objects.get(username=request.data.get("username"))
+        user_type = request.data.get("type")
+        topics = request.data.get("topics")
+        if user_type == 0:
+            freelancer = Freelancer.objects.create(user_id=user)
+            freelancer.first_name = request.data.get("firstName")
+            freelancer.last_name = request.data.get("lastName")
+            for topic in topics:
+                freelancer.topics.add(topic)
+            freelancer.save()
+        else:
+            company = Company.objects.create(user_id=user)
+            company.name = request.data.get('firstName')
+            for topic in topics:
+                company.topics.add(topic)
+            company.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

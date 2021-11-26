@@ -11,12 +11,10 @@ router.register('freelancers', AllFreelancerView, basename='freelancers')
 router.register('companies', AllCompanyView, basename='companies')
 router.register('orders', AllOrderView, basename='orders')
 router.register('order', OrderView, basename='order')
-router.register('register', OrderView, basename='order')
+router.register('register', UserView, basename='register')
 
 urlpatterns = [
     path('', index, name='home'),
-    #path('register/', registerPage, name='register'),
-    #path('login/', loginPage, name='login'),
     #path('logout/', logoutUser, name='logout'),
     path('api/', include(router.urls)),
     path('auth/', obtain_auth_token)
