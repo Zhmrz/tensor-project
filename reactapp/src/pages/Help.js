@@ -18,7 +18,7 @@ import StarBorder from '@mui/icons-material/StarBorder';
 import styled from "styled-components";
 
 const ListWrapper = styled(List)`
-    grid-column: 1 / span 10;
+    grid-column: 1 / span 12;
     grid-row: 2 / span 8;
 `
 
@@ -54,7 +54,7 @@ const Help = () => {
                         {open === item.id ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton >
                     <Collapse in={open === item.id} timeout="auto" unmountOnExit>
-                        <ListItem sx={{ pl: 4, bgcolor: 'info.main'  }}>
+                        <ListItem sx={{ pl: 4, bgcolor: 'secondary.main'  }}>
                             <ListItemIcon>
                                 <StarBorder />
                             </ListItemIcon>

@@ -122,7 +122,7 @@ class AllOrderView(ReadOnlyModelViewSet):
 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = OrderFilter

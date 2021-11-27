@@ -9,7 +9,7 @@ import {
     FormGroup,
     Checkbox,
     FormControlLabel,
-    FormLabel
+    FormLabel, Switch, Paper, Button
 } from '@mui/material';
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
@@ -19,19 +19,78 @@ import CodeIcon from '@mui/icons-material/Code';
 import ThreeDRotationIcon from '@mui/icons-material/ThreeDRotation';
 import SchoolIcon from '@mui/icons-material/School';
 import CreateIcon from '@mui/icons-material/Create';
-import {useNavigate} from "react-router-dom";
+import CircularProgress from '@mui/material/CircularProgress';
+import {authUserThunkCreator, registerUserThunkCreator, setHasAccount, setSuccess} from "../store/userReducer";
+import {useDispatch, useSelector} from "react-redux";
+import {setUserError} from "../store/userReducer";
+
 
 const LoginPage = () => {
-    const navigate = useNavigate();
-    const [type, setType] = useState('man');
-    const [category, setCategory] = useState({
-        typo: false,
-        dev: false,
-        model: false,
-        photo: false,
-        edu: false,
-        img: false
-    });
+    const dispatch = useDispatch()
+    const [userData, setUserData] = useState({
+        email: '',
+        password: '',
+        firstName: '',
+        lastName: '',
+        type: '0',
+        link: '',
+        topics: {
+            typo: false,
+            dev: false,
+            model: false,
+            photo: false,
+            edu: false,
+            img: false
+        }
+    })
+
+    const error = useSelector(state => state.user.error)
+    const successReg = useSelector(state => state.user.successReg)
+    const loading = useSelector(state => state.user.isLoading)
+
+    const hasAccount = useSelector(state => state.user.hasAccount)
+    const topicsArr = Object.entries(userData.topics).reduce((acc, val, ind) =>{
+        if(val[1]) acc.push(ind+1)
+        return acc
+    }, [])
+
+    const changeData = (event) => {
+        dispatch(setSuccess(false))
+        dispatch(setUserError(false))
+        setUserData({...userData, [event.target.name]: event.target.value})
+    }
+
+    const changeType = (event) => {
+        dispatch(setSuccess(false))
+        dispatch(setUserError(false))
+        setUserData({...userData, type: event.target.value})
+    }
+
+    const changeTopics = (event) => {
+        dispatch(setSuccess(false))
+        setUserData({...userData, topics: {...userData.topics, [event.target.name]: event.target.checked}})
+    }
+
+    const changeHasAccount = (value) => {
+        setUserData({
+            email: '',
+                password: '',
+            firstName: '',
+            lastName: '',
+            type: 'man',
+            link: '',
+            topics: {
+            typo: false,
+                dev: false,
+                model: false,
+                photo: false,
+                edu: false,
+                img: false
+        }});
+        dispatch(setSuccess(false))
+        dispatch(setHasAccount(value))
+        dispatch(setUserError(false))
+    }
 
     const variants = [
         {label: 'Типографика', name: 'typo', icon: <TextFieldsIcon />, active: <TextFieldsIcon color='success'/>},
@@ -41,20 +100,24 @@ const LoginPage = () => {
         {label: 'Образование', name: 'edu', icon: <SchoolIcon />, active: <SchoolIcon color='success'/>},
         {label: 'Графика', name: 'img', icon: <CreateIcon />, active: <CreateIcon color='success'/>},
     ]
-    const handleCheck = (event) => {
-        setCategory(({
-            ...category,
-            [event.target.name]: event.target.checked,
-        }))
-    };
-    const handleChange = (event) => {
-        setType(event.target.value);
-    };
+
     const sendForm = (event) => {
         event.preventDefault()
         //будет обработка с помощью промиса, отправка по axios
-        if(true){
-            navigate('/search')
+        if(hasAccount){
+            dispatch(authUserThunkCreator({
+                username: userData.email,
+                password: userData.password,
+            }))
+        } else {
+            dispatch(registerUserThunkCreator({
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                type: userData.type,
+                username: userData.email,
+                password: userData.password,
+                topics: topicsArr
+            }))
         }
     }
     return (
@@ -63,134 +126,206 @@ const LoginPage = () => {
                 component="div"
                 sx={{
                     gridRow: '1 / span 1',
-                    gridColumn: '3 / span 6',
+                    gridColumn: '3 / span 8',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gridColumnGap: '20px',
+                    p: '20px'
+                }}
+                noValidate
+                autoComplete="on"
+            >
+                <Button
+                    variant={hasAccount ? 'outlined' : 'contained'}
+                    onClick={() => changeHasAccount(false)}
+                    sx={{fontSize: '18px', gridRow: 1, gridColumn: '1 / span 1'}}
+                >
+                    Зарегистрироваться
+                </Button>
+                <Button
+                    variant={hasAccount ? 'contained' : 'outlined'}
+                    onClick={() => changeHasAccount(true)}
+                    sx={{fontSize: '18px', gridRow: 1, gridColumn: '2 / span 1', backgroundColor: successReg ? "secondary.main" : "none"}}
+                >
+                    Войти
+                </Button>
+            </Box>
+            {loading ? (
+                <Box sx={{
+                    gridRow: '2 / span 8',
+                    gridColumn: '3 / span 8',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center'
-                }}
-                noValidate
-                autoComplete="on"
-            >
-                <Typography align='center' sx={{fontSize: '18px'}}>Зарегистрироваться или Войти</Typography>
-            </Box>
-            <Box
-                component="form"
-                sx={{
-                    gridRow: '2 / span 8',
-                    gridColumn: '3 / span 6',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-start',
-                }}
-                noValidate
-                autoComplete="on"
-            >
-                <TextField
-                    id="select-type"
-                    required
-                    select
-                    label="Выберите тип аккаунта"
-                    value={type}
-                    onChange={handleChange}
-                >
-                    <MenuItem value='man'>
-                        Фрилансер
-                    </MenuItem>
-                    <MenuItem value='company'>
-                        Компания
-                    </MenuItem>
-                </TextField>
-                {type === 'man' ?
-                    <>
+                }}>
+                    <CircularProgress />
+                </Box>)
+                :
+                hasAccount ?
+                    <Box
+                        component="form"
+                        sx={{
+                            gridRow: '2 / span 8',
+                            gridColumn: '3 / span 8',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start',
+                        }}
+                        noValidate
+                        autoComplete="on"
+                    >
+                        <TextField
+                            required
+                            id="mail"
+                            name='email'
+                            value={userData.email}
+                            onChange={changeData}
+                            label="Электронная почта"
+                            type="email"
+                            fullWidth
+                            margin="dense"
+                        />
+                        <TextField
+                            required
+                            id="password"
+                            name='password'
+                            value={userData.password}
+                            onChange={changeData}
+                            label="Пароль"
+                            type="password"
+                            autoComplete="current-password"
+                            fullWidth
+                            margin="dense"
+                        />
+                        <TextField
+                            required
+                            id="submit"
+                            type="submit"
+                            fullWidth
+                            margin="dense"
+                            onClick={sendForm}
+                        />
+                        {error && <Typography sx={{color: 'red', textAlign: "center", p: '10px'}}>Проверьте корректность введенных данных!</Typography>}
+                    </Box> :
+                    <Box
+                        component="form"
+                        sx={{
+                            gridRow: '2 / span 8',
+                            gridColumn: '3 / span 8',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'flex-start',
+                        }}
+                        noValidate
+                        autoComplete="on"
+                    >
+                        <TextField
+                            id="select-type"
+                            name='type'
+                            required
+                            select
+                            label="Выберите тип аккаунта"
+                            defaultValue={0}
+                            value={userData.type}
+                            onChange={changeType}
+                        >
+                            <MenuItem value='0'>
+                                Фрилансер
+                            </MenuItem>
+                            <MenuItem value='1'>
+                                Компания
+                            </MenuItem>
+                        </TextField>
                         <TextField
                             required
                             id="name"
-                            label="Имя"
+                            name='firstName'
+                            label={userData.type === '0' ? 'Имя' : 'Название'}
+                            value={userData.firstName}
+                            onChange={changeData}
                             defaultValue="Доминик"
                             fullWidth
                             margin="dense"
                         />
+                        {userData.type === '0' &&
                         <TextField
                             required
                             id="surname"
+                            name='lastName'
+                            value={userData.lastName}
+                            onChange={changeData}
                             label="Фамилия"
                             defaultValue="Торетто"
                             fullWidth
                             margin="dense"
-                        />
+                        />}
                         <TextField
                             id="portfolio"
-                            label="Ссылка на портфолио"
+                            name='link'
+                            onChange={changeData}
+                            label={userData.type === 'man' ? "Ссылка на портфолио" : 'Ссылка на сайт'}
                             type="url"
                             fullWidth
                             margin="dense"
-                            helperText="Портфолио позволит Вам показать профессионализм и получить одобрение от заказчика"
+                            helperText={userData.type === 'man' ? "Портфолио позволит Вам показать профессионализм и получить одобрение от заказчика" :
+                                "Сайт позволит Вам убедить фрилансеров в серьезности своих намерений :)"
+                            }
                         />
-                    </> :
-                    <>
+                        <FormLabel component="legend">
+                            Выберите интересующие направления:
+                        </FormLabel>
+                        <FormGroup sx={{display: "flex", flexFlow: "row wrap", justifyContent: "space-between", alignItems: "flex-start"}}>
+                            {variants.map((item) => (
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={userData.topics[item.name]}
+                                            onChange={changeTopics}
+                                            name={item.name}
+                                            icon={item.icon}
+                                            checkedIcon={item.active}
+                                        />
+                                    }
+                                    label={item.label}
+                                    sx={{width: "30%"}}
+                                />
+                            ))}
+                        </FormGroup>
                         <TextField
                             required
-                            id="name"
-                            label="Название"
+                            id="mail"
+                            name='email'
+                            value={userData.email}
+                            onChange={changeData}
+                            label="Электронная почта"
+                            type="email"
                             fullWidth
                             margin="dense"
                         />
                         <TextField
-                            id="portfolio"
-                            label="Ссылка на сайт компании"
-                            type="url"
+                            required
+                            id="password"
+                            name='password'
+                            value={userData.password}
+                            onChange={changeData}
+                            label="Пароль"
+                            type="password"
+                            autoComplete="current-password"
                             fullWidth
                             margin="dense"
-                            helperText="Сайт позволит Вам убедить фрилансеров в серьезности своих намерений :)"
                         />
-                    </>
-                }
-                <FormLabel component="legend">
-                    Выберите интересующие направления:
-                </FormLabel>
-                <FormGroup sx={{display: "flex", flexFlow: "row wrap", justifyContent: "space-between", alignItems: "flex-start"}}>
-                    {variants.map((item) => (
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={category[item.name]}
-                                    onChange={handleCheck}
-                                    name={item.name}
-                                    icon={item.icon}
-                                    checkedIcon={item.active}
-                                />
-                            }
-                            label={item.label}
-                            sx={{width: "30%"}}
+                        <TextField
+                            required
+                            id="submit"
+                            type="submit"
+                            fullWidth
+                            margin="dense"
+                            onClick={sendForm}
                         />
-                    ))}
-                </FormGroup>
-                <TextField
-                    required
-                    id="mail"
-                    label="Электронная почта"
-                    type="email"
-                    fullWidth
-                    margin="dense"
-                />
-                <TextField
-                    required
-                    id="password"
-                    label="Пароль"
-                    type="password"
-                    autoComplete="current-password"
-                    fullWidth
-                    margin="dense"
-                />
-                <TextField
-                    required
-                    id="submit"
-                    type="submit"
-                    fullWidth
-                    margin="dense"
-                    onClick={sendForm}
-                />
-            </Box>
+                        {error && <Typography sx={{color: 'red', textAlign: "center", p: '10px'}}>Проверьте корректность введенных данных!</Typography>}
+                        {successReg && <Typography sx={{color: 'green', textAlign: "center", p: '10px'}}>Регистрация успешна! Вы можете войти в систему!</Typography>}
+                    </Box>
+            }
         </>
     );
 };

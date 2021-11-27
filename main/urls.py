@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path, include, re_path
 from .views import *
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
@@ -16,5 +16,6 @@ router.register('register', UserView, basename='register')
 urlpatterns = [
     path('', index, name='home'),
     path('api/', include(router.urls)),
-    path('auth/', obtain_auth_token)
+    path('auth/', obtain_auth_token),
+    re_path(r'^(?:.*)/?$', index, name='home'),
 ]

@@ -66,10 +66,10 @@ const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, set
             </FormControl>
             <SortWrapper column='3 /span 1' row='1 / span 1'>
                 <IconButton aria-label="price-up" onClick={() => setUp(true)}>
-                    <ArrowCircleUpIcon sx={{fontSize: '34px', color: up ? 'blue' : 'grey'}}/>
+                    <ArrowCircleUpIcon sx={{fontSize: '34px', color: up ? 'secondary.main' : 'primary.main'}}/>
                 </IconButton>
                 <IconButton aria-label="price-down" onClick={() => setUp(false)}>
-                    <ArrowCircleDownIcon sx={{fontSize: '34px', color: !up ? 'blue' : 'grey'}}/>
+                    <ArrowCircleDownIcon sx={{fontSize: '34px', color: !up ? 'secondary.main' : 'primary.main'}}/>
                 </IconButton>
             </SortWrapper>
             <Box />

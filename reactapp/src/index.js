@@ -4,14 +4,17 @@ import {BrowserRouter as Router} from "react-router-dom";
 import './styles/index.css';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import App from './App';
+import {Provider} from "react-redux";
+import store from './store/store';
 
 let theme = createTheme({
     palette: {
         primary: {
-            main: '#0052cc',
+            main: '#32384D',
+            contrastText: '#FFF'
         },
         secondary: {
-            main: '#edf2ff',
+            main: '#E29930',
         },
     },
     typography: {
@@ -24,11 +27,13 @@ let theme = createTheme({
 
 ReactDOM.render(
   <React.StrictMode>
-      <Router>
-          <ThemeProvider theme={theme}>
-            <App />
-          </ThemeProvider>
-      </Router>
+      <Provider store={store}>
+          <Router>
+              <ThemeProvider theme={theme}>
+                <App />
+              </ThemeProvider>
+          </Router>
+      </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
