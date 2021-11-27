@@ -8,14 +8,14 @@ class FreelancerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Freelancer
-        fields = ('first_name', 'last_name', 'description', 'image', 'link_to_resume')
+        fields = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume', 'topics')
 
 
 class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ('name', 'description', 'image', 'link_to_resume')
+        fields = ('id', 'name', 'description', 'image', 'link_to_resume', 'topics')
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -40,25 +40,8 @@ class UserSerializer(serializers.ModelSerializer):
             'required':True
         }}
 
-
     def create(self, validated_data):
 
         user = User.objects.create_user(**validated_data)
         Token.objects.create(user=user)
         return user
-
-        """user_type = validated_data.get(["type"])
-        topics = validated_data.get(["topics"])
-        if user_type == 0:            
-            freelancer = Freelancer.objects.create(user_id=user)
-            freelancer.first_name = validated_data["firstName"]
-            freelancer.last_name = validated_data["lastName"]
-            for topic in topics:
-                freelancer.topics.add(topic)
-            return freelancer, token
-        else:
-            company = Company.objects.create(user_id=user)
-            company.name = validated_data['firstName']
-            for topic in topics:
-                company.topics.add(topic)
-            return company, token"""

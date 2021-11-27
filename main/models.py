@@ -12,6 +12,7 @@ class Freelancer(models.Model):
     image = models.ImageField(verbose_name='Аватар')
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
+    # Кол-во выполненных заказов
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

@@ -15,7 +15,6 @@ router.register('register', UserView, basename='register')
 
 urlpatterns = [
     path('', index, name='home'),
-    #path('logout/', logoutUser, name='logout'),
     path('api/', include(router.urls)),
     path('auth/', obtain_auth_token)
 ]
