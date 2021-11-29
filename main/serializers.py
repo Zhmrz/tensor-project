@@ -19,6 +19,8 @@ class CompanySerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
 
+
+
     customer = serializers.ReadOnlyField(source='customer.name')
     #topic = serializers.RelatedField(many=False)
 

@@ -22,6 +22,8 @@ const FilterModal = ({filterVisible, setFilterVisible, realPriceLims, setPriceLi
         setFilterVisible(false)
         setFilterActive(true)
     }
+
+    console.log(priceL)
     const onClose = () => {
         if(!filterActive){
             setPriceL([realPriceLims.min, realPriceLims.max])

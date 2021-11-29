@@ -59,8 +59,8 @@ const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, set
                     onChange={changeSortType}
                 >
                     <FormControlLabel value="price" control={<Radio />} label="Стоимость" />
-                    <FormControlLabel value="duration" control={<Radio />} label="Срок выполнения" />
-                    <FormControlLabel value="date" control={<Radio />} label="Дата опубликования" />
+                    <FormControlLabel value="deadline" control={<Radio />} label="Срок выполнения" />
+                    <FormControlLabel value="publication_date" control={<Radio />} label="Дата опубликования" />
                 </RadioGroup>
             </FormControl>
             <SortWrapper column='3 /span 1' row='1 / span 1'>

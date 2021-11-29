@@ -54,6 +54,7 @@ class RespondingFreelancers(models.Model):
     freelancer = models.ForeignKey(Freelancer, verbose_name="Пользователь", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
     responding_date = models.DateTimeField(auto_now=True, verbose_name='Время отклика')
+    #статус отклика 0 - откликнулся, 1 - в работе
 
     def __str__(self):
         return f"{self.order} - откликнулся {self.freelancer}"

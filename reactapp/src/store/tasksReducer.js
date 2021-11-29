@@ -62,7 +62,7 @@ export const getTasksThunkCreator = (params) => {
         getTasksApi(params)
             .then(response => {
                 dispatch(loadTasks(response.data.orders))
-                dispatch(setDateLims(response.data.priceLims))
+                dispatch(setDateLims(response.data.dateLims))
                 dispatch(setDurationLims(response.data.durationLims))
                 dispatch(setPriceLims(response.data.priceLims))
                 const limit = getState().tasks.pageLimit

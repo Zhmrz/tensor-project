@@ -17,9 +17,10 @@ const UserPage = () => {
     let item = {}
     if(currentPageExist){
         const rating = 50
-        item = {place: 'Россия', date: '22 ноября, 2021',avatar: userData.firstName[0] || '', image: undefined, alt: userData.firstName  || '', likes: rating,...userData}
+        item = {place: 'Россия', date: '22 ноября, 2021',avatar: userData.name || '', image: undefined, alt: userData.name  || '', likes: rating,...userData}
     }
     useEffect(() => {
+        console.log('get user data')
         dispatch(getUserData(id))
     },[])
 

@@ -80,6 +80,29 @@ class AllOrderView(ReadOnlyModelViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = OrderFilter
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        price_list = []
+        deadline_list = []
+        date_list = []
+        for order in serializer.data:
+            price_list.append(float(order["price"]))
+            deadline_list.append(float(order["deadline"]))
+            date_list.append(order["publication_date"])
+        print(date_list)
+        print(min(date_list))
+        data = {"orders": serializer.data, "priceLims": [min(price_list, default="EMPTY"), max(price_list, default="EMPTY")],
+                "durationLims": [min(deadline_list, default="EMPTY"), max(deadline_list, default="EMPTY")],
+                "dateLims": [min(date_list, default="EMPTY"), max(date_list, default="EMPTY")]}
+        return Response(data)
+
 
 class OrderView(ModelViewSet):
 

@@ -77,6 +77,7 @@ function App() {
         dispatch(resetUser())
         localStorage.removeItem('token')
     }
+    console.log(successAuth)
     return (
       <AppWrapper>
         <BarWrapper top>

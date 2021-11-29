@@ -77,6 +77,7 @@ export const authUserThunkCreator = (params) => {
                 const user = response.data.userData
                 localStorage.setItem('token', response.data.token)
                 dispatch(setUser(user))
+                console.log('auth')
                 dispatch(setMe(user.id, user.name, user.surname, user.email))
                 dispatch(authSuccess(true))
                 dispatch(pageExist(true))
@@ -113,7 +114,10 @@ export const getUserData = (id) => {
         getUserPage(id)
             .then(response => {
                 dispatch(pageExist(true))
-                dispatch(setUser(response.data))
+                const name = response.data.first_name
+                const surname = response.data.last_name
+                const link = response.data.link_to_resume
+                dispatch(setUser({name: name, surname: surname, link: link}))
             })
             .catch(error => {
                 dispatch(pageExist(false))
