@@ -1,9 +1,14 @@
-import {authUser, registerUser} from "../api/userAPI";
-import {useNavigate} from "react-router-dom";
-import axios from 'axios'
+import {authUser, getUserPage, registerUser} from "../api/userAPI";
+import {SouthEastTwoTone} from "@mui/icons-material";
 
 const defaultState = {
-    id: undefined,
+    me: {
+        id: 0,
+        name: undefined,
+        surname: undefined,
+        email: undefined,
+    },
+    id: 0,
     name: undefined,
     surname: undefined,
     email: undefined,
@@ -13,19 +18,24 @@ const defaultState = {
     isLoading: false,
     error: false,
     hasAccount: true,
-    successReg: false
+    successReg: false,
+    successAuth: false,
+    currentPageExist: false
 };
 
-const LOGIN = 'LOGIN'
+const GET_DATA = 'GET_DATA'
 const LOGOUT = 'LOGOUT'
 const LOADING = 'LOADING'
 const ERROR = 'ERROR'
 const ACCOUNT ='ACCOUNT'
 const SUCCESS = 'SUCCESS'
+const AUTH_SUCCESS = 'AUTH_SUCCESS'
+const PAGE_EXIST = 'PAGE_EXIST'
+const SET_ME = 'SET_ME'
 
 export const userReducer = (state = defaultState, action) => {
     switch(action.type){
-        case LOGIN:
+        case GET_DATA:
             return {...state, ...action.payload}
         case LOGOUT:
             return {...state, ...defaultState}
@@ -37,29 +47,44 @@ export const userReducer = (state = defaultState, action) => {
             return {...state, hasAccount: action.payload}
         case SUCCESS:
             return {...state, successReg: action.payload}
+        case AUTH_SUCCESS:
+            return {...state, successAuth: action.payload}
+        case PAGE_EXIST:
+            return {...state, currentPageExist: action.payload}
+        case SET_ME:
+            return {...state, me: action.payload}
         default:
             return state
     }
 }
 
-export const setUser = (value) => ({type: LOGIN, payload: value})
+export const setUser = (value) => ({type: GET_DATA, payload: value})
 export const resetUser = () => ({type: LOGOUT})
 export const loadUserData = (value) => ({type: LOADING, payload: value})
 export const setUserError = (value) => ({type: ERROR, payload: value})
 export const setHasAccount = (value) => ({type: ACCOUNT, payload: value})
 export const setSuccess = (value) => ({type: SUCCESS, payload: value})
+export const authSuccess = (value) => ({type: AUTH_SUCCESS, payload: value})
+export const pageExist = (value) => ({type: PAGE_EXIST, payload: value})
+export const setMe = (id, name, surname, email) => ({type: SET_ME, payload: {id: id, name: name, surname: surname, email: email}})
 
 export const authUserThunkCreator = (params) => {
     return (dispatch, getState) => {
         dispatch(loadUserData(true))
-        //получить параметры фильтрации и упаковать в params
         authUser(params)
             .then(response => {
                 //с токеном работа
-                axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.token;
+                const user = response.data.userData
+                localStorage.setItem('token', response.data.token)
+                dispatch(setUser(user))
+                dispatch(setMe(user.id, user.name, user.surname, user.email))
+                dispatch(authSuccess(true))
+                dispatch(pageExist(true))
             })
             .catch(error => {
                 dispatch(setUserError(true))
+                //убрать в проде
+                //dispatch(authSuccess(true))
             })
         dispatch(loadUserData(false))
     }
@@ -77,6 +102,22 @@ export const registerUserThunkCreator = (params) => {
             })
             .catch(error => {
                 dispatch(setUserError(true))
+            })
+        dispatch(loadUserData(false))
+    }
+}
+
+export const getUserData = (id) => {
+    return (dispatch, getState) => {
+        dispatch(loadUserData(true))
+        getUserPage(id)
+            .then(response => {
+                dispatch(pageExist(true))
+                dispatch(setUser(response.data))
+            })
+            .catch(error => {
+                dispatch(pageExist(false))
+                console.log('no user')
             })
         dispatch(loadUserData(false))
     }

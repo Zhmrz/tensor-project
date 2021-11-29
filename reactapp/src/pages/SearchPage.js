@@ -23,17 +23,18 @@ const SearchPage = () => {
     const [page, setPage] = useState(1)
     const pageTotal = useSelector(state => state.tasks.totalPage)
     //настройка фильтрации
+    const [filterActive, setFilterActive] = useState(false)
     const [sortType, setSortType] = useState('price')
-    const [priceLims, setPriceLims] = useState([0, 100])
-    const [realPriceLims, setRealPriceLims] = useState({
-        min: 0,
-        max: 100
-    })
-    const [durationLims, setDurationLims] = useState([0, 100])
-    const [realDurationLims, setRealDurationLims] = useState({
-        min: 0,
-        max: 100
-    })
+
+    //будут получены из редакса
+    const realPriceLims = useSelector(state => state.tasks.priceLims)
+    const realDurationLims = useSelector(state => state.tasks.durationLims)
+    const realDateLims = useSelector(state => state.tasks.dateLims)
+
+    const [priceLims, setPriceLims] = useState(['', ''])
+    const [durationLims, setDurationLims] = useState(['', ''])
+    const [dateLims, setDateLims] = useState(['', ''])
+
     const [topics, setTopics] = useState({
         code: false,
         model: false,
@@ -46,29 +47,50 @@ const SearchPage = () => {
         if(val[1]) acc.push(ind+1)
         return acc
     }, []).join(',')
+
+    const resetFilter = () => {
+        setTopics({
+            code: false,
+            model: false,
+            photo: false,
+            typo: false,
+            img: false,
+            edu: false,
+        })
+        setDurationLims(['', ''])
+        setPriceLims(['', ''])
+        setDateLims(['', ''])
+        setFilterActive(false)
+    }
+
+    const [filterVisible, setFilterVisible] = useState(false)
+
     //настройка сортировки
     const [up, setUp] = useState(true)
-    const [options, addOptions] = useState(false)
 
     //модальное окно задания
     const [visibleTask, setVisibleTask] = useState(0)
     //загрузка данных
     useEffect(() => {
         const params = {
-            min_price: priceLims[0],
-            max_price: priceLims[1],
-            topic: topicString,
+            min_price: priceLims[0] || undefined,
+            max_price: priceLims[1] || undefined,
+            min_deadline: durationLims[0] || undefined,
+            max_deadline: durationLims[1] || undefined,
+            start_date: dateLims[0] || undefined,
+            end_date: dateLims[1] || undefined,
+            topic: topicString || undefined,
         }
-        dispatch(getTasksThunkCreator())
+        dispatch(getTasksThunkCreator(params))
         //response = ('id', 'customer', 'title', 'description', 'price','deadline', 'status', 'performer', 'publication_date', 'topic')
-    }, [durationLims, priceLims, topics]);
+    }, [durationLims, dateLims, priceLims, topicString]);
 
     const sortedData = useMemo(() => {
         return data.sort((a, b) => {
             if(up){
-                return a['id'] - b['id'] //a[sortType] - b[sortType]
+                return a[sortType] - b[sortType]
             }
-            return b['id'] - a['id']
+            return b[sortType] - a[sortType]
         })
     }, [up, sortType, data])
 
@@ -82,15 +104,16 @@ const SearchPage = () => {
                 <TaskControl
                     up={up}
                     setUp={setUp}
-                    addOptions={addOptions}
+                    setFilterVisible={setFilterVisible}
                     category={sortType}
                     setSort={setSortType}
                     checked={topics}
                     setChecked={setTopics}
+                    filterActive={filterActive}
+                    resetFilter={resetFilter}
                 />
                 {loading ? <CircularProgress />
-                    :
-                    pageItems.length ?
+                    : pageItems.length ?
                         <>
                             <TaskList items={pageItems} setVisibleTask={setVisibleTask}/>
                             <Pagination count={pageTotal}
@@ -100,18 +123,21 @@ const SearchPage = () => {
                                         sx={{mt: "auto", mb: '10px'}}
                             />
                         </>
-                    :
-                        <Box>
-                            <Typography>По Вашему запросу ничего не найдено :(</Typography>
-                        </Box>
+                        :   <Box>
+                                <Typography>По Вашему запросу ничего не найдено :(</Typography>
+                            </Box>
                 }
                 <FilterModal
                     setDurationLims={setDurationLims}
                     realDurationLims={realDurationLims}
                     realPriceLims={realPriceLims}
                     setPriceLims={setPriceLims}
-                    options={options}
-                    addOptions={addOptions}
+                    realDateLims={realDateLims}
+                    setDateLims={setDateLims}
+                    filterVisible={filterVisible}
+                    setFilterVisible={setFilterVisible}
+                    filterActive={filterActive}
+                    setFilterActive={setFilterActive}
                 />
                 <TaskModal
                     item={pageItems.filter(i => i.id === visibleTask)[0]} //коряво, поправить
