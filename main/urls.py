@@ -11,7 +11,7 @@ router.register('freelancers', AllFreelancerView, basename='freelancers')
 router.register('companies', AllCompanyView, basename='companies')
 router.register('orders', AllOrderView, basename='orders')
 router.register('order', OrderView, basename='order')
-router.register('register', UserRegister, basename='register')
+router.register('register', UserRegisterView, basename='register')
 router.register('respondingfreelancers', RespondingFreelancersView, basename='respondingfreelancers')
 
 urlpatterns = [

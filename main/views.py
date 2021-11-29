@@ -96,8 +96,6 @@ class AllOrderView(ReadOnlyModelViewSet):
             price_list.append(float(order["price"]))
             deadline_list.append(float(order["deadline"]))
             date_list.append(order["publication_date"])
-        print(date_list)
-        print(min(date_list))
         data = {"orders": serializer.data, "priceLims": [min(price_list, default="EMPTY"), max(price_list, default="EMPTY")],
                 "durationLims": [min(deadline_list, default="EMPTY"), max(deadline_list, default="EMPTY")],
                 "dateLims": [min(date_list, default="EMPTY"), max(date_list, default="EMPTY")]}
@@ -122,7 +120,7 @@ class OrderView(ModelViewSet):
         serializer.save()
 
 
-class UserRegister(ModelViewSet):
+class UserRegisterView(ModelViewSet):
 
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -134,7 +132,7 @@ class UserRegister(ModelViewSet):
         user = User.objects.get(username=request.data.get("username"))
         user_type = request.data.get("type")
         topics = request.data.get("topics")
-        if user_type == 0:
+        if user_type == "0":
             freelancer = Freelancer.objects.create(user_id=user)
             freelancer.first_name = request.data.get("firstName")
             freelancer.last_name = request.data.get("lastName")
