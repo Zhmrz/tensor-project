@@ -47,6 +47,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RespondingFreelancersSerializer(serializers.ModelSerializer):
 
+    freelancer = serializers.ReadOnlyField(source='freelancer.first_name')
+
     class Meta:
         model = RespondingFreelancers
         fields = ('freelancer', 'order', 'responding_date')
