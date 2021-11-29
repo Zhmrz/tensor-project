@@ -30,23 +30,22 @@ const SortWrapper = styled.div`
     grid-column: ${props => props.column};
     grid-row: ${props => props.row};
 `
+const categories = [
+    {id: 1, value: 'code', label: 'Программирование'},
+    {id: 1, value: 'model', label: '3D-моделирование'},
+    {id: 1, value: 'photo', label: 'Фотография'},
+    {id: 1, value: 'typo', label: 'Типографика'},
+    {id: 1, value: 'edu', label: 'Образование'},
+    {id: 1, value: 'img', label: 'Графика'},
+]
 
-const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, setUp, addOptions, sortType, setSort, checked, setChecked}) => {
+const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, setUp, setFilterVisible, sortType, setSort, checked, setChecked, filterActive, resetFilter}) => {
     const changeSortType = (event) => {
         setSort(event.target.value)
     }
     const changeChecked = (event) => {
         setChecked({...checked, [event.target.value]: event.target.checked})
-        console.log(checked)
     }
-    const categories = [
-        {id: 1, value: 'code', label: 'Программирование'},
-        {id: 1, value: 'model', label: '3D-моделирование'},
-        {id: 1, value: 'photo', label: 'Фотография'},
-        {id: 1, value: 'typo', label: 'Типографика'},
-        {id: 1, value: 'edu', label: 'Образование'},
-        {id: 1, value: 'img', label: 'Графика'},
-    ]
     return (
         <FormWrapper sx={{gridColumn: '1 /span 1', gridRow: '1 / span 1'}}>
             <TextField id="input" label="Введите что-нибудь" variant="standard" sx={{width: '90%'}}/>
@@ -93,11 +92,11 @@ const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, set
                 </FormGroup>
             </FormControl>
             <SortWrapper column='3 /span 1' row='2 / span 1'>
-                <IconButton aria-label="cancel" onClick={() => console.log('default')}>
+                <IconButton aria-label="cancel" onClick={() => resetFilter()}>
                     <CancelIcon sx={{fontSize: '34px'}}/>
                 </IconButton>
-                <IconButton aria-label='add-options' onClick={() => addOptions(true)}>
-                    <FilterAltIcon sx={{fontSize: '34px'}}/>
+                <IconButton aria-label='add-options' onClick={() => setFilterVisible(true)}>
+                    <FilterAltIcon sx={{fontSize: '34px', color: filterActive ? 'secondary.main' : 'primary.main'}}/>
                 </IconButton>
             </SortWrapper>
         </FormWrapper>

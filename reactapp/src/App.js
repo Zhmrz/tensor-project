@@ -4,16 +4,19 @@ import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import styled from 'styled-components';
-import {useState} from "react";
 import {Route, Routes, NavLink} from "react-router-dom";
 import Main from "./pages/Main";
 import Help from "./pages/Help";
-import OwnPage from "./pages/OwnPage";
 import NotFound from "./pages/NotFound";
 import LoginPage from "./pages/LoginPage";
 import SearchPage from "./pages/SearchPage";
 import UserPage from "./pages/UserPage";
+import {Navigate} from "react-router-dom";
+import {useDispatch, useSelector} from "react-redux";
+import {resetUser} from "./store/userReducer";
 
 const AppWrapper = styled.div`
     width: 100vw;
@@ -67,7 +70,13 @@ const PageWrapper = styled.div`
 `
 
 function App() {
-    const [userActive, setUserActive] = useState(true);
+    const dispatch = useDispatch()
+    const id = useSelector(state => state.user.me.id)
+    const successAuth = useSelector(state => state.user.successAuth)
+    const logout = () => {
+        dispatch(resetUser())
+        localStorage.removeItem('token')
+    }
     return (
       <AppWrapper>
         <BarWrapper top>
@@ -78,22 +87,32 @@ function App() {
               <HomeWorkIcon sx={{fontSize: '34px', color: 'inherit'}}/>
             </NavLink>
             <RightBar>
-              {userActive ?
+              {successAuth ?
                   <>
                     <NavLink to="/search" style={({ isActive }) => ({
                         color: isActive ? "#E29930" : "#ffffff"
                     })}>
                       <SearchIcon sx={{fontSize: '34px', color: 'inherit', ml: '20px'}}/>
                     </NavLink>
-                    <NavLink to="/user" style={({ isActive }) => ({
+                    <NavLink to={"/user/" + id} style={({ isActive }) => ({
                         color: isActive ? "#E29930" : "#ffffff"
                     })}>
                       <AccountCircle sx={{fontSize: '34px', color: 'inherit', ml: '20px'}}/>
                     </NavLink>
+                      <NavLink to="/login" onClick={() => logout()} style={({ isActive }) => ({
+                          color: isActive ? "#E29930" : "#ffffff"
+                      })}>
+                          <LogoutIcon sx={{fontSize: '34px', color: 'inherit', ml: '20px'}}/>
+                      </NavLink>
                   </>
-                  : <></>
+                  : <NavLink to="/login" style={({ isActive }) => ({
+                      color: isActive ? "#E29930" : "#ffffff"
+                  })}>
+                      <LoginIcon sx={{fontSize: '34px', color: 'inherit', ml: '20px'}}/>
+                  </NavLink>
+
               }
-              <NavLink to="/help"style={({ isActive }) => ({
+              <NavLink to="/help" style={({ isActive }) => ({
                   color: isActive ? "#E29930" : "#ffffff"
               })}>
                 <HelpOutlineIcon sx={{fontSize: '34px', color: 'inherit', ml: '20px'}}/>
@@ -103,11 +122,11 @@ function App() {
         </BarWrapper>
         <PageWrapper>
           <Routes>
-            <Route exact path="/" element={<Main />}/>
-            <Route exact path="/help" element={<Help />}/>
-            <Route path="/user" element={<UserPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/search" element={<SearchPage />} />
+              <Route exact path="/" element={<Main />}/>
+              <Route exact path="/help" element={<Help />}/>
+              <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={"/user/" + id} replace={true}/>}/>
+              <Route path="/user/:id" element={successAuth ? <UserPage /> : <Navigate to="/login" replace={true}/>} />
+              <Route path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
             <Route path="*" element={<NotFound />}/>
           </Routes>
         </PageWrapper>

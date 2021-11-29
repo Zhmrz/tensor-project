@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
-import styled from 'styled-components';
 import {
-    Input,
     Typography,
     TextField,
     Box,
@@ -9,10 +7,8 @@ import {
     FormGroup,
     Checkbox,
     FormControlLabel,
-    FormLabel, Switch, Paper, Button
+    FormLabel, Button
 } from '@mui/material';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import Favorite from '@mui/icons-material/Favorite';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import TextFieldsIcon from '@mui/icons-material/TextFields';
 import CodeIcon from '@mui/icons-material/Code';
@@ -20,10 +16,14 @@ import ThreeDRotationIcon from '@mui/icons-material/ThreeDRotation';
 import SchoolIcon from '@mui/icons-material/School';
 import CreateIcon from '@mui/icons-material/Create';
 import CircularProgress from '@mui/material/CircularProgress';
-import {authUserThunkCreator, registerUserThunkCreator, setHasAccount, setSuccess} from "../store/userReducer";
+import {
+    authUserThunkCreator,
+    registerUserThunkCreator,
+    setHasAccount,
+    setSuccess
+} from "../store/userReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {setUserError} from "../store/userReducer";
-
 
 const LoginPage = () => {
     const dispatch = useDispatch()
@@ -44,15 +44,17 @@ const LoginPage = () => {
         }
     })
 
-    const error = useSelector(state => state.user.error)
-    const successReg = useSelector(state => state.user.successReg)
-    const loading = useSelector(state => state.user.isLoading)
-
-    const hasAccount = useSelector(state => state.user.hasAccount)
     const topicsArr = Object.entries(userData.topics).reduce((acc, val, ind) =>{
         if(val[1]) acc.push(ind+1)
         return acc
     }, [])
+
+    const error = useSelector(state => state.user.error)
+    const successReg = useSelector(state => state.user.successReg)
+    const loading = useSelector(state => state.user.isLoading)
+    const hasAccount = useSelector(state => state.user.hasAccount)
+    console.log('email')
+    console.log(userData.password)
 
     const changeData = (event) => {
         dispatch(setSuccess(false))
@@ -63,6 +65,7 @@ const LoginPage = () => {
     const changeType = (event) => {
         dispatch(setSuccess(false))
         dispatch(setUserError(false))
+        console.log(event.target.value)
         setUserData({...userData, type: event.target.value})
     }
 
@@ -74,10 +77,10 @@ const LoginPage = () => {
     const changeHasAccount = (value) => {
         setUserData({
             email: '',
-                password: '',
+            password: '',
             firstName: '',
             lastName: '',
-            type: 'man',
+            type: '0',
             link: '',
             topics: {
             typo: false,
