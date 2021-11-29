@@ -12,7 +12,7 @@ class Freelancer(models.Model):
     image = models.ImageField(verbose_name='Аватар')
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
-    # Кол-во выполненных заказов
+    completed_orders = models.PositiveIntegerField(verbose_name="Кол-во выполненных заказов", default=0)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -42,7 +42,7 @@ class Order(models.Model):
     status = models.BooleanField(default=False)  # 0 - заказ свободен, 1 - если performer != Null
     performer = models.ForeignKey('RespondingFreelancers', verbose_name='Исполнитель заказа',
                                   on_delete=models.CASCADE, related_name='related_performer', null=True, blank=True)
-    publication_date = models.DateTimeField(auto_now=True, verbose_name='Время публикации')
+    publication_date = models.DateField(auto_now=True, verbose_name='Время публикации')
     topic = models.ForeignKey('Topic', verbose_name='Тема', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -53,8 +53,8 @@ class RespondingFreelancers(models.Model):
 
     freelancer = models.ForeignKey(Freelancer, verbose_name="Пользователь", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
-    responding_date = models.DateTimeField(auto_now=True, verbose_name='Время отклика')
-    #статус отклика 0 - откликнулся, 1 - в работе
+    responding_date = models.DateField(auto_now=True, verbose_name='Время отклика')
+    status = models.BooleanField(default=False)  #  0 - откликнулся, 1 - в работе
 
     def __str__(self):
         return f"{self.order} - откликнулся {self.freelancer}"
