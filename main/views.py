@@ -12,6 +12,8 @@ from django.contrib.auth import authenticate, login, logout
 
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import obtain_auth_token
+from rest_framework.authtoken.models import Token
 from .serializers import *
 
 
@@ -122,7 +124,7 @@ class AllOrderView(ReadOnlyModelViewSet):
 
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = OrderFilter
@@ -173,3 +175,24 @@ class UserView(ModelViewSet):
             company.save()
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+class LoginUser(obtain_auth_token):
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        if token:
+            user_token = 'Token ' + token
+        else:
+            user_token = 'Token ' + created
+        user_cookie = {'Authorization': user_token}
+        return Response({'token': token.key}).cookies.update(user_cookie)
+
+
+class RespondingFreelancersView(ModelViewSet):
+
+    queryset = RespondingFreelancers.objects.all()
+    serializer_class = RespondingFreelancersSerializer

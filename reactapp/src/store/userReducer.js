@@ -1,5 +1,6 @@
 import {authUser, registerUser} from "../api/userAPI";
 import {useNavigate} from "react-router-dom";
+import axios from 'axios'
 
 const defaultState = {
     id: undefined,
@@ -55,9 +56,7 @@ export const authUserThunkCreator = (params) => {
         authUser(params)
             .then(response => {
                 //с токеном работа
-                dispatch(setUser(response.data))
-                const navigate = useNavigate()
-                navigate('/user', {replace: true})
+                axios.defaults.headers.common['Authorization'] = 'Token ' + response.data.token;
             })
             .catch(error => {
                 dispatch(setUserError(true))

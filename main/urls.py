@@ -12,10 +12,11 @@ router.register('companies', AllCompanyView, basename='companies')
 router.register('orders', AllOrderView, basename='orders')
 router.register('order', OrderView, basename='order')
 router.register('register', UserView, basename='register')
+router.register('respondingfreelancers', RespondingFreelancersView, basename='respondingfreelancers')
 
 urlpatterns = [
     path('', index, name='home'),
     path('api/', include(router.urls)),
-    path('auth/', obtain_auth_token),
+    path('auth/', LoginUser.as_view()),
     re_path(r'^(?:.*)/?$', index, name='home'),
 ]
