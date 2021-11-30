@@ -1,5 +1,4 @@
 import django_filters
-from django.http import JsonResponse
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
@@ -89,13 +88,11 @@ class AllOrderView(ReadOnlyModelViewSet):
             return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
-        price_list = []
-        deadline_list = []
-        date_list = []
-        for order in serializer.data:
-            price_list.append(float(order["price"]))
-            deadline_list.append(float(order["deadline"]))
-            date_list.append(order["publication_date"])
+        price_list, deadline_list, date_list = set(), set(), set()
+        for order in Order.objects.all():
+            price_list.add(float(order.price))
+            deadline_list.add(float(order.deadline))
+            date_list.add(order.publication_date)
         data = {"orders": serializer.data, "priceLims": [min(price_list, default="EMPTY"), max(price_list, default="EMPTY")],
                 "durationLims": [min(deadline_list, default="EMPTY"), max(deadline_list, default="EMPTY")],
                 "dateLims": [min(date_list, default="EMPTY"), max(date_list, default="EMPTY")]}

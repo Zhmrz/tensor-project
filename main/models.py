@@ -42,7 +42,8 @@ class Order(models.Model):
     status = models.BooleanField(default=False)  # 0 - заказ свободен, 1 - если performer != Null
     performer = models.ForeignKey('RespondingFreelancers', verbose_name='Исполнитель заказа',
                                   on_delete=models.CASCADE, related_name='related_performer', null=True, blank=True)
-    publication_date = models.DateField(auto_now=True, verbose_name='Время публикации')
+    publication_date = models.DateField(verbose_name='Время публикации')  # auto_now=True,
+    publication_date.editable = True
     topic = models.ForeignKey('Topic', verbose_name='Тема', on_delete=models.CASCADE)
 
     def __str__(self):
