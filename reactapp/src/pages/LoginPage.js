@@ -20,10 +20,15 @@ import {
     authUserThunkCreator,
     registerUserThunkCreator,
     setHasAccount,
-    setSuccess
+    regSuccess
 } from "../store/userReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {setUserError} from "../store/userReducer";
+
+
+const emailRegex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
+const urlRegex = new RegExp('[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)')
+const nameRegex = new RegExp('^[а-яА-ЯёЁ0-9a-zA-Z]+$')
 
 const LoginPage = () => {
     const dispatch = useDispatch()
@@ -49,28 +54,25 @@ const LoginPage = () => {
         return acc
     }, [])
 
-    const error = useSelector(state => state.user.error)
-    const successReg = useSelector(state => state.user.successReg)
-    const loading = useSelector(state => state.user.isLoading)
-    const hasAccount = useSelector(state => state.user.hasAccount)
-    console.log('email')
-    console.log(userData.password)
+    const error = useSelector(state => state.user.status.error)
+    const successReg = useSelector(state => state.user.status.successReg)
+    const loading = useSelector(state => state.user.status.isLoading)
+    const hasAccount = useSelector(state => state.user.status.hasAccount)
 
     const changeData = (event) => {
-        dispatch(setSuccess(false))
+        dispatch(regSuccess(false))
         dispatch(setUserError(false))
         setUserData({...userData, [event.target.name]: event.target.value})
     }
 
     const changeType = (event) => {
-        dispatch(setSuccess(false))
+        dispatch(regSuccess(false))
         dispatch(setUserError(false))
-        console.log(event.target.value)
         setUserData({...userData, type: event.target.value})
     }
 
     const changeTopics = (event) => {
-        dispatch(setSuccess(false))
+        dispatch(regSuccess(false))
         setUserData({...userData, topics: {...userData.topics, [event.target.name]: event.target.checked}})
     }
 
@@ -90,7 +92,7 @@ const LoginPage = () => {
                 edu: false,
                 img: false
         }});
-        dispatch(setSuccess(false))
+        dispatch(regSuccess(false))
         dispatch(setHasAccount(value))
         dispatch(setUserError(false))
     }
@@ -122,6 +124,13 @@ const LoginPage = () => {
                 topics: topicsArr
             }))
         }
+    }
+
+    const validationErrors = {
+        name: false,
+        surname: false,
+        email: false,
+        url: false,
     }
     return (
         <>
@@ -187,6 +196,8 @@ const LoginPage = () => {
                             type="email"
                             fullWidth
                             margin="dense"
+                            error={false}
+                            helperText={'Текст'}
                         />
                         <TextField
                             required
@@ -246,7 +257,7 @@ const LoginPage = () => {
                             label={userData.type === '0' ? 'Имя' : 'Название'}
                             value={userData.firstName}
                             onChange={changeData}
-                            defaultValue="Доминик"
+                            defaultValue={userData.type === '0' ? 'Доминик' : 'Тензор'}
                             fullWidth
                             margin="dense"
                         />
@@ -263,7 +274,7 @@ const LoginPage = () => {
                             margin="dense"
                         />}
                         <TextField
-                            id="portfolio"
+                            id="link"
                             name='link'
                             onChange={changeData}
                             label={userData.type === 'man' ? "Ссылка на портфолио" : 'Ссылка на сайт'}

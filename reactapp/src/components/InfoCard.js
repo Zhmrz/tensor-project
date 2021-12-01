@@ -41,7 +41,7 @@ const InfoCard = ({item, liked, setLiked, row, column}) => {
             />
             <CardActions disableSpacing sx={{ height: "10%", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>
-                        {liked ? item.likes : item.likes + 1}
+                        {liked ? item.likes + 1 : item.likes}
                         <IconButton aria-label="favorite" sx={{color: liked ? 'red' : 'inherit'}} onClick={() => setLiked(!liked)}>
                             <FavoriteIcon />
                         </IconButton>

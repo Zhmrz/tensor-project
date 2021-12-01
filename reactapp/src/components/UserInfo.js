@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Box, Paper, Stack, Typography} from "@mui/material";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 const Item = styled.div`
     display: grid;
@@ -14,11 +15,9 @@ const Item = styled.div`
 
 const UserInfo = ({row, column}) => {
     const stats = [
-        {id: 1, title: 'Выполнено заказов:', num: 10, toModal: ''},
-        {id: 2, title: 'Ожидает проверки:', num: 10, toModal: ''},
-        {id: 3, title: 'Заказов в работе:', num: 10, toModal: ''},
-        {id: 4, title: 'Отменено заказов:', num: 10, toModal: ''},
-        {id: 5, title: 'Отклики:', num: 10, toModal: ''}
+        {id: 1, title: 'Отклики', num: 10, toModal: ''},
+        {id: 2, title: 'В работе', num: 10, toModal: ''},
+        {id: 3, title: 'Ожидает проверки', num: 10, toModal: ''},
     ]
     return (
         <Box sx={{gridRow: row, gridColumn: column}}>
@@ -29,12 +28,13 @@ const UserInfo = ({row, column}) => {
                     </Typography>
                     {stats.map((item) => (
                         <Item key={item.id} bottomColor='#32384D'>
-                            <Typography sx={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
+                            <Typography sx={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', fontSize: '24px'}}>
                                 {item.title}
                             </Typography>
-                            <Typography sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+                            <Typography sx={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center', fontSize: '24px'}}>
                                 {item.num}
                             </Typography>
+                            <AddCircleOutlineIcon />
                         </Item>
                     ))}
                 </Stack>
