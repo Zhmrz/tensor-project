@@ -33,10 +33,16 @@ class CompanyView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
 
+
+class UserView(ReadOnlyModelViewSet):
+
+    serializer_class = UserViewSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
     def get_queryset(self):
 
-        user = self.request.user
-        return Company.objects.filter(user_id=user)
+        return User.objects.filter(username=self.request.user)
 
 
 class AllFreelancerView(ReadOnlyModelViewSet):
@@ -72,7 +78,7 @@ class OrderFilter(django_filters.FilterSet):
 
 class AllOrderView(ReadOnlyModelViewSet):
 
-    queryset = Order.objects.all()
+    queryset = Order.objects.filter(status=False)
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)

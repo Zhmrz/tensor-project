@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 class Freelancer(models.Model):
 
-    user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE)
+    user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE, related_name="freelancer_info")
     first_name = models.CharField(max_length=100, verbose_name='Имя пользователя')
     last_name = models.CharField(max_length=100, verbose_name='Фамилия пользователя')
     # rating
@@ -14,13 +14,14 @@ class Freelancer(models.Model):
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
     completed_orders = models.PositiveIntegerField(verbose_name="Кол-во выполненных заказов", default=0)
 
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
 
 class Company(models.Model):
 
-    user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE)
+    user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE, related_name="company_info")
     name = models.CharField(max_length=100, verbose_name='Название компании')
     # rating
     description = models.TextField(verbose_name='Описание компании')
@@ -40,7 +41,7 @@ class Order(models.Model):
     price = models.DecimalField(verbose_name='Стоимость заказа', max_digits=9, decimal_places=2)
     deadline = models.IntegerField(verbose_name='Время на выполнение заказа')
     status = models.BooleanField(default=False)  # 0 - заказ свободен, 1 - если performer != Null
-    performer = models.ForeignKey('RespondingFreelancers', verbose_name='Исполнитель заказа',
+    performer = models.ForeignKey(Freelancer, verbose_name='Исполнитель заказа',
                                   on_delete=models.CASCADE, related_name='related_performer', null=True, blank=True)
     publication_date = models.DateField(verbose_name='Время публикации')  # auto_now=True,
     publication_date.editable = True
@@ -67,3 +68,12 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Transaction(models.Model):
+
+    freelancer = models.ForeignKey(Freelancer, verbose_name="Фрилансер", on_delete=models.CASCADE)
+    company = models.ForeignKey(Company, verbose_name="Компания", on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, verbose_name="Заказ", on_delete=models.CASCADE)
+    completed_order = models.FileField(verbose_name="Прикрепленная работа")
+    sum = models.DecimalField(verbose_name='Сумма заказа', max_digits=9, decimal_places=2)
