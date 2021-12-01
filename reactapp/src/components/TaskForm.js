@@ -1,0 +1,92 @@
+import React from 'react';
+import {Box, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
+
+const TaskForm = ({order, setOrder, sendForm}) => {
+    return (
+        <Box
+            component="form"
+            sx={{
+                display: 'flex',
+                justifyContent: 'stretch',
+                p: '0 2.5%'
+            }}
+            autoComplete="on"
+        >
+            <TextField
+                InputLabelProps={{ shrink: true }}
+                required
+                name='title'
+                label='Название'
+                value={order.title}
+                onChange={(e) => setOrder({title: e.target.value})}
+                defaultValue='Создать то, не знаю что'
+                margin="dense"
+                sx={{width: '20%'}}
+                type='text'
+            />
+            <TextField
+                InputLabelProps={{ shrink: true }}
+                required
+                name='description'
+                label='Описание'
+                value={order.description}
+                onChange={(e) => setOrder({description: e.target.value})}
+                defaultValue='Сложно, но возможно'
+                margin="dense"
+                sx={{width: '30%'}}
+                type='text'
+            />
+            <TextField
+                InputLabelProps={{ shrink: true }}
+                required
+                name='price'
+                label='Стоимость (р)'
+                value={order.price}
+                onChange={(e) => setOrder({price: e.target.value})}
+                defaultValue={0}
+                margin="dense"
+                sx={{width: '10%'}}
+                type='number'
+            />
+            <TextField
+                InputLabelProps={{ shrink: true }}
+                required
+                name='deadline'
+                label='Длительность (дней)'
+                value={order.deadline}
+                onChange={(e) => setOrder({deadline: e.target.value})}
+                defaultValue={0}
+                margin="dense"
+                sx={{width: '10%'}}
+                type='number'
+            />
+            <FormControl
+                sx={{width: '20%', mt: '8px'}}
+            >
+                <InputLabel id="select-label">Категория</InputLabel>
+                <Select
+                    labelId="select-label"
+                    value={order.topic}
+                    label="Категория"
+                    onChange={(e) => setOrder({topic: e.target.value})}
+                >
+                    <MenuItem value={1}>Программирование</MenuItem>
+                    <MenuItem value={2}>3D-моделирование</MenuItem>
+                    <MenuItem value={3}>Фотография</MenuItem>
+                    <MenuItem value={4}>Типографика</MenuItem>
+                    <MenuItem value={5}>Графика</MenuItem>
+                    <MenuItem value={6}>Образование</MenuItem>
+                </Select>
+            </FormControl>
+            <TextField
+                required
+                type="submit"
+                margin="dense"
+                onClick={sendForm}
+                sx={{width: '10%'}}
+            />
+        </Box>
+    );
+};
+
+export default TaskForm;

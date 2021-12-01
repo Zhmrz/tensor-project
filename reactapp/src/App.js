@@ -1,4 +1,5 @@
 import './App.css';
+import {useEffect} from 'react';
 import {Typography, Box} from "@mui/material";
 import HomeWorkIcon from '@mui/icons-material/HomeWork';
 import SearchIcon from '@mui/icons-material/Search';
@@ -16,7 +17,7 @@ import SearchPage from "./pages/SearchPage";
 import UserPage from "./pages/UserPage";
 import {Navigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {resetUser} from "./store/userReducer";
+import {getMe, resetUserData} from "./store/userReducer";
 
 const AppWrapper = styled.div`
     width: 100vw;
@@ -67,17 +68,26 @@ const PageWrapper = styled.div`
     grid-template-rows: repeat(10, 1fr);
     grid-row-gap: 10px;
     grid-column-gap: 10px;
+    margin: 20px 0;
 `
 
 function App() {
     const dispatch = useDispatch()
     const id = useSelector(state => state.user.me.id)
-    const successAuth = useSelector(state => state.user.successAuth)
+
     const logout = () => {
-        dispatch(resetUser())
+        dispatch(resetUserData())
         localStorage.removeItem('token')
     }
-    console.log(successAuth)
+
+    const token = localStorage.getItem('token')
+    useEffect(() => {
+        if(token){
+            dispatch(getMe(token))
+        }
+        console.log('from app js useEffect')
+    }, [])
+
     return (
       <AppWrapper>
         <BarWrapper top>
@@ -88,7 +98,7 @@ function App() {
               <HomeWorkIcon sx={{fontSize: '34px', color: 'inherit'}}/>
             </NavLink>
             <RightBar>
-              {successAuth ?
+              {token ?
                   <>
                     <NavLink to="/search" style={({ isActive }) => ({
                         color: isActive ? "#E29930" : "#ffffff"
@@ -125,17 +135,13 @@ function App() {
           <Routes>
               <Route exact path="/" element={<Main />}/>
               <Route exact path="/help" element={<Help />}/>
-              <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={"/user/" + id} replace={true}/>}/>
-              <Route path="/user/:id" element={successAuth ? <UserPage /> : <Navigate to="/login" replace={true}/>} />
-              <Route path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
+              <Route path="/login" element={!token ? <LoginPage />  : <Navigate to={"/user/" + id} replace={true}/>}/>
+              <Route path="/user/:id" element={token ? <UserPage type={0}/> : <Navigate to="/login" replace={true}/>} />
+              <Route path="/company/:id" element={token ? <UserPage type={1}/> : <Navigate to="/login" replace={true}/>} />
+              <Route path="/search" element={token ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
             <Route path="*" element={<NotFound />}/>
           </Routes>
         </PageWrapper>
-        <BarWrapper bottom>
-          <Box sx={{gridColumn: '2 / span 10', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-            <Typography align='center' sx={{fontSize: '18px', color: 'white'}}>© 2021 FreeStylooo United Group. Все права защищены.</Typography>
-          </Box>
-        </BarWrapper>
       </AppWrapper>
     );
 }

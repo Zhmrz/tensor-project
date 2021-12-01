@@ -1,11 +1,20 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Box, Button, Modal, Typography} from "@mui/material";
 import PanToolIcon from '@mui/icons-material/PanTool';
 import {SendRounded} from "@mui/icons-material";
+import {createResponse} from "../api/getTasksApi";
 
 //item = ('id', 'customer', 'title', 'description', 'price','deadline', 'status', 'performer', 'publication_date', 'topic')
 const TaskModal = ({item, visibleTask, setVisibleTask}) => {
     const task = item ? item : {id: 0, title: 'No name', description: 'No description', price: 0, deadline: undefined, status: 'active', publication_date: ''}
+    const [respSuccess, setRespSuccess] = useState(false)
+    const createResp = (id) => {
+        createResponse(id).then(() => {
+            setRespSuccess(true)
+        }).catch(() => {
+            console.log('error on sending response')
+        })
+    }
     return (
         <Modal
             open={visibleTask}
@@ -51,12 +60,12 @@ const TaskModal = ({item, visibleTask, setVisibleTask}) => {
                     {task.deadline}
                 </Typography>
                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2}}>
-                    <Button variant="outlined" startIcon={<PanToolIcon sx={{fontSize: '36px', mr: 2}}/>}>
+                    <Button variant="outlined" startIcon={<PanToolIcon sx={{fontSize: '36px', mr: 2}}/>} onClick={() => createResp(item.id)}>
                         Откликнуться
                     </Button>
-                    <Button variant="outlined" endIcon={<SendRounded sx={{fontSize: '24px', ml: 2}}/>}>
-                        Связаться с автором
-                    </Button>
+                    <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        {respSuccess && <Typography>Отклик успешно зарегистрирован!</Typography>}
+                    </Box>
                 </Box>
 
             </Box>

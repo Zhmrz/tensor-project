@@ -85,7 +85,7 @@ const Main = () => {
                 p: '20px 0'
             }}>
                 {controls.map(item => (
-                    <Button key={item.id} variant="outlined" startIcon={item.icon} sx={{width: '45%', height: '40%', fontSize: '18px'}} onClick={() => setCard(item.id - 1)}>
+                    <Button key={item.id} variant="outlined" startIcon={item.icon} sx={{width: '45%', height: '40%', fontSize: '18px', backgroundColor: card === (item.id - 1)? 'secondary.main' : 'none' }} onClick={() => setCard(item.id - 1)}>
                         {item.text}
                     </Button>
                 ))}

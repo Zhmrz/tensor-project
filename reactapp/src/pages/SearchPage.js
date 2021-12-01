@@ -48,6 +48,7 @@ const SearchPage = () => {
         return acc
     }, []).join(',')
 
+
     const resetFilter = () => {
         setTopics({
             code: false,

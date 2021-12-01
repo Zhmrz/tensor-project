@@ -11,6 +11,7 @@ const FilterModal = ({filterVisible, setFilterVisible, realPriceLims, setPriceLi
         min: realDateLims.min,
         max: realDateLims.max,
     })
+
     const dateChange = (event, lim) => {
         setDateL({...dateL, [lim]: event.target.value})
     }
@@ -23,8 +24,11 @@ const FilterModal = ({filterVisible, setFilterVisible, realPriceLims, setPriceLi
         setFilterActive(true)
     }
 
-    console.log(priceL)
     const onClose = () => {
+        setFilterVisible(false)
+    }
+
+    useEffect(() => {
         if(!filterActive){
             setPriceL([realPriceLims.min, realPriceLims.max])
             setDurL([realDurationLims.min, realDurationLims.max])
@@ -33,9 +37,7 @@ const FilterModal = ({filterVisible, setFilterVisible, realPriceLims, setPriceLi
                 max: realDateLims.max,
             })
         }
-        setFilterVisible(false)
-    }
-
+    }, [filterActive])
     return (
         <Modal
             open={filterVisible}
