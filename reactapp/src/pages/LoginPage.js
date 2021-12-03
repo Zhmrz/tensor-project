@@ -85,7 +85,7 @@ const LoginPage = () => {
             type: '0',
             link: '',
             topics: {
-                typo: false,
+            typo: false,
                 dev: false,
                 model: false,
                 photo: false,
@@ -291,7 +291,6 @@ const LoginPage = () => {
                         <FormGroup sx={{display: "flex", flexFlow: "row wrap", justifyContent: "space-between", alignItems: "flex-start"}}>
                             {variants.map((item) => (
                                 <FormControlLabel
-                                    key={item.name}
                                     control={
                                         <Checkbox
                                             checked={userData.topics[item.name]}

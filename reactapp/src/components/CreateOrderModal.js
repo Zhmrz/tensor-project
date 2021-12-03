@@ -1,10 +1,14 @@
 import React, {useState, useEffect} from 'react';
 import {
-    Box,
-    IconButton,
+    Avatar,
+    Box, FormControl,
+    IconButton, InputLabel,
     List,
-    ListItemText,
-    Modal,
+    ListItem,
+    ListItemAvatar,
+    ListItemText, MenuItem,
+    Modal, Select,
+    TextField,
     Typography
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -16,15 +20,11 @@ import Collapse from "@mui/material/Collapse";
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import TaskForm from "./TaskForm";
-import {useDispatch} from "react-redux";
-import {createCompanyOrderThunkCreator, updateCompanyOrderThunkCreator} from "../store/tasksReducer";
+import {createOrder, updateOrder} from "../api/getTasksApi";
 
 
 const CreateOrderModal = ({visible, setVisible, orders}) => {
-    //форму заполнения какого заказа открыть
-    //-1 - новый заказ
     const [open, setOpen] = useState(-1)
-    const dispatch = useDispatch()
     const orderDefault = {
         id: 0,
         title: '',
@@ -37,6 +37,7 @@ const CreateOrderModal = ({visible, setVisible, orders}) => {
     const [order, setOrder] = useState(orderDefault)
 
     const onOrderClick = (item) => {
+        console.log(item)
         if(open === item.id){
             setOrder(orderDefault)
             setOpen(-1)
@@ -44,16 +45,6 @@ const CreateOrderModal = ({visible, setVisible, orders}) => {
             setOrder(item)
             setOpen(item.id)
         }
-    }
-
-    const createOrder = (event) => {
-        event.preventDefault()
-        dispatch(createCompanyOrderThunkCreator(order))
-    }
-
-    const updateOrder = (event) => {
-        event.preventDefault()
-        dispatch(updateCompanyOrderThunkCreator(order.id, order))
     }
     return (
         <Modal
@@ -81,7 +72,9 @@ const CreateOrderModal = ({visible, setVisible, orders}) => {
                             {open === 0 ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton >
                         <Collapse in={open === 0} timeout="auto" unmountOnExit>
-                            <TaskForm order={order} setOrder={setOrder} sendForm={createOrder}
+                            <TaskForm order={order} setOrder={setOrder} sendForm={(e) => {
+                                e.preventDefault()
+                                createOrder(order)}}
                             />
                         </Collapse>
                         {orders.map(item => (
@@ -94,7 +87,11 @@ const CreateOrderModal = ({visible, setVisible, orders}) => {
                                     {open === item.id ? <ExpandLess /> : <ExpandMore />}
                                 </ListItemButton >
                                 <Collapse in={open === item.id} timeout="auto" unmountOnExit>
-                                    <TaskForm readOnly order={order} setOrder={setOrder} sendForm={updateOrder}/>
+                                    <TaskForm order={order} setOrder={setOrder} sendForm={(e) => {
+                                        e.preventDefault()
+                                        updateOrder(item.id, {...order, publication_date: new Date()})
+                                    }
+                                    }/>
                                 </Collapse>
                             </>
                         ))}

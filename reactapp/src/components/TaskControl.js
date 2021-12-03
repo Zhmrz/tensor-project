@@ -39,7 +39,7 @@ const categories = [
     {id: 1, value: 'img', label: 'Графика'},
 ]
 
-const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, setUp, setFilterVisible, sortType, setSort, checked, setChecked, filterActive, resetFilter, query, setQuery}) => {
+const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, setUp, setFilterVisible, sortType, setSort, checked, setChecked, filterActive, resetFilter}) => {
     const changeSortType = (event) => {
         setSort(event.target.value)
     }
@@ -48,13 +48,7 @@ const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, set
     }
     return (
         <FormWrapper sx={{gridColumn: '1 /span 1', gridRow: '1 / span 1'}}>
-            <TextField
-                id="input"
-                label="Введите что-нибудь"
-                variant="standard"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                sx={{width: '90%'}}/>
+            <TextField id="input" label="Введите что-нибудь" variant="standard" sx={{width: '90%'}}/>
             <FormControl component="fieldset" sx={{gridColumn: '2 /span 1', gridRow: '1 / span 1'}}>
                 <FormLabel component="legend">Параметр сортировки</FormLabel>
                 <RadioGroup

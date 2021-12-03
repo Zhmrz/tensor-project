@@ -10,7 +10,7 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import SendIcon from "@mui/icons-material/Send";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
-import {Box, Card} from "@mui/material";
+import {Card} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import NoPhoto from '../img/nophoto.jpg';
 
@@ -39,7 +39,7 @@ const InfoCard = ({item, liked, setLiked, row, column}) => {
                 src={item.image ? item.image : NoPhoto}
                 alt={item.alt}
             />
-            <CardActions disableSpacing sx={{ height: "10%", display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <CardActions disableSpacing sx={{ height: "10%", display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>
                         {liked ? item.likes + 1 : item.likes}
                         <IconButton aria-label="favorite" sx={{color: liked ? 'red' : 'inherit'}} onClick={() => setLiked(!liked)}>

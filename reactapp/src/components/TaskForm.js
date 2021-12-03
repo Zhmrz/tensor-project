@@ -1,14 +1,13 @@
 import React from 'react';
 import {Box, FormControl, InputLabel, MenuItem, Select, TextField} from "@mui/material";
 
-const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
+const TaskForm = ({order, setOrder, sendForm}) => {
     return (
         <Box
             component="form"
             sx={{
                 display: 'flex',
                 justifyContent: 'stretch',
-                flexWrap: 'wrap',
                 p: '0 2.5%'
             }}
             autoComplete="on"
@@ -22,11 +21,8 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 onChange={(e) => setOrder({title: e.target.value})}
                 defaultValue='Создать то, не знаю что'
                 margin="dense"
-                sx={{width: '40%'}}
+                sx={{width: '20%'}}
                 type='text'
-                InputProps={{
-                    readOnly: readOnly,
-                }}
             />
             <TextField
                 InputLabelProps={{ shrink: true }}
@@ -37,7 +33,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 onChange={(e) => setOrder({description: e.target.value})}
                 defaultValue='Сложно, но возможно'
                 margin="dense"
-                sx={{width: '60%'}}
+                sx={{width: '30%'}}
                 type='text'
             />
             <TextField
@@ -49,7 +45,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 onChange={(e) => setOrder({price: e.target.value})}
                 defaultValue={0}
                 margin="dense"
-                sx={{width: '20%'}}
+                sx={{width: '10%'}}
                 type='number'
             />
             <TextField
@@ -61,11 +57,11 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 onChange={(e) => setOrder({deadline: e.target.value})}
                 defaultValue={0}
                 margin="dense"
-                sx={{width: '20%'}}
+                sx={{width: '10%'}}
                 type='number'
             />
             <FormControl
-                sx={{width: '30%', mt: '8px'}}
+                sx={{width: '20%', mt: '8px'}}
             >
                 <InputLabel id="select-label">Категория</InputLabel>
                 <Select
@@ -73,7 +69,6 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                     value={order.topic}
                     label="Категория"
                     onChange={(e) => setOrder({topic: e.target.value})}
-                    inputProps={{ readOnly: readOnly }}
                 >
                     <MenuItem value={1}>Программирование</MenuItem>
                     <MenuItem value={2}>3D-моделирование</MenuItem>
@@ -88,7 +83,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 type="submit"
                 margin="dense"
                 onClick={sendForm}
-                sx={{width: '30%'}}
+                sx={{width: '10%'}}
             />
         </Box>
     );
