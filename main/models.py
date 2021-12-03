@@ -56,7 +56,8 @@ class RespondingFreelancers(models.Model):
     freelancer = models.ForeignKey(Freelancer, verbose_name="Пользователь", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
     responding_date = models.DateField(auto_now=True, verbose_name='Время отклика')
-    status = models.BooleanField(default=False)  #  0 - откликнулся, 1 - в работе
+    status = models.IntegerField(default=0)  #  0 - откликнулся, 1 - в работе, 2 - отклик на проверке
+    completed_order = models.FileField(verbose_name="Прикрепленная работа", null=True, blank=True)
 
     def __str__(self):
         return f"{self.order} - откликнулся {self.freelancer}"
@@ -68,12 +69,3 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class Transaction(models.Model):
-
-    freelancer = models.ForeignKey(Freelancer, verbose_name="Фрилансер", on_delete=models.CASCADE)
-    company = models.ForeignKey(Company, verbose_name="Компания", on_delete=models.CASCADE)
-    order = models.ForeignKey(Order, verbose_name="Заказ", on_delete=models.CASCADE)
-    completed_order = models.FileField(verbose_name="Прикрепленная работа")
-    sum = models.DecimalField(verbose_name='Сумма заказа', max_digits=9, decimal_places=2)

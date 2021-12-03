@@ -44,6 +44,25 @@ class UserView(ReadOnlyModelViewSet):
 
         return User.objects.filter(username=self.request.user)
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        """Убираем лишнюю инф-цию о пользователе, а также указываем его тип: 0 - фрилансер, 1 - компания"""
+        if serializer.data[0]["freelancer_info"]==None:
+            user_info = serializer.data[0]["company_info"]
+            user_info["user_type"] = 1
+        else:
+            user_info = serializer.data[0]["freelancer_info"]
+            user_info["user_type"] = 0
+        return Response(user_info)
+
 
 class AllFreelancerView(ReadOnlyModelViewSet):
 
@@ -164,7 +183,6 @@ class UserLogin(ObtainAuthToken):
         else:
             userData = Company.objects.filter(user_id=user).values()
         return Response({'token': token.key, 'userData': userData[0]})
-
 
 
 class RespondingFreelancersView(ModelViewSet):

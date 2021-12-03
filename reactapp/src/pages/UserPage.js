@@ -50,6 +50,11 @@ const UserPage = ({type}) => {
     useEffect(() => {
         if(type){
             dispatch(getCompanyData(id))
+            getOrders().then((response) => {
+            setOrders(response.data)
+        }).catch(() => {
+            console.log('ошибка закгрузки заказов')
+        })
         } else {
             dispatch(getUserData(id))
         }
@@ -58,11 +63,7 @@ const UserPage = ({type}) => {
         }).catch(() => {
             console.log('ошибка закгрузки откликов')
         })
-        getOrders().then((response) => {
-            setOrders(response.data)
-        }).catch(() => {
-            console.log('ошибка закгрузки заказов')
-        })
+
     },[])
 
     return (

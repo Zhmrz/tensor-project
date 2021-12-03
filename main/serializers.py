@@ -57,13 +57,14 @@ class OrderSerializer(serializers.ModelSerializer):
             field = getattr(instance, attr)
             field.set(value)
 
+        """Обновление статуса отклика и статуса заказа после назначения исполнителя заказа"""
         if validated_data["performer"].id:
             freelancer_id = validated_data["performer"].id
             order_id = instance.id
             response_to_order = RespondingFreelancers.objects.get(freelancer=freelancer_id, order=order_id)
-            response_to_order.status = True
+            response_to_order.status = 1  # Статус отклика 1 - отклик в работе
             response_to_order.save()
-            instance.status = True
+            instance.status = True  # Заказ занят и не будет появляться в поиске
             instance.save()
 
         return instance
@@ -95,3 +96,27 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
     class Meta:
         model = RespondingFreelancers
         fields = ('id_freelancer', 'freelancer', 'order', 'order_title', 'responding_date', 'status')
+
+
+    def update(self, instance, validated_data):
+
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        m2m_fields = []
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                setattr(instance, attr, value)
+
+        instance.save()
+
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        """Обновление статуса отклика после загрузки выполненной работы и ее отправки на проверку"""
+        # Поменять статус на 2
+        # Добавить поле со статусом проверки работы компанией. Если True, то увеличить счетчик фрилансера на 1 и перевести деньги
+
+        return instance
