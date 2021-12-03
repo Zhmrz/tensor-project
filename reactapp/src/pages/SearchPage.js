@@ -16,20 +16,21 @@ import {useDispatch, useSelector} from 'react-redux'
 
 const SearchPage = () => {
     const dispatch = useDispatch()
-    const data = useSelector(state => state.tasks.tasks)
-    const loading = useSelector(state => state.tasks.isLoading)
+    const data = useSelector(state => state.tasks.search.tasks)
+    const loading = useSelector(state => state.tasks.search.isLoading)
+    //поиск по содержанию и названию
+    const [query, setQuery] = useState('')
     //настройка пагинации
-    const pageLimit = useSelector(state => state.tasks.pageLimit)
+    const pageLimit = useSelector(state => state.tasks.search.pageLimit)
     const [page, setPage] = useState(1)
-    const pageTotal = useSelector(state => state.tasks.totalPage)
+    const pageTotal = useSelector(state => state.tasks.search.totalPage)
     //настройка фильтрации
     const [filterActive, setFilterActive] = useState(false)
     const [sortType, setSortType] = useState('price')
-
     //будут получены из редакса
-    const realPriceLims = useSelector(state => state.tasks.priceLims)
-    const realDurationLims = useSelector(state => state.tasks.durationLims)
-    const realDateLims = useSelector(state => state.tasks.dateLims)
+    const realPriceLims = useSelector(state => state.tasks.search.priceLims)
+    const realDurationLims = useSelector(state => state.tasks.search.durationLims)
+    const realDateLims = useSelector(state => state.tasks.search.dateLims)
 
     const [priceLims, setPriceLims] = useState(['', ''])
     const [durationLims, setDurationLims] = useState(['', ''])
@@ -81,17 +82,27 @@ const SearchPage = () => {
             start_date: dateLims[0] || undefined,
             end_date: dateLims[1] || undefined,
             topic: topicString || undefined,
+            query: query || undefined,
         }
         dispatch(getTasksThunkCreator(params))
         //response = ('id', 'customer', 'title', 'description', 'price','deadline', 'status', 'performer', 'publication_date', 'topic')
-    }, [durationLims, dateLims, priceLims, topicString]);
+    }, [durationLims, dateLims, priceLims, topicString, query]);
 
     const sortedData = useMemo(() => {
         return data.sort((a, b) => {
             if(up){
-                return a[sortType] - b[sortType]
+                if(sortType === 'publication_date'){
+                    return new Date(a[sortType]) - new Date(b[sortType])
+                } else {
+                    return a[sortType] - b[sortType]
+                }
+            } else {
+                if(sortType === 'publication_date'){
+                    return new Date(b[sortType]) - new Date(a[sortType])
+                } else {
+                    return b[sortType] - a[sortType]
+                }
             }
-            return b[sortType] - a[sortType]
         })
     }, [up, sortType, data])
 
@@ -110,6 +121,8 @@ const SearchPage = () => {
                     setSort={setSortType}
                     checked={topics}
                     setChecked={setTopics}
+                    query={query}
+                    setQuery={setQuery}
                     filterActive={filterActive}
                     resetFilter={resetFilter}
                 />

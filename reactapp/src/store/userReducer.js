@@ -2,7 +2,7 @@ import {authUser, getMyData, getFreelancerPage, getCompanyPage, registerUser} fr
 
 const defaultState = {
     me: {
-        id: 0,
+        id: -1,
         name: undefined,
         surname: undefined,
         description: undefined,
@@ -13,7 +13,7 @@ const defaultState = {
         type: 0
     },
     current: {
-        id: 0,
+        id: -1,
         name: undefined,
         surname: undefined,
         description: undefined,
@@ -79,18 +79,21 @@ export const pageExist = (value) => ({type: PAGE_EXIST, payload: value})
 export const setMe = (id, name, surname, email) => ({type: SET_ME, payload: {id: id, name: name, surname: surname, email: email}})
 
 export const getMe = () => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(loadingData(true))
         getMyData()
             .then(response => {
-                const user = response.data[0].freelancer_info ? response.data[0].freelancer_info : response.data[0].company_info
-                dispatch(setMe({...user, id: response.data[0].freelancer_info ? 0 : 1}))
+                //{"id":1,"first_name":"Ivan","last_name":"Фамилия","description":"","image":null,"link_to_resume":"resume","topics":[1,2], user_type: 0}
+                const user = response.data
+                dispatch(setMe({id: user.id, name: user.first_name, surname: user.last_name,
+                    image: user.image, description: user.description, link_to_resume: user.link_to_resume,
+                    topics: user.topics, type: user.user_type}))
                 dispatch(authSuccess(true))
             })
             .catch(error => {
                 dispatch(setUserError(true))
 //убрать в проде !!!!!!!!!!!!!!!
-                dispatch(authSuccess(true))
+                //dispatch(authSuccess(true))
             })
         dispatch(loadingData(false))
     }
@@ -98,10 +101,10 @@ export const getMe = () => {
 
 
 export const authUserThunkCreator = (params) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(loadingData(true))
 ////////убрать установку токена в проде!!!!
-        localStorage.setItem('token', '234')
+        //localStorage.setItem('token', '234')
         authUser(params)
             .then(response => {
                 //с токеном работа
@@ -115,16 +118,15 @@ export const authUserThunkCreator = (params) => {
             .catch(error => {
                 dispatch(setUserError(true))
 //убрать в проде
-                dispatch(authSuccess(true))
+                //dispatch(authSuccess(true))
             })
         dispatch(loadingData(false))
     }
 }
 
 export const registerUserThunkCreator = (params) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(loadingData(true))
-        //получить параметры фильтрации и упаковать в params
         registerUser(params)
             .then(response => {
                 dispatch(regSuccess(true))
@@ -137,7 +139,7 @@ export const registerUserThunkCreator = (params) => {
 }
 
 export const getUserData = (id) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(loadingData(true))
         getFreelancerPage(id)
             .then(response => {
@@ -155,7 +157,7 @@ export const getUserData = (id) => {
 }
 
 export const getCompanyData = (id) => {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         dispatch(loadingData(true))
         getCompanyPage(id)
             .then(response => {
