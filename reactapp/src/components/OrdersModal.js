@@ -16,6 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 const OrdersModal = ({visible, setVisible, title, request, storeName, onApprove, onReject, NoIcon, YesIcon, noAction, yesAction, orders}) => {
     const dispatch = useDispatch()
+    console.log(orders)
     //загрузка откликов из пропсов
     /*const orders = [
         {id: 1, title: 'my task', personName: 'man', personId: 1},

@@ -8,7 +8,7 @@ const FREELANCER_PAGE = '/api/freelancer/'
 //получить личную инф-цию фрилансера [GET-запрос]
 const COMPANY_PAGE = '/api/company/'
 //получить личную инф-цию компании   [POST-запрос]
-const USER = '/api/user'
+const USER = '/api/user/'
 
 export const authUser = (params) => {
     return instanceAPI.post(API_AUTH, params)
@@ -24,6 +24,14 @@ export const getFreelancerPage = (id) => {
 
 export const getCompanyPage = (id) => {
     return instanceAPI.get(COMPANY_PAGE + id + '/')
+}
+
+export const changeFreelancerInfo = (id, data) => {
+    return instanceAPI.put(FREELANCER_PAGE + id + '/', data)
+}
+
+export const changeCompanyInfo = (id, data) => {
+    return instanceAPI.put(COMPANY_PAGE + id + '/', data)
 }
 
 export const getMyData = () => {

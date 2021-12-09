@@ -145,18 +145,18 @@ class UserRegisterView(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         user = User.objects.get(username=request.data.get("username"))
-        user_type = request.data.get("type")
+        user_type = request.data.get("user_type")
         topics = request.data.get("topics")
         if user_type == "0":
             freelancer = Freelancer.objects.create(user_id=user)
-            freelancer.first_name = request.data.get("firstName")
-            freelancer.last_name = request.data.get("lastName")
+            freelancer.first_name = request.data.get("first_name")
+            freelancer.last_name = request.data.get("last_name")
             for topic in topics:
                 freelancer.topics.add(topic)
             freelancer.save()
         else:
             company = Company.objects.create(user_id=user)
-            company.name = request.data.get('firstName')
+            company.name = request.data.get('first_name')
             for topic in topics:
                 company.topics.add(topic)
             company.save()
@@ -196,8 +196,22 @@ class RespondingFreelancersView(ModelViewSet):
             company = Company.objects.get(user_id=user)
             return RespondingFreelancers.objects.filter(order__customer=company)
 
+    def create(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        """Проверка на повторный отклик"""
+        order = serializer.validated_data['order']
+        if not RespondingFreelancers.objects.filter(freelancer__user_id=self.request.user, order=order).exists():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            #headers = self.get(serializer.data)
+            return Response({"Отклик уже существует"}, status=status.HTTP_400_BAD_REQUEST)
+
+
     def perform_create(self, serializer):
 
-        user = self.request.user
-        serializer.validated_data['freelancer'] = Freelancer.objects.get(user_id=user)
+        serializer.validated_data['freelancer'] = Freelancer.objects.get(user_id=self.request.user)
         serializer.save()

@@ -61,7 +61,7 @@ class RespondingFreelancers(models.Model):
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
     responding_date = models.DateField(auto_now=True, verbose_name='Время отклика')
     status = models.IntegerField(default=0, verbose_name="Статус отклика")  #  0 - откликнулся, 1 - в работе,
-                                            # 2 - отклик (работа) на проверке, 3 - принято, 4 - на доработку
+                                            # 2 - отклик (работа) на проверке, 3 - принято, 4 - на доработку, -1 - отклонен
     completed_order = models.FileField(verbose_name="Прикрепленная работа", null=True, blank=True)
 
     def __str__(self):

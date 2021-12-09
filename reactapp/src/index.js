@@ -16,6 +16,9 @@ let theme = createTheme({
         secondary: {
             main: '#E29930',
         },
+        success: {
+            main: '#76c893',
+        }
     },
     typography: {
         fontFamily: 'Yanone Kaffeesatz, sans-serif;',
