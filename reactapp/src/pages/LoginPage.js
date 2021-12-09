@@ -35,10 +35,10 @@ const LoginPage = () => {
     const [userData, setUserData] = useState({
         email: '',
         password: '',
-        firstName: '',
-        lastName: '',
-        type: '0',
-        link: '',
+        first_name: '',
+        last_name: '',
+        user_type: '0',
+        link_to_resume: '',
         topics: {
             typo: false,
             dev: false,
@@ -80,10 +80,10 @@ const LoginPage = () => {
         setUserData({
             email: '',
             password: '',
-            firstName: '',
-            lastName: '',
-            type: '0',
-            link: '',
+            first_name: '',
+            last_name: '',
+            user_type: '0',
+            link_to_resume: '',
             topics: {
                 typo: false,
                 dev: false,
@@ -116,9 +116,9 @@ const LoginPage = () => {
             }))
         } else {
             dispatch(registerUserThunkCreator({
-                firstName: userData.firstName,
-                lastName: userData.lastName,
-                type: userData.type,
+                first_name: userData.first_name,
+                last_name: userData.last_name,
+                user_type: userData.user_type,
                 username: userData.email,
                 password: userData.password,
                 topics: topicsArr
@@ -235,12 +235,12 @@ const LoginPage = () => {
                     >
                         <TextField
                             id="select-type"
-                            name='type'
+                            name='user_type'
                             required
                             select
                             label="Выберите тип аккаунта"
                             defaultValue={0}
-                            value={userData.type}
+                            value={userData.user_type}
                             onChange={changeType}
                         >
                             <MenuItem value='0'>
@@ -252,21 +252,19 @@ const LoginPage = () => {
                         </TextField>
                         <TextField
                             required
-                            id="name"
-                            name='firstName'
-                            label={userData.type === '0' ? 'Имя' : 'Название'}
-                            value={userData.firstName}
+                            name='first_name'
+                            label={userData.user_type === '0' ? 'Имя' : 'Название'}
+                            value={userData.first_name}
                             onChange={changeData}
-                            defaultValue={userData.type === '0' ? 'Доминик' : 'Тензор'}
+                            defaultValue={userData.user_type === '0' ? 'Доминик' : 'Тензор'}
                             fullWidth
                             margin="dense"
                         />
-                        {userData.type === '0' &&
+                        {userData.user_type === '0' &&
                         <TextField
                             required
-                            id="surname"
-                            name='lastName'
-                            value={userData.lastName}
+                            name='last_name'
+                            value={userData.last_name}
                             onChange={changeData}
                             label="Фамилия"
                             defaultValue="Торетто"
@@ -274,14 +272,13 @@ const LoginPage = () => {
                             margin="dense"
                         />}
                         <TextField
-                            id="link"
-                            name='link'
+                            name='link_to_resume'
                             onChange={changeData}
-                            label={userData.type === 'man' ? "Ссылка на портфолио" : 'Ссылка на сайт'}
+                            label={userData.user_type === 'man' ? "Ссылка на портфолио" : 'Ссылка на сайт'}
                             type="url"
                             fullWidth
                             margin="dense"
-                            helperText={userData.type === 'man' ? "Портфолио позволит Вам показать профессионализм и получить одобрение от заказчика" :
+                            helperText={userData.user_type === 'man' ? "Портфолио позволит Вам показать профессионализм и получить одобрение от заказчика" :
                                 "Сайт позволит Вам убедить фрилансеров в серьезности своих намерений :)"
                             }
                         />
@@ -308,7 +305,6 @@ const LoginPage = () => {
                         </FormGroup>
                         <TextField
                             required
-                            id="mail"
                             name='email'
                             value={userData.email}
                             onChange={changeData}
@@ -319,7 +315,6 @@ const LoginPage = () => {
                         />
                         <TextField
                             required
-                            id="password"
                             name='password'
                             value={userData.password}
                             onChange={changeData}

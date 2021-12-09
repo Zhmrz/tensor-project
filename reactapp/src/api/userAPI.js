@@ -26,6 +26,14 @@ export const getCompanyPage = (id) => {
     return instanceAPI.get(COMPANY_PAGE + id + '/')
 }
 
+export const changeFreelancerInfo = (id, data) => {
+    return instanceAPI.put(FREELANCER_PAGE + id + '/', data)
+}
+
+export const changeCompanyInfo = (id, data) => {
+    return instanceAPI.put(COMPANY_PAGE + id + '/', data)
+}
+
 export const getMyData = () => {
     return instanceAPI.get(USER)
 }

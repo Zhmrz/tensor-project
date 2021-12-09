@@ -39,7 +39,7 @@ const categories = [
     {id: 1, value: 'img', label: 'Графика'},
 ]
 
-const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, setUp, setFilterVisible, sortType, setSort, checked, setChecked, filterActive, resetFilter, query, setQuery}) => {
+const TaskControl = ({up, setUp, setFilterVisible, sortType, setSort, checked, setChecked, filterActive, resetFilter, query, setQuery}) => {
     const changeSortType = (event) => {
         setSort(event.target.value)
     }
@@ -62,7 +62,7 @@ const TaskControl = ({setPriceLims, priceLims, setDurationLims, durLims, up, set
                     aria-label="sorttype"
                     name="row-radio-buttons-group"
                     value={sortType}
-                    onChange={changeSortType}
+                    onChange={e => changeSortType(e)}
                 >
                     <FormControlLabel value="price" control={<Radio />} label="Стоимость" />
                     <FormControlLabel value="deadline" control={<Radio />} label="Срок выполнения" />

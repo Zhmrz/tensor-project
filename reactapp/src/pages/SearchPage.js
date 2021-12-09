@@ -9,14 +9,13 @@ import TaskControl from "../components/TaskControl";
 import FilterModal from "../components/FilterModal";
 import TaskModal from "../components/TaskModal";
 import CircularProgress from '@mui/material/CircularProgress';
-import NoDataSvg from '../img/svg/NoData.svg';
 import {getTasksThunkCreator} from "../store/tasksReducer";
 import {useDispatch, useSelector} from 'react-redux'
 
 
 const SearchPage = () => {
     const dispatch = useDispatch()
-    const data = useSelector(state => state.tasks.search.tasks)
+    const data = useSelector(state => state.tasks.search.tasks) ////[{id: 1, publication_date: '2020-02-06'},{id: 3, publication_date: '2021-02-06'}]//
     const loading = useSelector(state => state.tasks.search.isLoading)
     //поиск по содержанию и названию
     const [query, setQuery] = useState('')
@@ -32,7 +31,7 @@ const SearchPage = () => {
     const realDurationLims = useSelector(state => state.tasks.search.durationLims)
     const realDateLims = useSelector(state => state.tasks.search.dateLims)
 
-    const [priceLims, setPriceLims] = useState(['', ''])
+    const [priceLims, setPriceLims] = useState(['', '']) //realPriceLims
     const [durationLims, setDurationLims] = useState(['', ''])
     const [dateLims, setDateLims] = useState(['', ''])
 
@@ -48,7 +47,6 @@ const SearchPage = () => {
         if(val[1]) acc.push(ind+1)
         return acc
     }, []).join(',')
-
 
     const resetFilter = () => {
         setTopics({
@@ -94,13 +92,13 @@ const SearchPage = () => {
                 if(sortType === 'publication_date'){
                     return new Date(a[sortType]) - new Date(b[sortType])
                 } else {
-                    return a[sortType] - b[sortType]
+                    return Number(a[sortType]) - Number(b[sortType])
                 }
             } else {
                 if(sortType === 'publication_date'){
                     return new Date(b[sortType]) - new Date(a[sortType])
                 } else {
-                    return b[sortType] - a[sortType]
+                    return Number(b[sortType]) - Number(a[sortType])
                 }
             }
         })
@@ -108,7 +106,7 @@ const SearchPage = () => {
 
     const pageItems = useMemo(() => {
         return sortedData.slice((page - 1)*pageLimit, page*pageLimit)
-    }, [page, up, sortType, sortedData])
+    }, [sortedData, pageLimit, page, sortType, up])
 
     return (
         <>
@@ -117,7 +115,7 @@ const SearchPage = () => {
                     up={up}
                     setUp={setUp}
                     setFilterVisible={setFilterVisible}
-                    category={sortType}
+                    sortType={sortType}
                     setSort={setSortType}
                     checked={topics}
                     setChecked={setTopics}

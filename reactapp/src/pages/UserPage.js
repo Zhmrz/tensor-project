@@ -3,7 +3,7 @@ import InfoCard from "../components/InfoCard";
 import {useDispatch, useSelector} from "react-redux";
 import {getCompanyData, getUserData} from "../store/userReducer";
 import {useParams} from "react-router-dom";
-import {Box, Button, Paper, Typography} from "@mui/material";
+import {Box, Button, Paper, Typography, useMediaQuery, useTheme} from "@mui/material";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import OrdersModal from "../components/OrdersModal";
 import CreateOrderModal from "../components/CreateOrderModal";
@@ -18,23 +18,45 @@ import {getRespThunkCreator} from "../store/respReducer";
 import {getCompanyOrdersThunkCreator} from "../store/tasksReducer";
 
 
-
 const UserPage = ({type}) => {
+    const theme = useTheme();
+    const mdUp = useMediaQuery(theme.breakpoints.up("md"));
+    const md_up = useMediaQuery(theme.breakpoints.between("sm", "md"));
+    const sm_md = useMediaQuery(theme.breakpoints.up("md"));
+    const sm_down = useMediaQuery(theme.breakpoints.down("sm"));
+
+    const styles = (item) => ({
+        button: [{
+            gridRow: item.row,
+            gridColumn: item.columnSm,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+        }, md_up && {
+            gridColumn: item.column
+        }, sm_down && {
+            gridColumn: item.column
+        }]
+    })
     const dispatch = useDispatch()
     let { id } = useParams();
     const buttons = [
-        {id: 1, text: 'Отклики', modal: 'wait', row: '1 / span 1', column: '4 / span 2', onClick: ''},
-        {id: 2, text: 'В работе', modal: 'work', row: '1 / span 1', column: '6 / span 2', onClick: ''},
-        {id: 3, text: 'На проверке', modal: 'check', row: '1 / span 1', column: '8 / span 2', onClick: ''},
-        {id: 4, text: 'Редактировать профиль',  modal: 'edit', row: '10 / span 1', column: type ? '4 / span 3' : '4 / span 6', onClick: ''},
+        {id: 1, text: 'Отклики', modal: 'wait', row: '1 / span 1', column: '4 / span 2', columnSm: '2 / span 3', onClick: ''},
+        {id: 2, text: 'В работе', modal: 'work', row: '1 / span 1', column: '6 / span 2', columnSm: '5 / span 4', onClick: ''},
+        {id: 3, text: 'На проверке', modal: 'check', row: '1 / span 1', column: '8 / span 2', columnSm: '9 / span 3', onClick: ''},
+        {id: 4, text: 'Редактировать профиль',  modal: 'edit', row: '10 / span 1', column: type ? '4 / span 3' : '4 / span 6', columnSm: type ? '2 / span 5' : '2 / span 10', onClick: ''},
+    ]
+    const anotherButtons = [
+        {id: 1, text: 'Работы в процессе', modal: 'userWorks', row: '10 / span 1', column: '4 / span 6', onClick: ''},
+        {id: 2, text: 'Все заказы компании', modal: 'companyWorks', row: '10 / span 1', column: '4 / span 6', onClick: ''},
     ]
     if(type){
-        buttons.push({id: 5, text: 'Добавить/изменить заказ', modal: 'change', row: '10 / span 1', column: '7 / span 3', onClick: ''})
+        buttons.push({id: 5, text: 'Добавить/изменить заказ', modal: 'change', row: '10 / span 1', column: '7 / span 3', columnSm: '7 / span 5', onClick: ''})
     }
     //заказы
-    const orders = []
+    let orders = []
     //отклики
-    const resp = useSelector(state => state.resp)
+    let resp = useSelector(state => state.resp)
     //видимость модальных окон
     const [visibleModal, setVisibleModal] = useState({
         check: false,
@@ -82,17 +104,24 @@ const UserPage = ({type}) => {
                     <>
                     <InfoCard
                         row='2 / span 8'
-                        column='4 / span 6'
-                        item={{likes: 100500, date: new Date().toLocaleDateString(), place: 'Россия', avatar: userData.name, alt: userData.name,...userData}}
+                        column={mdUp ? '4 / span 6' : '2 / span 10'}
+                        item={userData}
                         liked={true}
                     />
                         {isMyPage && buttons.map(item => (
-                            <Box sx={{gridRow: item.row, gridColumn: item.column, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                            <Box sx={{gridRow: item.row, gridColumn: mdUp ? item.column : item.columnSm, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <Button variant={'outlined'} key={item.id} sx={{width: '100%', height: '80%', fontSize: '28px'}} onClick={() => setVisibleModal({[item.modal]: true})}>
                                     {item.text}
                                 </Button>
                             </Box>
                         ))}
+                        {!isMyPage &&
+                            <Box sx={{gridRow: anotherButtons[type].row, gridColumn: anotherButtons[type].column, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button variant={'outlined'} key={anotherButtons[type].id} sx={{width: '100%', height: '80%', fontSize: '28px'}} onClick={() => setVisibleModal({[anotherButtons[type].modal]: true})}>
+                                    {anotherButtons[type].text}
+                                </Button>
+                            </Box>
+                        }
                         <OrdersModal
                             orders={resp.checkResp}
                             title='На проверке'

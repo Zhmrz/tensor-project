@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import styled from "styled-components";
-import {Box, Button, Card, Paper} from "@mui/material";
+import {Box, Button, Card, Paper, useMediaQuery, useTheme} from "@mui/material";
 import {Link} from "react-router-dom";
 import Typography from '@mui/material/Typography'
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -23,6 +23,8 @@ const MyLink = styled(Link)`
 `
 
 const Main = () => {
+    const theme = useTheme();
+    const mdUp = useMediaQuery(theme.breakpoints.up("md"));
     const dispatch = useDispatch()
     const [card, setCard] = useState(1)
     const [liked, setLiked] = useState({
@@ -58,7 +60,7 @@ const Main = () => {
     ]
     return (
         <>
-            <Paper elevation={6} sx={{gridRow: '2 / span 2', gridColumn: '1 / span 6', p: '20px', textAlign: 'center', backgroundColor: 'primary.main'}}>
+            <Paper elevation={6} sx={{gridRow: mdUp ? '2 / span 2' : '1 / span 1', gridColumn: mdUp ? '1 / span 6' : '1 / span 12', p: '20px', textAlign: 'center', backgroundColor: 'primary.main'}}>
                 <Typography sx={{color: "white", textDecoration: 'none', fontSize: '36px'}}>
                     Хотите узнать больше?
                 </Typography>
@@ -76,7 +78,7 @@ const Main = () => {
                     </MyLink>
                 </Typography>
             </Paper>
-            <Box sx={{gridRow: '4 / span 4',
+            <Box sx={{gridRow: mdUp ? '4 / span 4' : '2 / span 8',
                 gridColumn: '1 / span 6',
                 display: 'flex',
                 flexFlow: 'row wrap',
@@ -85,12 +87,12 @@ const Main = () => {
                 p: '20px 0'
             }}>
                 {controls.map(item => (
-                    <Button key={item.id} variant="outlined" startIcon={item.icon} sx={{width: '45%', height: '40%', fontSize: '18px', backgroundColor: card === (item.id - 1)? 'secondary.main' : 'none' }} onClick={() => setCard(item.id - 1)}>
+                    <Button key={item.id} variant="outlined" startIcon={item.icon} sx={{width: mdUp ? '45%' : '100%', height: mdUp ? '40%' : '20%', fontSize: '18px', backgroundColor: card === (item.id - 1)? 'secondary.main' : 'none' }} onClick={() => setCard(item.id - 1)}>
                         {item.text}
                     </Button>
                 ))}
             </Box>
-            <Paper elevation={6} sx={{gridRow: '8 / span 2', gridColumn: '1 / span 6', p: '20px', backgroundColor: 'primary.main', display: "flex", flexDirection: 'column', justifyContent: "center", alignItems: "center"}}>
+            <Paper elevation={6} sx={{gridRow: mdUp ? '8 / span 2' : '10 / span 1', gridColumn: mdUp ? '1 / span 6' : '1 / span 12', p: '20px', backgroundColor: 'primary.main', display: "flex", flexDirection: 'column', justifyContent: "center", alignItems: "center"}}>
                 <Typography variant='span' sx={{color: 'white', fontSize: '36px'}}>
                     Проблемы с использованием сервиса?
                 </Typography>

@@ -75,7 +75,7 @@ const PageWrapper = styled.div`
 function App() {
     const dispatch = useDispatch()
     const id = useSelector(state => state.user.me.id)
-    const type = useSelector(state => state.user.me.type)
+    const type = useSelector(state => state.user.me.user_type)
     const isLoading = useSelector(state => state.user.status.isLoading)
     const successAuth = useSelector(state => state.user.status.successAuth)
     const logout = () => {
