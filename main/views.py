@@ -1,41 +1,49 @@
-import django_filters
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.permissions import IsAuthenticated
+from .filters import OrderFilter
 from .serializers import *
 from rest_framework.authtoken.models import Token
 
 
-def index(request):
+def index(request):  # Возвращает index с React
     return render(request, 'index.html')
 
 
-class FreelancerView(ModelViewSet):
+"""API"""
 
+
+class FreelancerView(ModelViewSet):
+    """Для работы с таблицей Freelancer"""
     serializer_class = FreelancerSerializer
-    permission_classes = [IsAuthenticated]
-    authentication_classes = (TokenAuthentication,)
+    permission_classes = [IsAuthenticated]  # Доступ для аутентифицированных пользователей
+    authentication_classes = (TokenAuthentication,)  # Аутентификация по токену
 
     def get_queryset(self):
-
-        user = self.request.user
-        return Freelancer.objects.filter(user_id=user)
+        """Фрилансер будет получать инф-цию только о себе"""
+        user = self.request.user  # Определяем пользователя, к-й направил запрос
+        return Freelancer.objects.filter(user_id=user)  # Производим фильтрацию по данному пользователю
 
 
 class CompanyView(ModelViewSet):
-
+    """Для работы с таблицей Company"""
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
 
+    def get_queryset(self):
+        user = self.request.user
+        return Company.objects.filter(user_id=user)
+
 
 class UserView(ReadOnlyModelViewSet):
-
+    """Для предоставлении инф-ции о пользователе"""
     serializer_class = UserViewSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
@@ -55,7 +63,7 @@ class UserView(ReadOnlyModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
 
         """Убираем лишнюю инф-цию о пользователе, а также указываем его тип: 0 - фрилансер, 1 - компания"""
-        if serializer.data[0]["freelancer_info"]==None:
+        if serializer.data[0]["freelancer_info"] == None:
             user_info = serializer.data[0]["company_info"]
             user_info["user_type"] = 1
         else:
@@ -80,24 +88,9 @@ class AllCompanyView(ReadOnlyModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
 
-class OrderFilter(django_filters.FilterSet):
-
-    min_price = django_filters.NumberFilter(field_name="price", lookup_expr="gte")
-    max_price = django_filters.NumberFilter(field_name="price", lookup_expr="lte")
-    start_date = django_filters.DateFilter(field_name="publication_date", lookup_expr="gte")
-    end_date = django_filters.DateFilter(field_name="publication_date", lookup_expr="lte")
-    min_deadline = django_filters.NumberFilter(field_name="deadline", lookup_expr="gte")
-    max_deadline = django_filters.NumberFilter(field_name="deadline", lookup_expr="lte")
-    topic = django_filters.BaseInFilter(field_name="topic")
-
-    class Meta:
-        model = Order
-        fields = ['topic', 'price', 'deadline', 'publication_date']
-
-
 class AllOrderView(ReadOnlyModelViewSet):
 
-    queryset = Order.objects.filter(status=False)
+    queryset = Order.objects.filter(status=0)
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
@@ -191,6 +184,7 @@ class RespondingFreelancersView(ModelViewSet):
     serializer_class = RespondingFreelancersSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
+    parser_classes = [MultiPartParser, JSONParser]
 
     def get_queryset(self):
 

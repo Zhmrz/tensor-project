@@ -1,13 +1,16 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+"""БД включает в себя следующие таблицы: фрилансеры, компании, заказы, темы (направления), отклики"""
+
 
 class Freelancer(models.Model):
-
+    """Фрилансер"""
     user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE, related_name="freelancer_info")
     first_name = models.CharField(max_length=100, verbose_name='Имя пользователя')
     last_name = models.CharField(max_length=100, verbose_name='Фамилия пользователя')
     # rating
+    personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=0)
     description = models.TextField(verbose_name='О себе')
     image = models.ImageField(verbose_name='Аватар')
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
@@ -20,10 +23,11 @@ class Freelancer(models.Model):
 
 
 class Company(models.Model):
-
+    """Компания"""
     user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE, related_name="company_info")
     name = models.CharField(max_length=100, verbose_name='Название компании')
     # rating
+    personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=0)
     description = models.TextField(verbose_name='Описание компании')
     image = models.ImageField(verbose_name='Аватар')
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
@@ -34,13 +38,13 @@ class Company(models.Model):
 
 
 class Order(models.Model):
-
+    """Заказ"""
     customer = models.ForeignKey(Company, verbose_name="Заказчик", on_delete=models.CASCADE)
     title = models.CharField(max_length=100, verbose_name='Название заказа')
     description = models.TextField(verbose_name='Описание заказа')
     price = models.DecimalField(verbose_name='Стоимость заказа', max_digits=9, decimal_places=2)
-    deadline = models.IntegerField(verbose_name='Время на выполнение заказа')
-    status = models.BooleanField(default=False)  # 0 - заказ свободен, 1 - если performer != Null
+    deadline = models.IntegerField(verbose_name='Время на выполнение заказа (кол-во дней)')
+    status = models.IntegerField(default=0, verbose_name="Статус заказа")  # 0 - заказ свободен, 1 - занят, 2 - закрыт
     performer = models.ForeignKey(Freelancer, verbose_name='Исполнитель заказа',
                                   on_delete=models.CASCADE, related_name='related_performer', null=True, blank=True)
     publication_date = models.DateField(verbose_name='Время публикации')  # auto_now=True,
@@ -52,11 +56,12 @@ class Order(models.Model):
 
 
 class RespondingFreelancers(models.Model):
-
+    """Отклики (откликнувшиеся фрилансеры)"""
     freelancer = models.ForeignKey(Freelancer, verbose_name="Пользователь", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
     responding_date = models.DateField(auto_now=True, verbose_name='Время отклика')
-    status = models.IntegerField(default=0)  #  0 - откликнулся, 1 - в работе, 2 - отклик на проверке
+    status = models.IntegerField(default=0, verbose_name="Статус отклика")  #  0 - откликнулся, 1 - в работе,
+                                            # 2 - отклик (работа) на проверке, 3 - принято, 4 - на доработку
     completed_order = models.FileField(verbose_name="Прикрепленная работа", null=True, blank=True)
 
     def __str__(self):
@@ -64,7 +69,7 @@ class RespondingFreelancers(models.Model):
 
 
 class Topic(models.Model):
-
+    """Темы: программирование, 3D-моделирование, фотография, типографика, образование, графика"""
     title = models.CharField(max_length=100, verbose_name='Название темы')
 
     def __str__(self):
