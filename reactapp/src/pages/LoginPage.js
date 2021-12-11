@@ -30,29 +30,28 @@ const emailRegex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
 const urlRegex = new RegExp('[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)')
 const nameRegex = new RegExp('^[а-яА-ЯёЁ0-9a-zA-Z]+$')
 
+const variants = [
+    {id: 1, label: 'Типографика', name: 'typo', icon: <TextFieldsIcon />, active: <TextFieldsIcon />},
+    {id: 2, label: 'Программирование', name: 'dev', icon: <CodeIcon />, active: <CodeIcon />},
+    {id: 3, label: '3D-моделирование', name: 'model', icon: <ThreeDRotationIcon />, active: <ThreeDRotationIcon />},
+    {id: 4, label: 'Фотография', name: 'photo', icon: <PhotoCameraIcon />, active: <PhotoCameraIcon />},
+    {id: 5, label: 'Образование', name: 'edu', icon: <SchoolIcon />, active: <SchoolIcon />},
+    {id: 6, label: 'Графика', name: 'img', icon: <CreateIcon />, active: <CreateIcon />},
+]
+
+
+
 const LoginPage = () => {
     const dispatch = useDispatch()
     const [userData, setUserData] = useState({
-        email: '',
+        username: '', //email
         password: '',
         first_name: '',
         last_name: '',
         user_type: '0',
         link_to_resume: '',
-        topics: {
-            typo: false,
-            dev: false,
-            model: false,
-            photo: false,
-            edu: false,
-            img: false
-        }
+        topics: []
     })
-
-    const topicsArr = Object.entries(userData.topics).reduce((acc, val, ind) =>{
-        if(val[1]) acc.push(ind+1)
-        return acc
-    }, [])
 
     const error = useSelector(state => state.user.status.error)
     const successReg = useSelector(state => state.user.status.successReg)
@@ -68,68 +67,50 @@ const LoginPage = () => {
     const changeType = (event) => {
         dispatch(regSuccess(false))
         dispatch(setUserError(false))
-        setUserData({...userData, type: event.target.value})
-    }
-
-    const changeTopics = (event) => {
-        dispatch(regSuccess(false))
-        setUserData({...userData, topics: {...userData.topics, [event.target.name]: event.target.checked}})
+        setUserData({...userData, user_type: event.target.value})
     }
 
     const changeHasAccount = (value) => {
         setUserData({
-            email: '',
+            username: '', //email
             password: '',
             first_name: '',
             last_name: '',
             user_type: '0',
             link_to_resume: '',
-            topics: {
-                typo: false,
-                dev: false,
-                model: false,
-                photo: false,
-                edu: false,
-                img: false
-        }});
+            topics: []
+        });
         dispatch(regSuccess(false))
         dispatch(setHasAccount(value))
         dispatch(setUserError(false))
     }
 
-    const variants = [
-        {label: 'Типографика', name: 'typo', icon: <TextFieldsIcon />, active: <TextFieldsIcon color='success'/>},
-        {label: 'Программирование', name: 'dev', icon: <CodeIcon />, active: <CodeIcon color='success'/>},
-        {label: '3D-моделирование', name: 'model', icon: <ThreeDRotationIcon />, active: <ThreeDRotationIcon color='success'/>},
-        {label: 'Фотография', name: 'photo', icon: <PhotoCameraIcon />, active: <PhotoCameraIcon color='success'/>},
-        {label: 'Образование', name: 'edu', icon: <SchoolIcon />, active: <SchoolIcon color='success'/>},
-        {label: 'Графика', name: 'img', icon: <CreateIcon />, active: <CreateIcon color='success'/>},
-    ]
+    const changeTopics = (event, id) => {
+        dispatch(regSuccess(false))
+        if(userData.topics.includes(id)){
+            setUserData({...userData, topics: userData.topics.filter(item => item !== id)})
+        } else {
+            setUserData({...userData, topics: [...userData.topics, id]})
+        }
+    }
 
     const sendForm = (event) => {
         event.preventDefault()
         //будет обработка с помощью промиса, отправка по axios
         if(hasAccount){
             dispatch(authUserThunkCreator({
-                username: userData.email,
+                username: userData.username,
                 password: userData.password,
             }))
         } else {
-            dispatch(registerUserThunkCreator({
-                first_name: userData.first_name,
-                last_name: userData.last_name,
-                user_type: userData.user_type,
-                username: userData.email,
-                password: userData.password,
-                topics: topicsArr
-            }))
+            dispatch(registerUserThunkCreator(userData))
         }
     }
 
     const validationErrors = {
         name: false,
         surname: false,
-        email: false,
+        username: false,
         url: false,
     }
     return (
@@ -189,8 +170,8 @@ const LoginPage = () => {
                         <TextField
                             required
                             id="mail"
-                            name='email'
-                            value={userData.email}
+                            name='username'
+                            value={userData.username}
                             onChange={changeData}
                             label="Электронная почта"
                             type="email"
@@ -239,7 +220,7 @@ const LoginPage = () => {
                             required
                             select
                             label="Выберите тип аккаунта"
-                            defaultValue={0}
+                            defaultValue={'0'}
                             value={userData.user_type}
                             onChange={changeType}
                         >
@@ -291,11 +272,14 @@ const LoginPage = () => {
                                     key={item.name}
                                     control={
                                         <Checkbox
-                                            checked={userData.topics[item.name]}
-                                            onChange={changeTopics}
+                                            checked={userData.topics.includes(item.id)}
+                                            onChange={e => changeTopics(e, item.id)}
                                             name={item.name}
                                             icon={item.icon}
                                             checkedIcon={item.active}
+                                            sx={{
+                                                backgroundColor: userData.topics.includes(item.id) ? 'secondary.main' : 'none'
+                                            }}
                                         />
                                     }
                                     label={item.label}
@@ -305,8 +289,8 @@ const LoginPage = () => {
                         </FormGroup>
                         <TextField
                             required
-                            name='email'
-                            value={userData.email}
+                            name='username'
+                            value={userData.username}
                             onChange={changeData}
                             label="Электронная почта"
                             type="email"

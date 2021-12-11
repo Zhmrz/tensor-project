@@ -11,10 +11,10 @@ class Freelancer(models.Model):
     last_name = models.CharField(max_length=100, verbose_name='Фамилия пользователя')
     # rating
     personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=0)
-    description = models.TextField(verbose_name='О себе')
-    image = models.ImageField(verbose_name='Аватар')
+    description = models.TextField(verbose_name='О себе', null=True, blank=True)
+    image = models.ImageField(verbose_name='Аватар', null=True, blank=True)
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
-    link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
+    link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме', null=True, blank=True)
     completed_orders = models.PositiveIntegerField(verbose_name="Кол-во выполненных заказов", default=0)
 
 
@@ -28,9 +28,9 @@ class Company(models.Model):
     name = models.CharField(max_length=100, verbose_name='Название компании')
     # rating
     personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=0)
-    description = models.TextField(verbose_name='Описание компании')
-    image = models.ImageField(verbose_name='Аватар')
-    topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
+    description = models.TextField(verbose_name='Описание компании', null=True, blank=True)
+    image = models.ImageField(verbose_name='Аватар', null=True, blank=True)
+    topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления", blank=True)
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
 
     def __str__(self):
@@ -59,7 +59,8 @@ class RespondingFreelancers(models.Model):
     """Отклики (откликнувшиеся фрилансеры)"""
     freelancer = models.ForeignKey(Freelancer, verbose_name="Пользователь", on_delete=models.CASCADE)
     order = models.ForeignKey(Order, verbose_name='Заказ', on_delete=models.CASCADE)
-    responding_date = models.DateField(auto_now=True, verbose_name='Время отклика')
+    responding_date = models.DateField(auto_now=True, verbose_name='Дата отклика')
+    adoption_date = models.DateField(verbose_name="Дата принятия отклика", null=True, blank=True)
     status = models.IntegerField(default=0, verbose_name="Статус отклика")  #  0 - откликнулся, 1 - в работе,
                                             # 2 - отклик (работа) на проверке, 3 - принято, 4 - на доработку, -1 - отклонен
     completed_order = models.FileField(verbose_name="Прикрепленная работа", null=True, blank=True)

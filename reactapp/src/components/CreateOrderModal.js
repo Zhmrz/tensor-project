@@ -32,7 +32,7 @@ const CreateOrderModal = ({visible, setVisible, orders}) => {
         price: 0,
         deadline: 0,
         topic: 1,
-        publication_date: ''
+        publication_date: new Date().toISOString().split('T')[0]
     }
     const [order, setOrder] = useState(orderDefault)
 

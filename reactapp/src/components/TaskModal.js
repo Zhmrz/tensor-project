@@ -65,7 +65,7 @@ const TaskModal = ({item, visibleTask, setVisibleTask}) => {
                     </Button>
                     <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {respSuccess && <Typography sx={{color: 'green'}}>Отклик успешно зарегистрирован!</Typography>}
-                        {respError && <Typography sx={{color: 'red'}}>Ошибка при создании отклика!</Typography>}
+                        {respError && <Typography sx={{color: 'red'}}>Ошибка - отклик уже создан!</Typography>}
                     </Box>
                 </Box>
             </Box>

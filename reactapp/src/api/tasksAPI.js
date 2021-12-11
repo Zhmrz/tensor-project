@@ -2,7 +2,7 @@ import instanceAPI from "./API";
 
 const API_TASKS = 'api/orders/'
 //все заказы
-const COMP_ORDERS = 'api/order'
+const COMP_ORDERS = 'api/order/'
 //получить, изменить данные заказа компании   [GET-запрос, PUT-запрос]
 
 //все заказы получить
@@ -15,7 +15,7 @@ export const getOrders = () => {
 }
 
 export const updateOrder = (id, data) => {
-    return instanceAPI.put(COMP_ORDERS + `/${id}/`, data)
+    return instanceAPI.put(COMP_ORDERS + `${id}/`, data)
 }
 
 export const createOrder = (data) => {

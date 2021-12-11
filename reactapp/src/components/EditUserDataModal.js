@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
     Box, Button, Checkbox, FormControlLabel, FormGroup, FormLabel,
     IconButton, Input, List, ListItem, ListItemText,
@@ -13,7 +13,6 @@ import AddIcon from "@mui/icons-material/Add";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
-import TaskForm from "./TaskForm";
 import CustomForm from "./CustomForm";
 import {useDispatch, useSelector} from "react-redux";
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
@@ -27,7 +26,6 @@ import {changeCompanyData, changeUserData} from "../store/userReducer";
 import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from "@mui/icons-material/Check";
 import CustomCheckbox from "./CustomCheckbox";
-import {Label} from "@mui/icons-material";
 import CustomFileInput from "./CustomFileInput";
 
 
@@ -50,7 +48,6 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
         last_name: false,
         description: false,
         link_to_resume: false,
-        image: false,
         topics: false,
     })
 
@@ -58,21 +55,19 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
     const success = useSelector(state => state.user.status.successUpd)
 
     const sections = [
-        {id: 1, label: 'Имя', title: 'Изменить имя пользователя', field: 'first_name', type: 'text'},
-        {id: 2, label: 'Фамилия', title: 'Изменить фамилию пользователя', field: 'last_name', type: 'text'},
+        {id: 1, label: type ? 'Название' : 'Имя', title: 'Изменить имя пользователя', field: 'first_name', type: 'text'},
+        (!type) && {id: 2, label: 'Фамилия', title: 'Изменить фамилию пользователя', field: 'last_name', type: 'text'},
         {id: 3, label: 'Описание', title: 'Изменить описание пользователя', field: 'description', type: 'text'},
         {id: 4, label: 'Ссылка', title: 'Изменить ссылку на сайт', field: 'link_to_resume', type: 'url'},
     ]
     const [open, setOpen] = useState(0)
-    const changeData = (e) => {
-        setNewUserData({[e.target.name]: e.target.value})
-    }
+
     const sendForm = (e) => {
         e.preventDefault()
         if(type){
-            dispatch(changeCompanyData(userData.id, {...userData, ...newUserData}))
+            dispatch(changeCompanyData(userData.id, newUserData))
         } else {
-            dispatch(changeUserData(userData.id, {...userData, ...newUserData}))
+            dispatch(changeUserData(userData.id, newUserData))
         }
     }
     return (
@@ -126,35 +121,6 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
                             </Collapse>
                         </List>
                     ))}
-                    <List>
-                        <ListItemButton divider onClick={() => {setOpen(open === 5 ? 0 : 5)}}>
-                            <ListItemIcon>
-                                <AddIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={'Изменить фотографию'}/>
-                            {activeChanges['image'] &&
-                            <ListItemIcon>
-                                <DoneOutlineIcon sx={{color: 'success.main'}}/>
-                            </ListItemIcon>
-                            }
-                            {open === 5 ? <ExpandLess /> : <ExpandMore />}
-                        </ListItemButton >
-                        <Collapse in={open === 5} timeout="auto" unmountOnExit>
-                            <CustomFileInput
-                                label='Загрузить фото'
-                                defVal={newUserData.image}
-                                cancel={e => {
-                                    setNewUserData({...newUserData, image: userData.image})
-                                    setActiveChanges({...activeChanges, image: false})
-                                    setOpen(0)
-                                }}
-                                approve={(e, value) => {
-                                    setNewUserData({...newUserData, image: value})
-                                    setActiveChanges({...activeChanges, image: true})
-                                    setOpen(0)
-                                }}/>
-                        </Collapse>
-                    </List>
                     <List>
                         <ListItemButton divider onClick={() => setOpen(open === 6 ? 0 : 6)}>
                             <ListItemIcon>

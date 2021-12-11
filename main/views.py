@@ -24,6 +24,7 @@ class FreelancerView(ModelViewSet):
     serializer_class = FreelancerSerializer
     permission_classes = [IsAuthenticated]  # Доступ для аутентифицированных пользователей
     authentication_classes = (TokenAuthentication,)  # Аутентификация по токену
+    parser_classes = [MultiPartParser, JSONParser]
 
     def get_queryset(self):
         """Фрилансер будет получать инф-цию только о себе"""
@@ -31,11 +32,16 @@ class FreelancerView(ModelViewSet):
         return Freelancer.objects.filter(user_id=user)  # Производим фильтрацию по данному пользователю
 
 
+class UploadImageFreelancerView(ModelViewSet):
+    """Для загрузки аватара фрилансером"""
+
+
 class CompanyView(ModelViewSet):
     """Для работы с таблицей Company"""
     serializer_class = CompanySerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
+    parser_classes = [MultiPartParser, JSONParser]
 
     def get_queryset(self):
         user = self.request.user
@@ -62,7 +68,7 @@ class UserView(ReadOnlyModelViewSet):
 
         serializer = self.get_serializer(queryset, many=True)
 
-        """Убираем лишнюю инф-цию о пользователе, а также указываем его тип: 0 - фрилансер, 1 - компания"""
+        """Убираем лишние списки и передаем соот-щую типу пользователя инф-цию: 0 - фрилансер, 1 - компания"""
         if serializer.data[0]["freelancer_info"] == None:
             user_info = serializer.data[0]["company_info"]
             user_info["user_type"] = 1
@@ -83,7 +89,7 @@ class AllFreelancerView(ReadOnlyModelViewSet):
 class AllCompanyView(ReadOnlyModelViewSet):
 
     queryset = Company.objects.all()
-    serializer_class = CompanySerializer
+    serializer_class = CompaniesSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
 

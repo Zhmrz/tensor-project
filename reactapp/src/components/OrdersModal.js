@@ -8,39 +8,35 @@ import {
     ListItemAvatar,
     ListItemText,
     Modal,
-    Typography
+    Typography,
+    Tooltip
 } from "@mui/material";
-import {useDispatch} from "react-redux";
 import CloseIcon from '@mui/icons-material/Close';
 
+const statusDict = {
+    '0': 'Отлик отправлен',
+    '1': 'Отлик одобрен',
+    '2': 'Работа на проверке',
+    '3': 'Работа оплачена',
+    '4': 'Работа возвращена на доработку',
+    '-1': 'Отлик отменен',
+}
 
-const OrdersModal = ({visible, setVisible, title, request, storeName, onApprove, onReject, NoIcon, YesIcon, noAction, yesAction, orders}) => {
-    const dispatch = useDispatch()
-    console.log(orders)
-    //загрузка откликов из пропсов
-    /*const orders = [
-        {id: 1, title: 'my task', personName: 'man', personId: 1},
-        {id: 2, title: 'my task', personName: 'man', personId: 2},
-        {id: 3, title: 'my task', personName: 'man', personId: 3},
-        {id: 4, title: 'my task', personName: 'man', personId: 4},
-        {id: 5, title: 'my task', personName: 'man', personId: 5},
-        {id: 6, title: 'my task', personName: 'man', personId: 6},
-        {id: 7, title: 'my task', personName: 'man', personId: 7},
-        {id: 9, title: 'my task', personName: 'man', personId: 8},
-        {id: 10, title: 'my task', personName: 'man', personId: 9},
-        {id: 11, title: 'my task', personName: 'man', personId: 6},
-        {id: 12, title: 'my task', personName: 'man', personId: 7},
-        {id: 13, title: 'my task', personName: 'man', personId: 8},
-        {id: 14, title: 'my task', personName: 'man', personId: 9},
-    ]*/
-    const noHandler = (e) => {
+const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAction, yesAction, orders}) => {
+    const noHandler = (e, item) => {
         e.preventDefault()
-        noAction()
+        if(noAction){
+            noAction(item)
+        }
     }
-    const yesHandler = (e) => {
+    const yesHandler = (e, item) => {
         e.preventDefault()
-        yesAction()
+        if(yesAction){
+            yesAction(item)
+        }
     }
+    //формат отклика
+    //{"id":9,"id_freelancer":14,"freelancer":"Marat Sabitov","order":3,"order_title":"Windows 12","responding_date":"2021-12-10","status":0,"completed_order":null}
     return (
         <Modal
             open={visible}
@@ -59,21 +55,30 @@ const OrdersModal = ({visible, setVisible, title, request, storeName, onApprove,
                     </IconButton>
                 </Box>
                 <List sx={{overflowY: 'scroll', overflowX: 'hidden', height: '90%'}}>
-                    {orders.map(item => (
+                    {orders.length ? orders.map(item => (
+                        //{"id":9,"id_freelancer":14,"freelancer":"Marat Sabitov","order":3,"order_title":"Windows 12","responding_date":"2021-12-10","status":0,"completed_order":null}
                         <ListItem key={item.id}>
                             <ListItemAvatar>
                                 <Avatar>
                                 </Avatar>
                             </ListItemAvatar>
-                            <ListItemText primary={item.title} secondary={item.personName}/>
-                            <IconButton onClick={(e) => noHandler(e)}>
-                                <NoIcon sx={{fontSize: '24px'}}/>
-                            </IconButton>
-                            <IconButton onClick={(e) => yesHandler(e)}>
-                                <YesIcon sx={{fontSize: '24px'}}/>
-                            </IconButton>
+                            <ListItemText primary={item.order_title} secondary={item.freelancer}/>
+                            <Typography sx={{pr: '20px'}}>Дата отклика: {item.responding_date}</Typography>
+                            <Typography sx={{pr: '20px'}}>Статус: {statusDict[String(item.status)]}</Typography>
+                            {labels[0] &&
+                                <Tooltip title={labels[0]} placement="bottom">
+                                    <IconButton onClick={(e) => yesHandler(e, item)}>
+                                        <YesIcon sx={{fontSize: '24px'}}/>
+                                    </IconButton>
+                                </Tooltip>}
+                            {labels[1] &&
+                                <Tooltip title={labels[1]} placement="bottom">
+                                    <IconButton onClick={(e) => noHandler(e, item)}>
+                                        <NoIcon sx={{fontSize: '24px'}}/>
+                                    </IconButton>
+                                </Tooltip>}
                         </ListItem>
-                    ))}
+                        )): <Typography>В данной категории пока нет откликов</Typography>}
                 </List>
             </Box>
         </Modal>

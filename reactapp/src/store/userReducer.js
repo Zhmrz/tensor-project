@@ -182,9 +182,7 @@ export const getCompanyData = (id) => {
                 console.log('получить данные компании')
                 console.log(response)
                 dispatch(pageExist(true))
-                const name = response.data.first_name
-                const link = response.data.link_to_resume
-                dispatch(setUser({name: name, link: link}))
+                dispatch(setUser(response.data))
             })
             .catch(error => {
                 dispatch(pageExist(false))

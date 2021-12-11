@@ -13,9 +13,25 @@ import Typography from "@mui/material/Typography";
 import {Box, Card, Tooltip} from "@mui/material";
 import {useNavigate} from "react-router-dom";
 import NoPhoto from '../img/nophoto.jpg';
+import TextFieldsIcon from "@mui/icons-material/TextFields";
+import CodeIcon from "@mui/icons-material/Code";
+import ThreeDRotationIcon from "@mui/icons-material/ThreeDRotation";
+import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
+import SchoolIcon from "@mui/icons-material/School";
+import CreateIcon from "@mui/icons-material/Create";
+
+const variants = [
+    {id: 1, label: 'Типографика', name: 'typo', icon: <TextFieldsIcon />, active: <TextFieldsIcon />},
+    {id: 2, label: 'Программирование', name: 'dev', icon: <CodeIcon />, active: <CodeIcon />},
+    {id: 3, label: '3D-моделирование', name: 'model', icon: <ThreeDRotationIcon />, active: <ThreeDRotationIcon />},
+    {id: 4, label: 'Фотография', name: 'photo', icon: <PhotoCameraIcon />, active: <PhotoCameraIcon />},
+    {id: 5, label: 'Образование', name: 'edu', icon: <SchoolIcon />, active: <SchoolIcon />},
+    {id: 6, label: 'Графика', name: 'img', icon: <CreateIcon />, active: <CreateIcon />},
+]
 
 const InfoCard = ({item, liked, setLiked, row, column}) => {
     let navigate = useNavigate();
+    const spec = item.topics.map(item => variants[item].label).join()
     const [min, max] = [1, 125000]
     const likes = item.likes || Math.floor(Math.random() * (max - min)) + min;
     return (
@@ -32,7 +48,7 @@ const InfoCard = ({item, liked, setLiked, row, column}) => {
                         <MoreVertIcon sx={{fontSize: '24px'}}/>
                     </IconButton>
                 }
-                title={item.place || item.topics || 'Специализация не указана'}
+                title={spec || 'Специализация не указана'}
                 subheader={item.date || new Date().toLocaleString().split(',')[0]}
             />
             <Box sx={{height: '60%', background: `url(${item.image ? item.image : NoPhoto}) center no-repeat`, backgroundSize: 'auto 100%'}} />

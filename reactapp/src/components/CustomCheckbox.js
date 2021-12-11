@@ -5,6 +5,8 @@ import CheckIcon from "@mui/icons-material/Check";
 
 
 const CustomCheckbox = ({defArr, variants, approve, cancel}) => {
+    console.log('пришел массив')
+    console.log(defArr)
     const [checkedTopics, setCheckedTopics] = useState(defArr)
     const onChange = (event, id) => {
         if(checkedTopics.includes(id)){
@@ -27,11 +29,12 @@ const CustomCheckbox = ({defArr, variants, approve, cancel}) => {
                                 icon={item.icon}
                                 checkedIcon={item.active}
                                 sx={{
-                                    backgroundColor: checkedTopics.includes(item.id) ? 'secondary.main' : 'none'
+                                    backgroundColor: checkedTopics.includes(item.id) ? 'secondary.main' : 'none',
                                 }}
                             />
                         }
                         label={item.label}
+                        sx={{width: '30%'}}
                     />
                 ))}
             </FormGroup>

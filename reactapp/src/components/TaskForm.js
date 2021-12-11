@@ -19,7 +19,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 name='title'
                 label='Название'
                 value={order.title}
-                onChange={(e) => setOrder({title: e.target.value})}
+                onChange={(e) => setOrder({...order, title: e.target.value})}
                 defaultValue='Создать то, не знаю что'
                 margin="dense"
                 sx={{width: '40%'}}
@@ -34,7 +34,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 name='description'
                 label='Описание'
                 value={order.description}
-                onChange={(e) => setOrder({description: e.target.value})}
+                onChange={(e) => setOrder({...order, description: e.target.value})}
                 defaultValue='Сложно, но возможно'
                 margin="dense"
                 sx={{width: '60%'}}
@@ -46,7 +46,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 name='price'
                 label='Стоимость (р)'
                 value={order.price}
-                onChange={(e) => setOrder({price: e.target.value})}
+                onChange={(e) => setOrder({...order, price: e.target.value})}
                 defaultValue={0}
                 margin="dense"
                 sx={{width: '20%'}}
@@ -58,7 +58,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                 name='deadline'
                 label='Длительность (дней)'
                 value={order.deadline}
-                onChange={(e) => setOrder({deadline: e.target.value})}
+                onChange={(e) => setOrder({...order, deadline: e.target.value})}
                 defaultValue={0}
                 margin="dense"
                 sx={{width: '20%'}}
@@ -72,7 +72,7 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                     labelId="select-label"
                     value={order.topic}
                     label="Категория"
-                    onChange={(e) => setOrder({topic: e.target.value})}
+                    onChange={(e) => setOrder({...order, topic: e.target.value})}
                     inputProps={{ readOnly: readOnly }}
                 >
                     <MenuItem value={1}>Программирование</MenuItem>

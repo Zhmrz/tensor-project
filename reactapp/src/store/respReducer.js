@@ -1,4 +1,11 @@
-import {createResponse, getResponses} from "../api/respAPI";
+import {
+    approveResponse,
+    changeRespStatus,
+    createResponse,
+    deleteResponse,
+    getResponses,
+    loadWork
+} from "../api/respAPI";
 
 const LOAD_RESP = 'LOAD_RESP'
 const RESET_RESP = 'RESET_RESP'
@@ -48,7 +55,7 @@ export const setWaitResp = (value) => ({type: SET_WAIT_RESP, payload: value})
 export const setWorkResp = (value) => ({type: SET_WORK_RESP, payload: value})
 export const setCheckResp = (value) => ({type: SET_CHECK_RESP, payload: value})
 export const setRespCreated = (value) => ({type:RESP_CREATED, payload: value})
-export const setRespError = (value) => ({type: RESP_CREATED, payload: value})
+export const setRespError = (value) => ({type: SET_ERROR, payload: value})
 
 
 export const getRespThunkCreator = () => {
@@ -59,12 +66,12 @@ export const getRespThunkCreator = () => {
                 console.log("Получены отклики")
                 console.log(response)
                 dispatch(loadResp(response.data))
-                dispatch(setWaitResp(response.data.filter(item => item.status === 0)))
-                dispatch(setWorkResp(response.data.filter(item => item.status === 1)))
-                dispatch(setCheckResp(response.data.filter(item => item.status === 2)))
+                dispatch(setWaitResp(response.data.filter(item => item.status === 0 || item.status === 5)))
+                dispatch(setWorkResp(response.data.filter(item => item.status === 1 || item.status === 4)))
+                dispatch(setCheckResp(response.data.filter(item => item.status === 2 || item.status === 3)))
             })
             .catch(error => {
-                setRespError(true)
+                dispatch(setRespError(true))
                 console.log('error on loading resp')
             })
         dispatch(setLoading(false))
@@ -76,13 +83,78 @@ export const createRespThunkCreator = (id) => {
         createResponse(id)
             .then(response => {
                 console.log("создан отклик")
-                console.log(response)
                 dispatch(setRespCreated(true))
             })
             .catch(error => {
-                setRespError(true)
+                dispatch(setRespError(true))
                 console.log('error on loading resp')
             })
     }
 }
+
+export const changeRespStatusThunkCreator = (id, status) => {
+    return (dispatch) => {
+        dispatch(setLoading(true))
+        changeRespStatus(id, status)
+            .then(response => {
+                console.log('response status изменен на ' + status)
+                dispatch(getRespThunkCreator()) //получаем заново все отклики
+            })
+            .catch(error => {
+            dispatch(setRespError(true))
+            console.log('error on change status operations with resp')
+        })
+        dispatch(setLoading(false))
+    }
+}
+
+export const deleteRespThunkCreator = (id) => {
+    return (dispatch) => {
+        dispatch(setLoading(true))
+        deleteResponse(id)
+            .then(response => {
+                console.log('response удален')
+                dispatch(getRespThunkCreator()) //получаем заново все отклики
+            })
+            .catch(error => {
+                dispatch(setRespError(true))
+                console.log('error on delete operations with resp')
+            })
+        dispatch(setLoading(false))
+    }
+}
+/*
+export const approveRespThunkCreator = (id, userId) => {
+    return (dispatch) => {
+        dispatch(setLoading(true))
+        approveResponse(id, userId)
+            .then(response => {
+                console.log('response одобрен')
+                dispatch(getRespThunkCreator()) //получаем заново все отклики
+            })
+            .catch(error => {
+                dispatch(setRespError(true))
+                console.log('error on approve operations with resp')
+            })
+        dispatch(setLoading(false))
+    }
+}
+*/
+
+export const loadFileRespThunkCreator = (id, file) => {
+    return (dispatch) => {
+        dispatch(setLoading(true))
+        loadWork(id, file)
+            .then(response => {
+                console.log('работа отправлена')
+                dispatch(getRespThunkCreator()) //получаем заново все отклики
+            })
+            .catch(error => {
+                dispatch(setRespError(true))
+                console.log('error on load operations with resp')
+            })
+        dispatch(setLoading(false))
+    }
+}
+
 

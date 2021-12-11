@@ -31,7 +31,11 @@ export const changeFreelancerInfo = (id, data) => {
 }
 
 export const changeCompanyInfo = (id, data) => {
-    return instanceAPI.put(COMPANY_PAGE + id + '/', data)
+    return instanceAPI.put(COMPANY_PAGE + id + '/', data, {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    })
 }
 
 export const getMyData = () => {

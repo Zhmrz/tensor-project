@@ -14,8 +14,14 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CheckIcon from '@mui/icons-material/Check';
 import DoNotDisturbOnIcon from '@mui/icons-material/DoNotDisturbOn';
 import EditUserDataModal from "../components/EditUserDataModal";
-import {getRespThunkCreator} from "../store/respReducer";
+import {
+    approveRespThunkCreator,
+    changeRespStatusThunkCreator,
+    deleteRespThunkCreator,
+    getRespThunkCreator, loadFileRespThunkCreator
+} from "../store/respReducer";
 import {getCompanyOrdersThunkCreator} from "../store/tasksReducer";
+import {loadWork} from "../api/respAPI";
 
 
 const UserPage = ({type}) => {
@@ -40,18 +46,14 @@ const UserPage = ({type}) => {
     })
     const dispatch = useDispatch()
     let { id } = useParams();
-    console.log(useParams());
-    console.log("айди в странице юзера: " + id)
+
     const buttons = [
         {id: 1, text: 'Отклики', modal: 'wait', row: '1 / span 1', column: '4 / span 2', columnSm: '2 / span 3', onClick: ''},
         {id: 2, text: 'В работе', modal: 'work', row: '1 / span 1', column: '6 / span 2', columnSm: '5 / span 4', onClick: ''},
         {id: 3, text: 'На проверке', modal: 'check', row: '1 / span 1', column: '8 / span 2', columnSm: '9 / span 3', onClick: ''},
         {id: 4, text: 'Редактировать профиль',  modal: 'edit', row: '10 / span 1', column: type ? '4 / span 3' : '4 / span 6', columnSm: type ? '2 / span 5' : '2 / span 10', onClick: ''},
     ]
-    const anotherButtons = [
-        {id: 1, text: 'Работы в процессе', modal: 'userWorks', row: '10 / span 1', column: '4 / span 6', onClick: ''},
-        {id: 2, text: 'Все заказы компании', modal: 'companyWorks', row: '10 / span 1', column: '4 / span 6', onClick: ''},
-    ]
+    const anotherButtons = {id: 1, text: 'Все заказы компании', modal: 'companyWorks', row: '10 / span 1', column: '4 / span 6', onClick: ''}
     if(type){
         buttons.push({id: 5, text: 'Добавить/изменить заказ', modal: 'change', row: '10 / span 1', column: '7 / span 3', columnSm: '7 / span 5', onClick: ''})
     }
@@ -69,27 +71,43 @@ const UserPage = ({type}) => {
     })
     //найден ли пользователь
     const currentPageExist = useSelector(state => state.user.current.currentPageExist)
-    //console.log("Exist "+ useSelector(state => state.user))
     //пользователь просматриваемой страницы
     const userData = useSelector(state => state.user.current)
-    console.log(userData)
+    const userMe = useSelector(state => state.user.me)
     //идентификатор авторизованного пользователя
-    const myId = useSelector(state => state.user.me.id)
+    const myId = userMe.id
+    const userType = userMe.user_type
     const isMyPage = Number(id) === myId
     useEffect(() => {
         if(type){
             dispatch(getCompanyData(id))
-            if(true){ //currentPageExist
-                console.log("Inside")
-                dispatch(getRespThunkCreator())
-                dispatch(getCompanyOrdersThunkCreator())
-            }
+            dispatch(getRespThunkCreator())
+            dispatch(getCompanyOrdersThunkCreator())
         } else {
             dispatch(getUserData(id))
             dispatch(getRespThunkCreator())
         }
     },[])
 
+    //коллбеки в OrderModal
+    const returnInWork = (item) => {
+        dispatch(changeRespStatusThunkCreator(item.id, 4))
+    }
+    const payForWork = (item) => {
+        dispatch(changeRespStatusThunkCreator(item.id, 3))
+    }
+    const delResp = (item) => {
+        dispatch(deleteRespThunkCreator(item.id))
+    }
+    const approveFree = (item) => {
+        dispatch(changeRespStatusThunkCreator(item.id, 1))
+    }
+    const cancelFree = (item) => {
+        dispatch(changeRespStatusThunkCreator(item.id, 5))
+    }
+    const loadFile = (item) => {
+        dispatch(loadFileRespThunkCreator(item.id, 'file'))
+    }
     return (
         //!currentPageExist
         <>
@@ -121,41 +139,47 @@ const UserPage = ({type}) => {
                             </Box>
                         ))}
                         {!isMyPage &&
-                            <Box sx={{gridRow: anotherButtons[type].row, gridColumn: anotherButtons[type].column, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                <Button variant={'outlined'} key={anotherButtons[type].id} sx={{width: '100%', height: '80%', fontSize: '28px'}} onClick={() => setVisibleModal({[anotherButtons[type].modal]: true})}>
-                                    {anotherButtons[type].text}
+                            <Box sx={{gridRow: anotherButtons.row, gridColumn: anotherButtons.column, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <Button variant={'outlined'} key={anotherButtons.id} sx={{width: '100%', height: '80%', fontSize: '28px'}} onClick={() => setVisibleModal({[anotherButtons.modal]: true})}>
+                                    {anotherButtons.text}
                                 </Button>
                             </Box>
                         }
                         <OrdersModal
+                            labels={userType ? ['Оплатить работу', 'Вернуть на доработку'] : ['', '']}
+                            type='check'
                             orders={resp.checkResp}
                             title='На проверке'
                             visible={visibleModal.check}
                             setVisible={(value) => setVisibleModal({check: value})}
                             YesIcon={CheckIcon}
                             NoIcon={DoNotDisturbOnIcon}
-                            yesAction={() => console.log('yes')}
-                            noAction={() => console.log('no')}
+                            yesAction={userType ? payForWork : undefined}
+                            noAction={userType ? returnInWork : undefined}
                         />
                         <OrdersModal
+                            labels={userType ? ['Одобрить отклик', 'Отклонить отклик'] : ['', 'Отменить отклик']}
+                            type='wait'
                             orders={resp.waitResp}
                             title='Отклики'
                             visible={visibleModal.wait}
                             setVisible={(value) => setVisibleModal({wait: value})}
                             YesIcon={ThumbUpIcon}
                             NoIcon={ThumbDownIcon}
-                            yesAction={() => console.log('yes')}
-                            noAction={() => console.log('no')}
+                            yesAction={userType ? approveFree : undefined}
+                            noAction={userType ? cancelFree : delResp} //нужна операция на отколнение отклика компанией
                         />
                         <OrdersModal
+                            labels={userType ? ['', ''] : ['Отправить работу', 'Отменить работу']}
+                            type='work'
                             orders={resp.workResp}
                             title='В работе'
                             visible={visibleModal.work}
                             setVisible={(value) => setVisibleModal({work: value})}
                             YesIcon={FileDownloadIcon}
                             NoIcon={DoDisturbIcon}
-                            yesAction={() => console.log('yes')}
-                            noAction={() => console.log('no')}
+                            yesAction={userType ? undefined : loadFile} //загрузить файл
+                            noAction={userType ? undefined : delResp} //отменить отклик
                         />
                         <CreateOrderModal
                             visible={visibleModal.change}
@@ -165,6 +189,7 @@ const UserPage = ({type}) => {
                         <EditUserDataModal
                             visible={visibleModal.edit}
                             setVisible={(value) => setVisibleModal({edit: value})}
+                            type={userType}
                         />
                     </>
             }

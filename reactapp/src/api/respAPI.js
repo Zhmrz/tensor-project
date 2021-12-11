@@ -19,35 +19,22 @@ export const getResponses = () => {
     return instanceAPI.get(API_RESP)
 }
 
-//Одобрить отклик (К) - http://127.0.0.1:8000/api/order/<id>/
-// [PATCH-запрос]  {"performer": id фрилансера}. После назначения меняется статус у отклика: status=1 (принято в работу)
-export const approveResponse = (id) => { //чей id в строке запросс???
-    return instanceAPI.patch(API_APPR_RESP + id, {"performer": id})
-}
-
 //Загрузить работу (Ф)
 //http://127.0.0.1:8000/api/respondingfreelancers/<id>/  [PATCH-запрос] form-data {"completed_order": файл}.
 // Меняется статус отклика: status=2 (на проверке)
-export const loadWork = (id, file) => { //чей id в строке запрос???
-    return instanceAPI.patch(API_APPR_RESP + id, {"completed_order": file})
+export const loadWork = (id, file) => {
+    return instanceAPI.patch(API_RESP + id + '/', {"completed_order": file})
 }
 
-//Принять работу (К) - http://127.0.0.1:8000/api/respondingfreelancers/<id>/
-//[PATCH-запрос] {"status": 3}.
-//Происходит перевод денег со счета компании на счет фрилансера,
-//статус заказа status=3 (принято), счетчик выполн-х заказов у фрилансера +1
-export const acceptWork = (id) => { //чей id в строке запрос???
-    return instanceAPI.patch(API_APPR_RESP + id, {"status": 3})
-}
-//Не принять работу (К) - http://127.0.0.1:8000/api/respondingfreelancers/<id>/
-// [PATCH-запрос] {"status": 4}
-export const declineWork = (id) => { //чей id в строке запрос???
-    return instanceAPI.patch(API_APPR_RESP + id, {"status": 4})
+//Не принять или принять работу (К) - http://127.0.0.1:8000/api/respondingfreelancers/<id>/
+// [PATCH-запрос] {"status": 4} {"status": 3}.
+export const changeRespStatus = (id, status) => {
+    return instanceAPI.patch(API_RESP + id + '/', {"status": status})
 }
 
 //Удалить отклик (Ф)  -  http://127.0.0.1:8000/api/respondingfreelancers/<id>/
 // [DELETE-запрос]
-export const deleteResponse = (id) => { //чей id в строке запрос???
-    return instanceAPI.delete(API_APPR_RESP + id)
+export const deleteResponse = (id) => {
+    return instanceAPI.delete(API_RESP + id + '/')
 }
 
