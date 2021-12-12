@@ -21,17 +21,23 @@ class FreelancerSerializer(serializers.ModelSerializer):
 
 
 class UploadImageFreelancerSerializer(serializers.ModelSerializer):
-
+    """Для загрузки аватара фрилансером"""
     class Meta:
         model = Freelancer
         fields = ('image',)
+        extra_kwargs = {'image': {
+            'write_only': True
+        }}
 
 
 class UploadImageCompanySerializer(serializers.ModelSerializer):
-
+    """Для загрузки аватара компанией"""
     class Meta:
         model = Company
         fields = ('image',)
+        extra_kwargs = {'image': {
+            'write_only': True
+        }}
 
 
 class CompanySerializer(serializers.ModelSerializer):
@@ -125,7 +131,7 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
     class Meta:
         model = RespondingFreelancers
         fields = ('id', 'id_freelancer', 'freelancer', 'order', 'order_title',
-                  'responding_date', 'status', 'completed_order')
+                  'responding_date', 'status')
     """Добавим логику взаимодействия фрилансера с компанией при обновлении отклика"""
     """Взаимодействие будет осуществляться посредством изменения статуса отклика"""
     def update(self, instance, validated_data):
@@ -167,3 +173,25 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
                 instance.order.save()
 
         return instance
+
+
+class UploadFileSerializer(serializers.ModelSerializer):
+    """Для загрузки файла работы фрилансером"""
+    class Meta:
+        model = RespondingFreelancers
+        fields = ['completed_order']
+        extra_kwargs = {'completed_order': {
+            'write_only': True,
+            'required': True
+        }}
+
+
+class DownloadFileSerializer(serializers.ModelSerializer):
+    """Для скачивания файла работы компанией"""
+    class Meta:
+        model = RespondingFreelancers
+        fields = ['completed_order']
+        extra_kwargs = {'completed_order': {
+            'read_only': True,
+            'required': True
+        }}

@@ -34,6 +34,11 @@ class FreelancerView(ModelViewSet):
 
 class UploadImageFreelancerView(ModelViewSet):
     """Для загрузки аватара фрилансером"""
+    queryset = Freelancer.objects.all()
+    serializer_class = UploadImageFreelancerSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    parser_classes = [MultiPartParser]
 
 
 class CompanyView(ModelViewSet):
@@ -46,6 +51,15 @@ class CompanyView(ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Company.objects.filter(user_id=user)
+
+
+class UploadImageCompanyView(ModelViewSet):
+    """Для загрузки аватара компанией"""
+    queryset = Company.objects.all()
+    serializer_class = UploadImageCompanySerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    parser_classes = [MultiPartParser]
 
 
 class UserView(ReadOnlyModelViewSet):
@@ -221,3 +235,21 @@ class RespondingFreelancersView(ModelViewSet):
 
         serializer.validated_data['freelancer'] = Freelancer.objects.get(user_id=self.request.user)
         serializer.save()
+
+
+class UploadFileView(ModelViewSet):
+    """Для загрузки файла работы фрилансером"""
+    queryset = RespondingFreelancers.objects.all()
+    serializer_class = UploadFileSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    parser_classes = [MultiPartParser]
+
+
+class DownloadFileView(ModelViewSet):
+    """Для скачивания файла работы компанией"""
+    queryset = RespondingFreelancers.objects.all()
+    serializer_class = DownloadFileSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+    parser_classes = [MultiPartParser]

@@ -13,6 +13,10 @@ router.register('orders', AllOrderView, basename='orders')  # Информаци
 router.register('order', OrderView, basename='order')  # Заказы компании
 router.register('register', UserRegisterView, basename='register')  # Регистрация
 router.register('respondingfreelancers', RespondingFreelancersView, basename='respondingfreelancers')  # Отклики
+router.register('uploadimagef', UploadImageFreelancerView, basename='uploadimagef')  # Загрузка аватара фрилансера
+router.register('uploadimagec', UploadImageCompanyView, basename='uploadimagec')  # Загрузка аватара фрилансера
+router.register('uploadfile', UploadFileView, basename='uploadfile')  # Загрузка файла работы фрилансером
+router.register('downloadfile', DownloadFileView, basename='downloadfile')  # Скачивание файла работы компанией
 
 
 urlpatterns = [
