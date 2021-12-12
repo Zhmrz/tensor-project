@@ -51,6 +51,7 @@ class CompanySerializer(serializers.ModelSerializer):
             'read_only': True
         }}
 
+    """Добавим логику пополнения счета"""
     def update(self, instance, validated_data):
         raise_errors_on_nested_writes('update', self, validated_data)
         info = model_meta.get_field_info(instance)
@@ -132,47 +133,6 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
         model = RespondingFreelancers
         fields = ('id', 'id_freelancer', 'freelancer', 'order', 'order_title',
                   'responding_date', 'status')
-    """Добавим логику взаимодействия фрилансера с компанией при обновлении отклика"""
-    """Взаимодействие будет осуществляться посредством изменения статуса отклика"""
-    def update(self, instance, validated_data):
-
-        raise_errors_on_nested_writes('update', self, validated_data)
-        info = model_meta.get_field_info(instance)
-        m2m_fields = []
-        for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
-            else:
-                setattr(instance, attr, value)
-
-        instance.save()
-
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
-
-        """Компания одобряет отклик"""
-        if validated_data.get("status", False) and validated_data["status"] == 1:
-            instance.order.status = 1  # Заказ занят и не будет появляться в поиске
-            instance.order.performer = instance.freelancer  # Назначается исполнитель заказа
-            instance.adoption_date = datetime.date.today()
-            instance.order.save()
-
-        """Компания принимает работу (осуществляется перевод денег)"""
-        if validated_data.get("status", False) and validated_data["status"] == 3:  # Если компания принимает работу (=меняет статус отклика на 3)
-            if instance.order.status != 2:  # Для предотвращения повторного перевода
-                freelancer = instance.freelancer  # Определяем фрилансера
-                company = instance.order.customer  # Определяем компанию
-                """Проведение транзакции"""
-                company.personal_account -= instance.order.price  # Списание со счета компании денежных средств в размере равном стоимости заказа
-                freelancer.personal_account += instance.order.price  # Пополнение счета фрилансера
-                freelancer.completed_orders += 1  # Увеличение счетчика выполненных заказов фрилансера
-                freelancer.save()
-                company.save()
-                instance.order.status = 2  # Статус заказа "закрыт"
-                instance.order.save()
-
-        return instance
 
 
 class UploadFileSerializer(serializers.ModelSerializer):

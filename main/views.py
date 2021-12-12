@@ -3,6 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.filters import SearchFilter
 from rest_framework.parsers import JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
@@ -10,6 +11,7 @@ from rest_framework.permissions import IsAuthenticated
 from .filters import OrderFilter
 from .serializers import *
 from rest_framework.authtoken.models import Token
+from django.core import serializers as ser
 
 
 def index(request):  # Возвращает index с React
@@ -93,7 +95,7 @@ class UserView(ReadOnlyModelViewSet):
 
 
 class AllFreelancerView(ReadOnlyModelViewSet):
-
+    """Инф-ция о всех фрилансерах"""
     queryset = Freelancer.objects.all()
     serializer_class = FreelancerSerializer
     permission_classes = [IsAuthenticated]
@@ -101,7 +103,7 @@ class AllFreelancerView(ReadOnlyModelViewSet):
 
 
 class AllCompanyView(ReadOnlyModelViewSet):
-
+    """Инф-ция о всех компаниях"""
     queryset = Company.objects.all()
     serializer_class = CompaniesSerializer
     permission_classes = [IsAuthenticated]
@@ -109,12 +111,13 @@ class AllCompanyView(ReadOnlyModelViewSet):
 
 
 class AllOrderView(ReadOnlyModelViewSet):
-
-    queryset = Order.objects.filter(status=0)
+    """Инф-ция о всех заказах (для страницы поиска заказов)"""
+    queryset = Order.objects.filter(status=0)  # Свободные заказы
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['title', 'description']  # Поиск в названии и описании заказа
     filterset_class = OrderFilter
 
     def list(self, request, *args, **kwargs):
@@ -138,7 +141,7 @@ class AllOrderView(ReadOnlyModelViewSet):
 
 
 class OrderView(ModelViewSet):
-
+    """Для работы с заказами"""
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
@@ -156,7 +159,7 @@ class OrderView(ModelViewSet):
 
 
 class UserRegisterView(ModelViewSet):
-
+    """Регистрация"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -185,21 +188,21 @@ class UserRegisterView(ModelViewSet):
 
 
 class UserLogin(ObtainAuthToken):
-
+    """Вход в систему"""
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data['user']
         token, created = Token.objects.get_or_create(user=user)
         if Freelancer.objects.filter(user_id=user).exists():
-            userData = Freelancer.objects.filter(user_id=user).values()
+            userData = FreelancerSerializer(Freelancer.objects.get(user_id=user)).data
         else:
-            userData = Company.objects.filter(user_id=user).values()
-        return Response({'token': token.key, 'userData': userData[0]})
+            userData = CompanySerializer(Company.objects.get(user_id=user)).data
+        return Response({'token': token.key, 'userData': userData})
 
 
 class RespondingFreelancersView(ModelViewSet):
-
+    """Работа с откликами"""
     queryset = RespondingFreelancers.objects.all()
     serializer_class = RespondingFreelancersSerializer
     permission_classes = [IsAuthenticated]
@@ -207,14 +210,14 @@ class RespondingFreelancersView(ModelViewSet):
     parser_classes = [MultiPartParser, JSONParser]
 
     def get_queryset(self):
-
+        """Фильтр по пользователю"""
         user = self.request.user
-        if Freelancer.objects.filter(user_id=user).exists():
+        if Freelancer.objects.filter(user_id=user).exists():  # Фрилансер получает свои отклики
             freelancer = Freelancer.objects.get(user_id=user)
             return RespondingFreelancers.objects.filter(freelancer=freelancer)
         else:
             company = Company.objects.get(user_id=user)
-            return RespondingFreelancers.objects.filter(order__customer=company)
+            return RespondingFreelancers.objects.filter(order__customer=company)  # Компания видит откликнувшихся на своих заказы
 
     def create(self, request, *args, **kwargs):
 
@@ -227,13 +230,49 @@ class RespondingFreelancersView(ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         else:
-            #headers = self.get(serializer.data)
             return Response({"Отклик уже существует"}, status=status.HTTP_400_BAD_REQUEST)
 
 
     def perform_create(self, serializer):
-
+        """Фрилансер при создании отклика указывается автоматически исходя из запроса (request.user)"""
         serializer.validated_data['freelancer'] = Freelancer.objects.get(user_id=self.request.user)
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        """Изменение статуса заказа при отказе фрилансера от работы"""
+        if instance.status == 1 or instance.status == "1":  # Если заказ был в работе
+            instance.order.performer = None  # Данный фрилансер больше не является исполнителем заказа
+            instance.order.status = 0
+            instance.order.save()
+        instance.delete()
+
+    """Добавим логику взаимодействия фрилансера с компанией при обновлении отклика"""
+    def perform_update(self, serializer):
+        """Взаимодействие будет осуществляться посредством изменения статуса отклика"""
+
+        """Компания одобряет отклик"""
+        if self.request.user == serializer.instance.order.customer and serializer.validated_data.get("status", False) \
+                and serializer.validated_data["status"] == 1:
+            serializer.instance.order.status = 1  # Заказ занят и не будет появляться в поиске
+            serializer.instance.order.performer = serializer.instance.freelancer  # Назначается исполнитель заказа
+            serializer.instance.adoption_date = datetime.date.today()
+            serializer.instance.order.save()
+
+        """Компания принимает работу (осуществляется перевод денег)"""
+        if self.request.user == serializer.instance.order.customer and serializer.validated_data.get("status", False) \
+                and serializer.validated_data["status"] == 3:  # Если компания принимает работу (=меняет статус отклика на 3)
+            if serializer.instance.order.status != 2:  # Для предотвращения повторного перевода
+                freelancer = serializer.instance.freelancer  # Определяем фрилансера
+                company = serializer.instance.order.customer  # Определяем компанию
+                """Проведение транзакции"""
+                company.personal_account -= serializer.instance.order.price  # Списание со счета компании денежных средств в размере равном стоимости заказа
+                freelancer.personal_account += serializer.instance.order.price  # Пополнение счета фрилансера
+                freelancer.completed_orders += 1  # Увеличение счетчика выполненных заказов фрилансера
+                freelancer.save()
+                company.save()
+                serializer.instance.order.status = 2  # Статус заказа "закрыт"
+                serializer.instance.order.save()
+
         serializer.save()
 
 
