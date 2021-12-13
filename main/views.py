@@ -301,21 +301,20 @@ class DownloadFileView(ModelViewSet):
 
 """Server sent events"""
 """Сервер отвечает при изменении статуса отклика либо изменении кол-ва откликов > фронт направляет запрос на API откликов"""
-def event_status(token):
+def event_status(user_id, user_type):
     """Проверка статуса откликов/их количества"""
-    token = token[6:]
-    user = Token.objects.get(key=token).user
+
     initial_statuses = []  # Статусы отклика на момент запроса (исходный список статусов)
     """Фильтрация откликов либо для фрилансера, либо для компании"""
-    if Freelancer.objects.filter(user_id=user).exists():
+    if user_type == 0 or user_type == "0":
         flag = True
-        freelancer = Freelancer.objects.get(user_id=user)
+        freelancer = Freelancer.objects.get(pk=user_id)
         respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
         for responding in respondings:
             initial_statuses.append(responding.status)
     else:
         flag = False
-        company = Company.objects.get(user_id=user)
+        company = Company.objects.get(pk=user_id)
         respondings = RespondingFreelancers.objects.filter(order__customer=company)
         for responding in respondings:
             initial_statuses.append(responding.status)
@@ -343,9 +342,8 @@ def event_status(token):
 
 
 class PostStreamView(View):
-    """Возвращает 1 при изменении статуса"""
-    def get(self, request):
-
-        response = StreamingHttpResponse(event_status(request.headers["Authorization"]))
+    """Возвращает 1 при изменении статуса отклика"""
+    def get(self, request, user_id, user_type):
+        response = StreamingHttpResponse(event_status(user_id, user_type))
         response['Content-Type'] = 'text/event-stream'
         return response
