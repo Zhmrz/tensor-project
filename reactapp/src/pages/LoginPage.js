@@ -24,34 +24,17 @@ import {
 } from "../store/userReducer";
 import {useDispatch, useSelector} from "react-redux";
 import {setUserError} from "../store/userReducer";
+import {defUserData, variants} from "../data/commonData";
 
 
 const emailRegex = new RegExp('[a-z0-9]+@[a-z]+\.[a-z]{2,3}');
 const urlRegex = new RegExp('[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)')
 const nameRegex = new RegExp('^[а-яА-ЯёЁ0-9a-zA-Z]+$')
 
-const variants = [
-    {id: 1, label: 'Типографика', name: 'typo', icon: <TextFieldsIcon />, active: <TextFieldsIcon />},
-    {id: 2, label: 'Программирование', name: 'dev', icon: <CodeIcon />, active: <CodeIcon />},
-    {id: 3, label: '3D-моделирование', name: 'model', icon: <ThreeDRotationIcon />, active: <ThreeDRotationIcon />},
-    {id: 4, label: 'Фотография', name: 'photo', icon: <PhotoCameraIcon />, active: <PhotoCameraIcon />},
-    {id: 5, label: 'Образование', name: 'edu', icon: <SchoolIcon />, active: <SchoolIcon />},
-    {id: 6, label: 'Графика', name: 'img', icon: <CreateIcon />, active: <CreateIcon />},
-]
-
-
 
 const LoginPage = () => {
     const dispatch = useDispatch()
-    const [userData, setUserData] = useState({
-        username: '', //email
-        password: '',
-        first_name: '',
-        last_name: '',
-        user_type: '0',
-        link_to_resume: '',
-        topics: []
-    })
+    const [userData, setUserData] = useState(defUserData)
 
     const error = useSelector(state => state.user.status.error)
     const successReg = useSelector(state => state.user.status.successReg)
@@ -71,15 +54,7 @@ const LoginPage = () => {
     }
 
     const changeHasAccount = (value) => {
-        setUserData({
-            username: '', //email
-            password: '',
-            first_name: '',
-            last_name: '',
-            user_type: '0',
-            link_to_resume: '',
-            topics: []
-        });
+        setUserData(defUserData);
         dispatch(regSuccess(false))
         dispatch(setHasAccount(value))
         dispatch(setUserError(false))
@@ -103,7 +78,7 @@ const LoginPage = () => {
                 password: userData.password,
             }))
         } else {
-            dispatch(registerUserThunkCreator(userData))
+            dispatch(registerUserThunkCreator({...userData, 'link': 'link_test'})) //проверка
         }
     }
 

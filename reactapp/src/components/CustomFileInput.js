@@ -1,39 +1,55 @@
 import React, {useState} from 'react';
 import {Box, Button, IconButton, Input} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
-import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
+import {setUserError} from "../store/userReducer";
+import {useDispatch} from "react-redux";
+import styled from "styled-components";
 
-const CustomFileInput = ({label, defVal, cancel, approve}) => {
-    const [value, setValue] = useState(defVal)
-    let file
+
+const FileInput  = styled.input`
+    background-color: white;
+    color: black;
+    height: 20px;
+`
+
+
+const CustomFileInput = ({mainLabel, action, actionLabel, withClear, formData1}) => {
+    let formData = new FormData()
+    const dispatch = useDispatch()
+    const [loaded, setLoaded] = useState(false)
+    const cancel = (e) => {
+        e.preventDefault()
+        formData.delete('file')
+        setLoaded(false)
+    }
+    console.log(formData)
     return (
         <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: '8px 16px'}}>
+            {withClear &&
             <Box>
                 <Box sx={{display: 'inline-block', mr: '10px'}}>
-                    <label htmlFor="contained-button-file">
-                        <Button variant="contained" component="span">
-                            {label}
-                        </Button>
-                    </label>
-                    <Input
-                        inputProps={{accept: "image/*"}}
-                        id="contained-button-file"
+                    <input
                         type="file"
-                        onChange={(e, value) => file = e.target.files[0]}
-                        sx={{display: 'none'}}
+                        onChange={(e, value) => {
+                            dispatch(setUserError(false))
+                            console.log(e.target.files[0])
+                            formData.set('file', e.target.files[0])
+                            setLoaded(true)
+                        }}
                     />
                 </Box>
-                <span>
-                    {defVal === file ? defVal : file}
-                </span>
+
             </Box>
-            <Box sx={{display: "flex", justifyContent: 'space-between', alignItems: "center", width: '60px', ml: '10px'}}>
-                <IconButton onClick={(e) => cancel(e)}>
-                    <ClearIcon sx={{fontSize: '24px'}}/>
-                </IconButton>
-                <IconButton onClick={(e) => approve(e, file)}>
-                    <CheckIcon sx={{fontSize: '24px'}}/>
-                </IconButton>
+            }
+            <Box sx={{display: "flex", justifyContent: 'flex-end', alignItems: "center", width: '40%', mx: '10px'}}>
+                {withClear &&
+                <Button variant="outlined" startIcon={<DeleteIcon sx={{fontSize: '24px', mr: '10px'}}/>} onClick={(e) => cancel(e)}>
+                    Очистить
+                </Button>}
+                <Button variant="outlined" startIcon={<SendIcon sx={{fontSize: '24px'}}/>} onClick={(e) => action(e, formData)}>
+                    {actionLabel}
+                </Button>
             </Box>
         </Box>
     );

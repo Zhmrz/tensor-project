@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
     Box, Button, Checkbox, FormControlLabel, FormGroup, FormLabel,
     IconButton, Input, List, ListItem, ListItemText,
@@ -16,33 +16,19 @@ import Collapse from "@mui/material/Collapse";
 import CustomForm from "./CustomForm";
 import {useDispatch, useSelector} from "react-redux";
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import TextFieldsIcon from "@mui/icons-material/TextFields";
-import CodeIcon from "@mui/icons-material/Code";
-import ThreeDRotationIcon from "@mui/icons-material/ThreeDRotation";
-import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
-import SchoolIcon from "@mui/icons-material/School";
-import CreateIcon from "@mui/icons-material/Create";
-import {changeCompanyData, changeUserData} from "../store/userReducer";
-import ClearIcon from '@mui/icons-material/Clear';
-import CheckIcon from "@mui/icons-material/Check";
+import {changeCompanyData, changePhoto, changeUserData} from "../store/userReducer";
 import CustomCheckbox from "./CustomCheckbox";
 import CustomFileInput from "./CustomFileInput";
+import {compSections, userSections, variants} from "../data/commonData";
 
 
-const variants = [
-    {id: 1, label: 'Типографика', name: 'typo', icon: <TextFieldsIcon />, active: <TextFieldsIcon />},
-    {id: 2, label: 'Программирование', name: 'dev', icon: <CodeIcon />, active: <CodeIcon />},
-    {id: 3, label: '3D-моделирование', name: 'model', icon: <ThreeDRotationIcon />, active: <ThreeDRotationIcon />},
-    {id: 4, label: 'Фотография', name: 'photo', icon: <PhotoCameraIcon />, active: <PhotoCameraIcon />},
-    {id: 5, label: 'Образование', name: 'edu', icon: <SchoolIcon />, active: <SchoolIcon />},
-    {id: 6, label: 'Графика', name: 'img', icon: <CreateIcon />, active: <CreateIcon />},
-]
-
-const EditUserDataModal = ({visible, setVisible, type}) => {
-    const dispatch = useDispatch()
-    const userData = useSelector(state => state.user.me)
-    const [newUserData, setNewUserData] = useState(userData);
-
+const EditUserDataModal = ({visible, setVisible, type, userData}) => {
+    const dispatch = useDispatch();
+    //const [newUserData, setNewUserData] = useState(userData);
+    const [newUserData, setNewUserData] = useState(userData)
+    useEffect(() => {
+        setNewUserData(userData)
+    }, [userData])
     const [activeChanges, setActiveChanges] = useState({
         first_name: false,
         last_name: false,
@@ -54,12 +40,7 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
     const error = useSelector(state => state.user.status.error)
     const success = useSelector(state => state.user.status.successUpd)
 
-    const sections = [
-        {id: 1, label: type ? 'Название' : 'Имя', title: 'Изменить имя пользователя', field: 'first_name', type: 'text'},
-        (!type) && {id: 2, label: 'Фамилия', title: 'Изменить фамилию пользователя', field: 'last_name', type: 'text'},
-        {id: 3, label: 'Описание', title: 'Изменить описание пользователя', field: 'description', type: 'text'},
-        {id: 4, label: 'Ссылка', title: 'Изменить ссылку на сайт', field: 'link_to_resume', type: 'url'},
-    ]
+    const sections = type ? compSections : userSections
     const [open, setOpen] = useState(0)
 
     const sendForm = (e) => {
@@ -69,6 +50,10 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
         } else {
             dispatch(changeUserData(userData.id, newUserData))
         }
+    }
+    const changeUserPhoto = (e, data) => {
+        e.preventDefault()
+        dispatch(changePhoto(userData.user_type, userData.id, data))
     }
     return (
         <Modal
@@ -96,9 +81,9 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
                                 </ListItemIcon>
                                 <ListItemText primary={item.title}/>
                                 {activeChanges[item.field] &&
-                                    <ListItemIcon>
-                                        <DoneOutlineIcon sx={{color: 'success.main'}}/>
-                                    </ListItemIcon>
+                                <ListItemIcon>
+                                    <DoneOutlineIcon sx={{color: 'success.main'}}/>
+                                </ListItemIcon>
                                 }
                                 {open === item.id ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton >
@@ -159,8 +144,22 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
                         margin="dense"
                         onClick={sendForm}
                     />
-                    {error && <Typography sx={{color: 'red', textAlign: 'center'}}>Ошибка при обновлении данных пользователя!</Typography>}
-                    {success && <Typography sx={{color: 'success.main', textAlign: 'center'}}>Данные успешно обновлены!</Typography>}
+                    <Box sx={{p: '0', mt: '10px'}}>
+                        <Typography variant="h2" component="h2" sx={{fontSize: '24px'}}>
+                            Изменение фотографии профиля
+                        </Typography>
+                        <CustomFileInput
+                            mainLabel='Загрузить файл'
+                            actionLabel='Отправить'
+                            withClear={true}
+                            action={changeUserPhoto}
+                            formData={new FormData()}
+                        />
+                    </Box>
+                    <Box sx={{p: '0', mt: '10px'}}>
+                        {error && <Typography sx={{color: 'red', textAlign: 'center'}}>Ошибка при обновлении данных пользователя!</Typography>}
+                        {success && <Typography sx={{color: 'success.main', textAlign: 'center'}}>Данные успешно обновлены!</Typography>}
+                    </Box>
                 </Box>
             </Box>
         </Modal>
