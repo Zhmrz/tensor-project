@@ -18,10 +18,10 @@ router.register('uploadimagec', UploadImageCompanyView, basename='uploadimagec')
 router.register('uploadfile', UploadFileView, basename='uploadfile')  # Загрузка файла работы фрилансером
 router.register('downloadfile', DownloadFileView, basename='downloadfile')  # Скачивание файла работы компанией
 
-
 urlpatterns = [
     path('', index, name='home'),  # Фронт
     path('api/', include(router.urls)),  # urls API
     path('auth/', UserLogin.as_view()),  # url аутентификации
+    path('stream/', PostStreamView.as_view()),
     re_path(r'^(?:.*)/?$', index, name='home'),  # Перенаправление на фронт (иначе Django ловит url и не находит его)
 ]

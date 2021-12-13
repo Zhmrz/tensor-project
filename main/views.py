@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views import View
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -11,6 +12,8 @@ from rest_framework.permissions import IsAuthenticated
 from .filters import OrderFilter
 from .serializers import *
 from rest_framework.authtoken.models import Token
+from django.http import StreamingHttpResponse
+import time
 
 
 def index(request):  # Возвращает index с React
@@ -294,3 +297,55 @@ class DownloadFileView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     parser_classes = [MultiPartParser]
+
+
+"""Server sent events"""
+"""Сервер отвечает при изменении статуса отклика либо изменении кол-ва откликов > фронт направляет запрос на API откликов"""
+def event_status(token):
+    """Проверка статуса откликов/их количества"""
+    token = token[6:]
+    user = Token.objects.get(key=token).user
+    initial_statuses = []  # Статусы отклика на момент запроса (исходный список статусов)
+    """Фильтрация откликов либо для фрилансера, либо для компании"""
+    if Freelancer.objects.filter(user_id=user).exists():
+        flag = True
+        freelancer = Freelancer.objects.get(user_id=user)
+        respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
+        for responding in respondings:
+            initial_statuses.append(responding.status)
+    else:
+        flag = False
+        company = Company.objects.get(user_id=user)
+        respondings = RespondingFreelancers.objects.filter(order__customer=company)
+        for responding in respondings:
+            initial_statuses.append(responding.status)
+
+    while True:
+
+        current_statuses = []  # Текущий список статусов (обновляется каждую сек.)
+
+        if flag:
+            respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
+        else:
+            respondings = RespondingFreelancers.objects.filter(order__customer=company)
+
+        for responding in respondings:
+            current_statuses.append(responding.status)
+
+        if not initial_statuses == current_statuses:  # Если изменилось кол-во статусов(=откликов)
+            yield 1
+
+        for i in range(len(initial_statuses)):  # Иначе сравниваем каждый статус
+            if initial_statuses[i] - current_statuses[i] != 0:
+                yield 1
+
+        time.sleep(1)
+
+
+class PostStreamView(View):
+    """Возвращает 1 при изменении статуса"""
+    def get(self, request):
+
+        response = StreamingHttpResponse(event_status(request.headers["Authorization"]))
+        response['Content-Type'] = 'text/event-stream'
+        return response
