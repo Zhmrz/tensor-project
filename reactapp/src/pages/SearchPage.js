@@ -80,7 +80,7 @@ const SearchPage = () => {
             start_date: dateLims[0] || undefined,
             end_date: dateLims[1] || undefined,
             topic: topicString || undefined,
-            query: query || undefined,
+            search: query || undefined,
         }
         dispatch(getTasksThunkCreator(params))
         //response = ('id', 'customer', 'title', 'description', 'price','deadline', 'status', 'performer', 'publication_date', 'topic')

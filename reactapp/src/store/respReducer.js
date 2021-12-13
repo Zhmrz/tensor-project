@@ -2,9 +2,9 @@ import {
     approveResponse,
     changeRespStatus,
     createResponse,
-    deleteResponse,
+    deleteResponse, downloadFile,
     getResponses,
-    loadWork
+    loadWork, uploadFile
 } from "../api/respAPI";
 
 const LOAD_RESP = 'LOAD_RESP'
@@ -140,7 +140,7 @@ export const approveRespThunkCreator = (id, userId) => {
     }
 }
 */
-
+/*
 export const loadFileRespThunkCreator = (id, file) => {
     return (dispatch) => {
         dispatch(setLoading(true))
@@ -152,6 +152,41 @@ export const loadFileRespThunkCreator = (id, file) => {
             .catch(error => {
                 dispatch(setRespError(true))
                 console.log('error on load operations with resp')
+            })
+        dispatch(setLoading(false))
+    }
+}*/
+
+export const uploadFileThunkCreator = (id, data) => {
+    return (dispatch) => {
+        dispatch(setLoading(true))
+        uploadFile(id, data)
+            .then(response => {
+                console.log('работа отправлена')
+                dispatch(changeRespStatusThunkCreator(id, 2))
+                dispatch(getRespThunkCreator()) //получаем заново все отклики
+            })
+            .catch(error => {
+                dispatch(setRespError(true))
+                console.log('error on load operations with resp')
+            })
+        dispatch(setLoading(false))
+    }
+}
+
+export const downloadFileThunkCreator = (id) => {
+    return (dispatch) => {
+        dispatch(setLoading(true))
+        downloadFile(id)
+            .then(response => {
+                const url = response.completed_order
+                console.log(url)
+                window.open(url)
+                console.log('работа скачана')
+            })
+            .catch(error => {
+                dispatch(setRespError(true))
+                console.log('error on download operations with resp')
             })
         dispatch(setLoading(false))
     }

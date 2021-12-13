@@ -4,7 +4,7 @@ import {
     getFreelancerPage,
     getCompanyPage,
     registerUser,
-    changeFreelancerInfo, changeCompanyInfo
+    changeFreelancerInfo, changeCompanyInfo, uploadPhoto
 } from "../api/userAPI";
 
 const defaultState = {
@@ -36,8 +36,9 @@ const defaultState = {
         error: false,
         hasAccount: true,
         successReg: false,
-        successAuth: false, //false!!!
-        successUpd: false,
+        //successAuth: false, //false!!!
+        successUpd: false, //0 - не обработано, 1 - успех,  2 - ошибка
+        successPhoto: false, //0 - не обработано, 1 - успех,  2 - ошибка
     }
 };
 
@@ -51,6 +52,7 @@ const AUTH_SUCCESS = 'AUTH_SUCCESS'
 const PAGE_EXIST = 'PAGE_EXIST'
 const SET_ME = 'SET_ME'
 const UPDATE_SUCCESS = 'UPDATE_SUCCESS'
+const PHOTO_SUCCESS = 'PHOTO_SUCCESS'
 
 export const userReducer = (state = defaultState, action) => {
     switch(action.type){
@@ -70,6 +72,8 @@ export const userReducer = (state = defaultState, action) => {
             return {...state, status: {...state.status, successAuth: action.payload}}
         case UPDATE_SUCCESS:
             return {...state, status: {...state.status, successUpd: action.payload}}
+        case PHOTO_SUCCESS:
+            return {...state, status: {...state.status, successPhoto: action.payload}}
         case PAGE_EXIST:
             return {...state, current: {...state.current, currentPageExist: action.payload}}
         case SET_ME:
@@ -85,8 +89,9 @@ export const loadingData = (value) => ({type: LOADING, payload: value})
 export const setUserError = (value) => ({type: ERROR, payload: value})
 export const setHasAccount = (value) => ({type: HAS_ACCOUNT, payload: value})
 export const regSuccess = (value) => ({type: REG_SUCCESS, payload: value})
-export const authSuccess = (value) => ({type: AUTH_SUCCESS, payload: value})
+//export const authSuccess = (value) => ({type: AUTH_SUCCESS, payload: value})
 export const updSuccess = (value) => ({type: UPDATE_SUCCESS, payload: value})
+//export const photoSuccess = (value) => ({type: PHOTO_SUCCESS, payload: value})
 export const pageExist = (value) => ({type: PAGE_EXIST, payload: value})
 export const setMe = (value) => ({type: SET_ME, payload: value})
 
@@ -102,7 +107,8 @@ export const getMe = () => {
                 const user = response.data
                 console.log(user)
                 dispatch(setMe(user))
-                dispatch(authSuccess(true))
+                localStorage.setItem('auth', true)
+                //dispatch(authSuccess(true))
             })
             .catch(error => {
                 dispatch(setUserError(true))
@@ -122,15 +128,15 @@ export const authUserThunkCreator = (params) => {
             .then(response => {
                 //с токеном работа
                 console.log("автоматическая авторизация")
-                console.log(response)
                 const user = response.data.userData
                 localStorage.setItem('token', response.data.token)
                 dispatch(setUser(user))
                 console.log('authUser')
                 console.log(response)
                 dispatch(setMe(user))
-                dispatch(authSuccess(true))
-                dispatch(pageExist(true))
+                localStorage.setItem('auth', true)
+                //dispatch(authSuccess(true))
+                //dispatch(pageExist(true))
             })
             .catch(error => {
                 dispatch(setUserError(true))
@@ -164,10 +170,11 @@ export const getUserData = (id) => {
             .then(response => {
                 console.log('получить данные пользователя')
                 console.log(response)
-                dispatch(pageExist(true))
                 dispatch(setUser(response.data))
+                dispatch(pageExist(true))
             })
             .catch(error => {
+                console.log(error)
                 dispatch(pageExist(false))
             })
         dispatch(loadingData(false))
@@ -181,10 +188,11 @@ export const getCompanyData = (id) => {
             .then(response => {
                 console.log('получить данные компании')
                 console.log(response)
-                dispatch(pageExist(true))
                 dispatch(setUser(response.data))
+                dispatch(pageExist(true))
             })
             .catch(error => {
+                console.log(error)
                 dispatch(pageExist(false))
             })
         dispatch(loadingData(false))
@@ -198,6 +206,7 @@ export const changeUserData = (id, data) => {
             .then(response => {
                 console.log('обновить пользовательские данные')
                 console.log(response)
+                dispatch(getMe())
                 dispatch(updSuccess(true))
             })
             .catch(error => {
@@ -214,9 +223,28 @@ export const changeCompanyData = (id, data) => {
             .then(response => {
                 console.log('обновить данные компании')
                 console.log(response)
+                dispatch(getMe())
                 dispatch(updSuccess(true))
             })
             .catch(error => {
+                dispatch(setUserError(true))
+            })
+        dispatch(loadingData(false))
+    }
+}
+
+export const changePhoto = (type, id, data) => {
+    return (dispatch) => {
+        dispatch(loadingData(true))
+        uploadPhoto(type, id, data)
+            .then(response => {
+                console.log('фото загружено')
+                console.log(response)
+                dispatch(updSuccess(true))
+                //dispatch(photoSuccess(true))
+            })
+            .catch(error => {
+                console.log('ошибка при загрузке фото')
                 dispatch(setUserError(true))
             })
         dispatch(loadingData(false))

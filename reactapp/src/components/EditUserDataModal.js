@@ -22,11 +22,12 @@ import ThreeDRotationIcon from "@mui/icons-material/ThreeDRotation";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import SchoolIcon from "@mui/icons-material/School";
 import CreateIcon from "@mui/icons-material/Create";
-import {changeCompanyData, changeUserData} from "../store/userReducer";
+import {changeCompanyData, changePhoto, changeUserData} from "../store/userReducer";
 import ClearIcon from '@mui/icons-material/Clear';
 import CheckIcon from "@mui/icons-material/Check";
 import CustomCheckbox from "./CustomCheckbox";
 import CustomFileInput from "./CustomFileInput";
+
 
 
 const variants = [
@@ -39,8 +40,10 @@ const variants = [
 ]
 
 const EditUserDataModal = ({visible, setVisible, type}) => {
+
     const dispatch = useDispatch()
     const userData = useSelector(state => state.user.me)
+    console.log(userData)
     const [newUserData, setNewUserData] = useState(userData);
 
     const [activeChanges, setActiveChanges] = useState({
@@ -56,7 +59,7 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
 
     const sections = [
         {id: 1, label: type ? 'Название' : 'Имя', title: 'Изменить имя пользователя', field: 'first_name', type: 'text'},
-        (!type) && {id: 2, label: 'Фамилия', title: 'Изменить фамилию пользователя', field: 'last_name', type: 'text'},
+        {id: 2, label: 'Фамилия', title: 'Изменить фамилию пользователя', field: 'last_name', type: 'text'},
         {id: 3, label: 'Описание', title: 'Изменить описание пользователя', field: 'description', type: 'text'},
         {id: 4, label: 'Ссылка', title: 'Изменить ссылку на сайт', field: 'link_to_resume', type: 'url'},
     ]
@@ -69,6 +72,10 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
         } else {
             dispatch(changeUserData(userData.id, newUserData))
         }
+    }
+    const changeUserPhoto = (e, data) => {
+        e.preventDefault()
+        dispatch(changePhoto(userData.user_type, userData.id, data))
     }
     return (
         <Modal
@@ -159,8 +166,22 @@ const EditUserDataModal = ({visible, setVisible, type}) => {
                         margin="dense"
                         onClick={sendForm}
                     />
-                    {error && <Typography sx={{color: 'red', textAlign: 'center'}}>Ошибка при обновлении данных пользователя!</Typography>}
-                    {success && <Typography sx={{color: 'success.main', textAlign: 'center'}}>Данные успешно обновлены!</Typography>}
+                    <Box sx={{p: '0', mt: '10px'}}>
+                        <Typography variant="h2" component="h2" sx={{fontSize: '24px'}}>
+                            Изменение фотографии профиля
+                        </Typography>
+                        <CustomFileInput
+                            mainLabel='Загрузить файл'
+                            actionLabel='Отправить'
+                            withClear={true}
+                            action={changeUserPhoto}
+                            formData={new FormData()}
+                        />
+                    </Box>
+                    <Box sx={{p: '0', mt: '10px'}}>
+                        {error && <Typography sx={{color: 'red', textAlign: 'center'}}>Ошибка при обновлении данных пользователя!</Typography>}
+                        {success && <Typography sx={{color: 'success.main', textAlign: 'center'}}>Данные успешно обновлены!</Typography>}
+                    </Box>
                 </Box>
             </Box>
         </Modal>

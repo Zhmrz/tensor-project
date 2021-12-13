@@ -67,7 +67,7 @@ const InfoCard = ({item, liked, setLiked, row, column}) => {
             </CardActions>
             <CardContent sx={{ height: "20%" }}>
                 <Typography variant="body2" color="text.secondary">
-                    {item.desc || 'Пользователь не указал о себе никакой информации. Подозрительно -_-'}
+                    {item.description || 'Пользователь не указал о себе никакой информации. Подозрительно -_-'}
                 </Typography>
             </CardContent>
         </Card>

@@ -9,6 +9,10 @@ const FREELANCER_PAGE = '/api/freelancer/'
 const COMPANY_PAGE = '/api/company/'
 //получить личную инф-цию компании   [POST-запрос]
 const USER = '/api/user/'
+//Загрузить фото (фрилансер) PATCH-запрос
+const PHOTO_FREE = '/api/uploadimagef/'
+// Загрузить фото (компания) PATCH-запрос
+const PHOTO_COMP = '/api/uploadimagec/'
 
 export const authUser = (params) => {
     return instanceAPI.post(API_AUTH, params)
@@ -31,13 +35,25 @@ export const changeFreelancerInfo = (id, data) => {
 }
 
 export const changeCompanyInfo = (id, data) => {
-    return instanceAPI.put(COMPANY_PAGE + id + '/', data, {
-        headers: {
-            'Content-Type': 'multipart/form-data'
-        }
-    })
+    return instanceAPI.put(COMPANY_PAGE + id + '/', data)
 }
 
 export const getMyData = () => {
     return instanceAPI.get(USER)
+}
+
+//Загрузить фото (фрилансер)  -  http://127.0.0.1:8000/api/uploadimagef/<id фрилансера>/   PATCH-запрос
+// Загрузить фото (компания)  -  http://127.0.0.1:8000/api/uploadimagec/<id компании>/   PATCH-запрос
+export const uploadPhoto = (type, id, data) => {
+    if(type){
+        return instanceAPI.patch(PHOTO_COMP + id + '/', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }})
+    } else {
+        return instanceAPI.patch(PHOTO_FREE + id + '/', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }})
+    }
 }

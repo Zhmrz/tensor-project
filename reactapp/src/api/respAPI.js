@@ -1,7 +1,9 @@
 import instanceAPI from "./API";
 
 const API_RESP = 'api/respondingfreelancers/'
-const API_APPR_RESP = 'api/order/'
+const API_UPLOAD_FREE = '/api/uploadfile/'
+const API_UPLOAD_COMP = '/api/downloadfile/'
+
 ///respondingfreelancers/   - [GET-запрос]  получить данные об откликах (фрилансер получает все свои отклики, компания - отклики на свои заказы)
 // response = ('id_freelancer', 'freelancer', 'order', 'order_title', ''responding_date', 'status')
 //где freelancer - имя и фамилия фрилансера, order - id заказа, order_title - название заказа, status - false - откликнулся, true - в работе
@@ -38,3 +40,14 @@ export const deleteResponse = (id) => {
     return instanceAPI.delete(API_RESP + id + '/')
 }
 
+//Загрузить работу (фрилансер)
+// http://127.0.0.1:8000/api/uploadfile/<id отклика>/   PATCH-запрос
+export const uploadFile = (id, data) => {
+    return instanceAPI.patch(API_UPLOAD_FREE + id + '/', data)
+}
+
+//Скачать работу (компания)    -
+// http://127.0.0.1:8000/api/downloadfile/<id отклика>/   GET-запрос  respone={"completed_order": <url файла>}
+export const downloadFile = (id) => {
+    return instanceAPI.get(API_UPLOAD_COMP + id + '/')
+}

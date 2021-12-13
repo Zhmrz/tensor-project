@@ -22,20 +22,24 @@ class FreelancerSerializer(serializers.ModelSerializer):
 
 class UploadImageFreelancerSerializer(serializers.ModelSerializer):
     """Для загрузки аватара фрилансером"""
+    file = serializers.ImageField(source='image')
+
     class Meta:
         model = Freelancer
-        fields = ('image',)
-        extra_kwargs = {'image': {
+        fields = ('file',)
+        extra_kwargs = {'file': {
             'write_only': True
         }}
 
 
 class UploadImageCompanySerializer(serializers.ModelSerializer):
     """Для загрузки аватара компанией"""
+    file = serializers.ImageField(source='image')
+
     class Meta:
         model = Company
-        fields = ('image',)
-        extra_kwargs = {'image': {
+        fields = ('file',)
+        extra_kwargs = {'file': {
             'write_only': True
         }}
 
@@ -137,6 +141,7 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
 
 class UploadFileSerializer(serializers.ModelSerializer):
     """Для загрузки файла работы фрилансером"""
+
     class Meta:
         model = RespondingFreelancers
         fields = ['completed_order']
@@ -148,6 +153,7 @@ class UploadFileSerializer(serializers.ModelSerializer):
 
 class DownloadFileSerializer(serializers.ModelSerializer):
     """Для скачивания файла работы компанией"""
+
     class Meta:
         model = RespondingFreelancers
         fields = ['completed_order']

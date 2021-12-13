@@ -10,6 +10,7 @@ const TaskModal = ({item, visibleTask, setVisibleTask}) => {
     const task = item ? item : {id: 0, title: 'No name', description: 'No description', price: 0, deadline: undefined, status: 'active', publication_date: ''}
     const respSuccess = useSelector(state => state.resp.respCreated)
     const respError = useSelector(state => state.resp.respError)
+    const userType = useSelector(state => state.user.me.user_type)
     const onClose = () => {
         dispatch(setRespCreated(false))
         dispatch(setRespError(false))
@@ -24,12 +25,9 @@ const TaskModal = ({item, visibleTask, setVisibleTask}) => {
             sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}
         >
             <Box sx={{width: '50%', backgroundColor: 'white', p: '20px'}}>
-                <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                     <Typography variant="h2" component="h2">
                         Информация о заказе № {task.id}
-                    </Typography>
-                    <Typography variant="p" component="">
-                        Статус: {task.status}
                     </Typography>
                 </Box>
                 <Typography variant="p" component="p">
@@ -60,9 +58,10 @@ const TaskModal = ({item, visibleTask, setVisibleTask}) => {
                     {task.deadline}
                 </Typography>
                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2}}>
+                    {!userType &&
                     <Button variant="outlined" startIcon={<PanToolIcon sx={{fontSize: '36px', mr: 2}}/>} onClick={() => dispatch(createRespThunkCreator(item.id))}>
                         Откликнуться
-                    </Button>
+                    </Button>}
                     <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {respSuccess && <Typography sx={{color: 'green'}}>Отклик успешно зарегистрирован!</Typography>}
                         {respError && <Typography sx={{color: 'red'}}>Ошибка - отклик уже создан!</Typography>}

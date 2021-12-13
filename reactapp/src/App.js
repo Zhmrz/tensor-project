@@ -17,7 +17,7 @@ import SearchPage from "./pages/SearchPage";
 import UserPage from "./pages/UserPage";
 import {Navigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {getMe, resetUserData} from "./store/userReducer";
+import {getMe, loadingData, resetUserData} from "./store/userReducer";
 import {Box} from "@mui/material";
 
 const AppWrapper = styled.div`
@@ -74,30 +74,31 @@ const PageWrapper = styled.div`
 
 function App() {
     const dispatch = useDispatch()
+    const isLoading = useSelector(state => state.user.status.isLoading)
     const token = localStorage.getItem('token')
+    const successAuth = localStorage.getItem('auth')
     useEffect(() => {
         if(token){
-            dispatch(getMe(token))
+            dispatch(getMe())
         }
     }, [])
     const id = useSelector(state => state.user.me.id)
-    console.log("App"+id)
-    console.log(useSelector(state => state.user.me))
     const type = useSelector(state => state.user.me.user_type)
-    const isLoading = useSelector(state => state.user.status.isLoading)
-    const successAuth = useSelector(state => state.user.status.successAuth)
+
+    //const successAuth = useSelector(state => state.user.status.successAuth)
     const logout = () => {
         dispatch(resetUserData())
+        localStorage.removeItem('auth')
         localStorage.removeItem('token')
     }
-
+    console.log(successAuth)
 
 
     return (
       <AppWrapper>
           {isLoading ?
               <Box sx={{display: "flex", justifyContent: 'center', alignItems: 'center'}}>
-                  <CircularProgress color={"primary.main"}/>
+                  <CircularProgress />
               </Box>
           :
               <>
@@ -146,10 +147,10 @@ function App() {
                   <Routes>
                   <Route exact path="/" element={<Main />}/>
                   <Route exact path="/help" element={<Help />}/>
-                  <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={(type ? '/company/' : '/freelancer/') + id} replace={true}/>}/>
+                  <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={(type ? '/company/' : '/freelancer/') + id + '/'} replace={true}/>}/>
                   <Route path="/freelancer/:id" element={successAuth ? <UserPage type={0}/> : <Navigate to="/login" replace={true}/>} />
                   <Route path="/company/:id" element={successAuth ? <UserPage type={1}/> : <Navigate to="/login" replace={true}/>} />
-                  <Route path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
+                  <Route exact path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
                   <Route path="*" element={<NotFound />}/>
                   </Routes>
                   </PageWrapper>

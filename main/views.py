@@ -11,7 +11,6 @@ from rest_framework.permissions import IsAuthenticated
 from .filters import OrderFilter
 from .serializers import *
 from rest_framework.authtoken.models import Token
-from django.core import serializers as ser
 
 
 def index(request):  # Возвращает index с React
@@ -196,8 +195,10 @@ class UserLogin(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         if Freelancer.objects.filter(user_id=user).exists():
             userData = FreelancerSerializer(Freelancer.objects.get(user_id=user)).data
+            userData["user_type"] = 0
         else:
             userData = CompanySerializer(Company.objects.get(user_id=user)).data
+            userData["user_type"] = 1
         return Response({'token': token.key, 'userData': userData})
 
 
@@ -256,6 +257,7 @@ class RespondingFreelancersView(ModelViewSet):
             serializer.instance.order.status = 1  # Заказ занят и не будет появляться в поиске
             serializer.instance.order.performer = serializer.instance.freelancer  # Назначается исполнитель заказа
             serializer.instance.adoption_date = datetime.date.today()
+            serializer.instance.save()  # Проверить
             serializer.instance.order.save()
 
         """Компания принимает работу (осуществляется перевод денег)"""

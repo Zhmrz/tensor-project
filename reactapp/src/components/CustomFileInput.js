@@ -1,39 +1,52 @@
 import React, {useState} from 'react';
 import {Box, Button, IconButton, Input} from "@mui/material";
-import ClearIcon from "@mui/icons-material/Clear";
-import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
+import {setUserError} from "../store/userReducer";
+import {useDispatch} from "react-redux";
 
-const CustomFileInput = ({label, defVal, cancel, approve}) => {
-    const [value, setValue] = useState(defVal)
-    let file
+const CustomFileInput = ({mainLabel, action, actionLabel, withClear, formData}) => {
+    const dispatch = useDispatch()
+    let file = 0
+    const cancel = (e) => {
+        e.preventDefault()
+        formData.delete('file')
+    }
     return (
-        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: '8px 16px'}}>
+        <Box sx={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', p: '8px 16px'}}>
+            {withClear &&
             <Box>
                 <Box sx={{display: 'inline-block', mr: '10px'}}>
                     <label htmlFor="contained-button-file">
                         <Button variant="contained" component="span">
-                            {label}
+                            {mainLabel}
                         </Button>
                     </label>
                     <Input
                         inputProps={{accept: "image/*"}}
                         id="contained-button-file"
                         type="file"
-                        onChange={(e, value) => file = e.target.files[0]}
+                        onChange={(e, value) => {
+                            dispatch(setUserError(false))
+                            formData.set('file', e.target.files[0])
+                            file = 1
+                        }}
                         sx={{display: 'none'}}
                     />
                 </Box>
                 <span>
-                    {defVal === file ? defVal : file}
+                    {file ? 'Файл загружен!' : 'Файл не загружен!'}
                 </span>
             </Box>
-            <Box sx={{display: "flex", justifyContent: 'space-between', alignItems: "center", width: '60px', ml: '10px'}}>
-                <IconButton onClick={(e) => cancel(e)}>
-                    <ClearIcon sx={{fontSize: '24px'}}/>
-                </IconButton>
-                <IconButton onClick={(e) => approve(e, file)}>
-                    <CheckIcon sx={{fontSize: '24px'}}/>
-                </IconButton>
+            }
+            <Box sx={{display: "flex", justifyContent: 'space-between', alignItems: "center", width: '50%', ml: '10px'}}>
+                {withClear &&
+                <Button variant="outlined" startIcon={<DeleteIcon sx={{fontSize: '24px'}}/>} onClick={(e) => cancel(e)}>
+                    Очистить
+                </Button>}
+                <Button variant="outlined" startIcon={<SendIcon sx={{fontSize: '24px'}}/>} onClick={(e) => action(e, formData)}>
+                    {actionLabel}
+                </Button>
             </Box>
         </Box>
     );
