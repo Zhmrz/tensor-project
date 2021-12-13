@@ -3,18 +3,10 @@ import styled from "styled-components";
 import {Box, Button, Card, Paper, useMediaQuery, useTheme} from "@mui/material";
 import {Link} from "react-router-dom";
 import Typography from '@mui/material/Typography'
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import CoffeeIcon from '@mui/icons-material/Coffee';
-import EuroIcon from '@mui/icons-material/Euro';
-import MovingIcon from '@mui/icons-material/Moving';
 import InfoCard from "../components/InfoCard";
-import dog from '../img/dog.png';
-import dzyuba from '../img/dzyuba.jpg';
-import insta from '../img/insta.jpg';
-import oneHome from '../img/oneHome.jpg';
-import heroes from '../img/heroes.jpeg';
 import {setHasAccount} from "../store/userReducer";
 import {useDispatch} from "react-redux";
+import {cards, controls} from '../data/commonData'
 
 const MyLink = styled(Link)`
     text-decoration: none;
@@ -37,27 +29,12 @@ const Main = () => {
     const nextCard = () => {
         setCard(card === 3 ? 0 : card + 1)
     }
-
     useEffect(() => {
         let timerID = setTimeout(nextCard, 10000)
         return () => {
             clearTimeout(timerID)
         }
     }, [card])
-
-    const controls = [
-        {id: 1, text: 'Получите оценку Ваших умений', icon: <ThumbUpIcon />},
-        {id: 2, text: 'Получайте справедливую оплату', icon: <EuroIcon />},
-        {id: 3, text: 'Зарабатывайте, не выходя из дома', icon: <CoffeeIcon />},
-        {id: 4, text: 'Развивайте свои компетенции', icon: <MovingIcon />},
-    ]
-    const cards = [
-        {id: 1, avatar: 'D', topics: [1,3,5], date: '22 ноября, 2021', link: '/login', image: dzyuba, alt: 'Счастливый Дзюба', likes: 2521, description: 'Пусть все увидят ваше мастерство!'},
-        {id: 2, avatar: 'E', topics: [1,2,3], date: '20 ноября, 2021', link: '/login', image: heroes, alt: 'Счастливая лига', likes: 4872, description: 'Вы заслуживаете справделивой оплаты!'},
-        {id: 3, avatar: 'S', topics: [2,3,4], date: '14 ноября, 2021', link: '/login', image: oneHome, alt: 'Счастливый парень', likes: 360001, description: 'Вы можете работать прямо у себя дома!'},
-        {id: 4, avatar: 'I', topics: [2], date: '11 ноября, 2021', link: '/login', image: insta, alt: 'Счастливая Инстасамка', likes: 1248, desc: 'Вам будут нести деньги прямо в руки!'},
-        {id: 5, avatar: 'R', topics: [1], date: '1 ноября, 2021', link: '/login', image: dog, alt: 'Счастливый собакен', likes: 124000000, desc: 'Этот собакен заработал больше, чем сын маминой подруги, просто выполняя заказы на фриласне!'}
-    ]
     return (
         <>
             <Paper elevation={6} sx={{gridRow: mdUp ? '2 / span 2' : '1 / span 1', gridColumn: mdUp ? '1 / span 6' : '1 / span 12', p: '20px', textAlign: 'center', backgroundColor: 'primary.main'}}>

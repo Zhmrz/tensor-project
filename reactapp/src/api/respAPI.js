@@ -3,6 +3,7 @@ import instanceAPI from "./API";
 const API_RESP = 'api/respondingfreelancers/'
 const API_UPLOAD_FREE = '/api/uploadfile/'
 const API_UPLOAD_COMP = '/api/downloadfile/'
+const STREAM = '/stream/'
 
 ///respondingfreelancers/   - [GET-запрос]  получить данные об откликах (фрилансер получает все свои отклики, компания - отклики на свои заказы)
 // response = ('id_freelancer', 'freelancer', 'order', 'order_title', ''responding_date', 'status')
@@ -50,4 +51,8 @@ export const uploadFile = (id, data) => {
 // http://127.0.0.1:8000/api/downloadfile/<id отклика>/   GET-запрос  respone={"completed_order": <url файла>}
 export const downloadFile = (id) => {
     return instanceAPI.get(API_UPLOAD_COMP + id + '/')
+}
+
+export const streamResp = () => {
+    return instanceAPI.get(STREAM)
 }

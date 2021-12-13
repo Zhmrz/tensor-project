@@ -29,7 +29,7 @@ const defaultState = {
         user_type: 0,
         link_to_resume: undefined,
         topics: [],
-        currentPageExist: false
+        currentPageExist: true
     },
     status: {
         isLoading: false,
@@ -89,9 +89,7 @@ export const loadingData = (value) => ({type: LOADING, payload: value})
 export const setUserError = (value) => ({type: ERROR, payload: value})
 export const setHasAccount = (value) => ({type: HAS_ACCOUNT, payload: value})
 export const regSuccess = (value) => ({type: REG_SUCCESS, payload: value})
-//export const authSuccess = (value) => ({type: AUTH_SUCCESS, payload: value})
 export const updSuccess = (value) => ({type: UPDATE_SUCCESS, payload: value})
-//export const photoSuccess = (value) => ({type: PHOTO_SUCCESS, payload: value})
 export const pageExist = (value) => ({type: PAGE_EXIST, payload: value})
 export const setMe = (value) => ({type: SET_ME, payload: value})
 
@@ -107,14 +105,12 @@ export const getMe = () => {
                 const user = response.data
                 console.log(user)
                 dispatch(setMe(user))
-                localStorage.setItem('auth', true)
-                //dispatch(authSuccess(true))
+                localStorage.setItem('auth', 'auth')
             })
             .catch(error => {
                 dispatch(setUserError(true))
                 localStorage.removeItem('token')
-//убрать в проде !!!!!!!!!!!!!!!
-                //dispatch(authSuccess(true))
+                localStorage.removeItem('auth')
             })
         dispatch(loadingData(false))
     }
@@ -130,11 +126,10 @@ export const authUserThunkCreator = (params) => {
                 console.log("автоматическая авторизация")
                 const user = response.data.userData
                 localStorage.setItem('token', response.data.token)
-                dispatch(setUser(user))
                 console.log('authUser')
                 console.log(response)
                 dispatch(setMe(user))
-                localStorage.setItem('auth', true)
+                localStorage.setItem('auth', 'auth')
                 //dispatch(authSuccess(true))
                 //dispatch(pageExist(true))
             })

@@ -42,8 +42,8 @@ export const getMyData = () => {
     return instanceAPI.get(USER)
 }
 
-//Загрузить фото (фрилансер)  -  http://127.0.0.1:8000/api/uploadimagef/<id фрилансера>/   PATCH-запрос
-// Загрузить фото (компания)  -  http://127.0.0.1:8000/api/uploadimagec/<id компании>/   PATCH-запрос
+//Загрузить фото (фрилансер)
+// Загрузить фото (компания)
 export const uploadPhoto = (type, id, data) => {
     if(type){
         return instanceAPI.patch(PHOTO_COMP + id + '/', data, {

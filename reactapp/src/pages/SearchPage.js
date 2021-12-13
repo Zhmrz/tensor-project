@@ -8,9 +8,10 @@ import TaskList from "../components/TaskList";
 import TaskControl from "../components/TaskControl";
 import FilterModal from "../components/FilterModal";
 import TaskModal from "../components/TaskModal";
-import CircularProgress from '@mui/material/CircularProgress';
+import DataLoading from '../components/DataLoading'
 import {getTasksThunkCreator} from "../store/tasksReducer";
 import {useDispatch, useSelector} from 'react-redux'
+import {defTopics} from "../data/commonData";
 
 
 const SearchPage = () => {
@@ -35,28 +36,14 @@ const SearchPage = () => {
     const [durationLims, setDurationLims] = useState(['', ''])
     const [dateLims, setDateLims] = useState(['', ''])
 
-    const [topics, setTopics] = useState({
-        code: false,
-        model: false,
-        photo: false,
-        typo: false,
-        img: false,
-        edu: false,
-    })
+    const [topics, setTopics] = useState(defTopics)
     const topicString = Object.entries(topics).reduce((acc, val, ind) => {
         if(val[1]) acc.push(ind+1)
         return acc
     }, []).join(',')
 
     const resetFilter = () => {
-        setTopics({
-            code: false,
-            model: false,
-            photo: false,
-            typo: false,
-            img: false,
-            edu: false,
-        })
+        setTopics(defTopics)
         setDurationLims(['', ''])
         setPriceLims(['', ''])
         setDateLims(['', ''])
@@ -124,7 +111,7 @@ const SearchPage = () => {
                     filterActive={filterActive}
                     resetFilter={resetFilter}
                 />
-                {loading ? <CircularProgress />
+                {loading ? <DataLoading />
                     : pageItems.length ?
                         <>
                             <TaskList items={pageItems} setVisibleTask={setVisibleTask}/>

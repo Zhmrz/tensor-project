@@ -16,15 +16,8 @@ import CustomFileInput from "./CustomFileInput";
 import {downloadFileThunkCreator, uploadFileThunkCreator} from "../store/respReducer";
 import {useDispatch} from "react-redux";
 import {updSuccess} from "../store/userReducer";
+import {statusDict} from "../data/commonData";
 
-const statusDict = {
-    '0': 'Отлик отправлен',
-    '1': 'Отлик одобрен',
-    '2': 'Работа на проверке',
-    '3': 'Работа оплачена',
-    '4': 'Работа возвращена на доработку',
-    '-1': 'Отлик отменен',
-}
 
 const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAction, yesAction, orders, withAction, userType}) => {
     const dispatch = useDispatch()
@@ -81,17 +74,17 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
                                 <Typography sx={{mr: '10px'}}>Дата отклика: {item.responding_date}</Typography>
                                 <Typography sx={{mr: '10px'}}>Статус: {statusDict[String(item.status)]}</Typography>
                                 {labels[0] &&
-                                    <Tooltip title={labels[0]} placement="bottom">
-                                        <IconButton onClick={(e) => yesHandler(e, item)}>
-                                            <YesIcon sx={{fontSize: '24px'}}/>
-                                        </IconButton>
-                                    </Tooltip>}
+                                <Tooltip title={labels[0]} placement="bottom">
+                                    <IconButton onClick={(e) => yesHandler(e, item)}>
+                                        <YesIcon sx={{fontSize: '24px'}}/>
+                                    </IconButton>
+                                </Tooltip>}
                                 {labels[1] &&
-                                    <Tooltip title={labels[1]} placement="bottom">
-                                        <IconButton onClick={(e) => noHandler(e, item)}>
-                                            <NoIcon sx={{fontSize: '24px'}}/>
-                                        </IconButton>
-                                    </Tooltip>}
+                                <Tooltip title={labels[1]} placement="bottom">
+                                    <IconButton onClick={(e) => noHandler(e, item)}>
+                                        <NoIcon sx={{fontSize: '24px'}}/>
+                                    </IconButton>
+                                </Tooltip>}
                             </ListItem>
                             {withAction &&
                             <CustomFileInput
@@ -103,7 +96,7 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
                             />
                             }
                         </Box>
-                        )): <Typography sx={{m: '10px', textAlign: 'center'}}>В данной категории пока нет откликов</Typography>
+                    )): <Typography sx={{m: '10px', textAlign: 'center'}}>В данной категории пока нет откликов</Typography>
                     }
                 </List>
             </Box>

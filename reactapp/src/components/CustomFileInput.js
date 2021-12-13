@@ -4,44 +4,47 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import {setUserError} from "../store/userReducer";
 import {useDispatch} from "react-redux";
+import styled from "styled-components";
 
-const CustomFileInput = ({mainLabel, action, actionLabel, withClear, formData}) => {
+
+const FileInput  = styled.input`
+    background-color: white;
+    color: black;
+    height: 20px;
+`
+
+
+const CustomFileInput = ({mainLabel, action, actionLabel, withClear, formData1}) => {
+    let formData = new FormData()
     const dispatch = useDispatch()
-    let file = 0
+    const [loaded, setLoaded] = useState(false)
     const cancel = (e) => {
         e.preventDefault()
         formData.delete('file')
+        setLoaded(false)
     }
+    console.log(formData)
     return (
-        <Box sx={{display: 'flex', justifyContent: 'flex-start', alignItems: 'center', p: '8px 16px'}}>
+        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: '8px 16px'}}>
             {withClear &&
             <Box>
                 <Box sx={{display: 'inline-block', mr: '10px'}}>
-                    <label htmlFor="contained-button-file">
-                        <Button variant="contained" component="span">
-                            {mainLabel}
-                        </Button>
-                    </label>
-                    <Input
-                        inputProps={{accept: "image/*"}}
-                        id="contained-button-file"
+                    <input
                         type="file"
                         onChange={(e, value) => {
                             dispatch(setUserError(false))
+                            console.log(e.target.files[0])
                             formData.set('file', e.target.files[0])
-                            file = 1
+                            setLoaded(true)
                         }}
-                        sx={{display: 'none'}}
                     />
                 </Box>
-                <span>
-                    {file ? 'Файл загружен!' : 'Файл не загружен!'}
-                </span>
+
             </Box>
             }
-            <Box sx={{display: "flex", justifyContent: 'space-between', alignItems: "center", width: '50%', ml: '10px'}}>
+            <Box sx={{display: "flex", justifyContent: 'flex-end', alignItems: "center", width: '40%', mx: '10px'}}>
                 {withClear &&
-                <Button variant="outlined" startIcon={<DeleteIcon sx={{fontSize: '24px'}}/>} onClick={(e) => cancel(e)}>
+                <Button variant="outlined" startIcon={<DeleteIcon sx={{fontSize: '24px', mr: '10px'}}/>} onClick={(e) => cancel(e)}>
                     Очистить
                 </Button>}
                 <Button variant="outlined" startIcon={<SendIcon sx={{fontSize: '24px'}}/>} onClick={(e) => action(e, formData)}>

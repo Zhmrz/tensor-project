@@ -255,17 +255,17 @@ class RespondingFreelancersView(ModelViewSet):
         """Взаимодействие будет осуществляться посредством изменения статуса отклика"""
 
         """Компания одобряет отклик"""
-        if self.request.user == serializer.instance.order.customer and serializer.validated_data.get("status", False) \
-                and serializer.validated_data["status"] == 1:
+        if serializer.validated_data.get("status", False) and serializer.validated_data["status"] == 1 and \
+                self.request.user.company_info.id == serializer.instance.order.customer.id:
+
             serializer.instance.order.status = 1  # Заказ занят и не будет появляться в поиске
             serializer.instance.order.performer = serializer.instance.freelancer  # Назначается исполнитель заказа
             serializer.instance.adoption_date = datetime.date.today()
-            serializer.instance.save()  # Проверить
             serializer.instance.order.save()
 
         """Компания принимает работу (осуществляется перевод денег)"""
-        if self.request.user == serializer.instance.order.customer and serializer.validated_data.get("status", False) \
-                and serializer.validated_data["status"] == 3:  # Если компания принимает работу (=меняет статус отклика на 3)
+        if serializer.validated_data.get("status", False) and serializer.validated_data["status"] == 3 and \
+                self.request.user.company_info.id == serializer.instance.order.customer.id:  # Если компания принимает работу (=меняет статус отклика на 3)
             if serializer.instance.order.status != 2:  # Для предотвращения повторного перевода
                 freelancer = serializer.instance.freelancer  # Определяем фрилансера
                 company = serializer.instance.order.customer  # Определяем компанию

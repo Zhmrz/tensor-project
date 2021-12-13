@@ -101,9 +101,9 @@ export const changeRespStatusThunkCreator = (id, status) => {
                 dispatch(getRespThunkCreator()) //получаем заново все отклики
             })
             .catch(error => {
-            dispatch(setRespError(true))
-            console.log('error on change status operations with resp')
-        })
+                dispatch(setRespError(true))
+                console.log('error on change status operations with resp')
+            })
         dispatch(setLoading(false))
     }
 }
@@ -191,5 +191,3 @@ export const downloadFileThunkCreator = (id) => {
         dispatch(setLoading(false))
     }
 }
-
-
