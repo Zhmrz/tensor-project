@@ -138,6 +138,7 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
                     </List>
                     <TextField
                         required
+                        value='Изменить данные'
                         id="submit"
                         type="submit"
                         fullWidth

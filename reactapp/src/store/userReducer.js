@@ -128,8 +128,8 @@ export const authUserThunkCreator = (params) => {
                 localStorage.setItem('token', response.data.token)
                 console.log('authUser')
                 console.log(response)
-                dispatch(setMe(user))
                 localStorage.setItem('auth', 'auth')
+                dispatch(setMe(user))
                 //dispatch(authSuccess(true))
                 //dispatch(pageExist(true))
             })
@@ -158,10 +158,10 @@ export const registerUserThunkCreator = (params) => {
     }
 }
 
-export const getUserData = (id) => {
+export const getUserData = (id, me) => {
     return (dispatch) => {
         dispatch(loadingData(true))
-        getFreelancerPage(id)
+        getFreelancerPage(id, me)
             .then(response => {
                 console.log('получить данные пользователя')
                 console.log(response)
@@ -176,10 +176,10 @@ export const getUserData = (id) => {
     }
 }
 
-export const getCompanyData = (id) => {
+export const getCompanyData = (id, me) => {
     return (dispatch) => {
         dispatch(loadingData(true))
-        getCompanyPage(id)
+        getCompanyPage(id, me)
             .then(response => {
                 console.log('получить данные компании')
                 console.log(response)

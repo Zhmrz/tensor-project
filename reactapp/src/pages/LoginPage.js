@@ -173,6 +173,7 @@ const LoginPage = () => {
                             type="submit"
                             fullWidth
                             margin="dense"
+                            value="Войти на сайт"
                             onClick={sendForm}
                         />
                         {error && <Typography sx={{color: 'red', textAlign: "center", p: '10px'}}>Проверьте корректность введенных данных!</Typography>}
@@ -289,6 +290,7 @@ const LoginPage = () => {
                             type="submit"
                             fullWidth
                             margin="dense"
+                            value="Зарегистрироваться"
                             onClick={sendForm}
                         />
                         {error && <Typography sx={{color: 'red', textAlign: "center", p: '10px'}}>Проверьте корректность введенных данных!</Typography>}

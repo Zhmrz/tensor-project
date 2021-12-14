@@ -141,11 +141,11 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
 
 class UploadFileSerializer(serializers.ModelSerializer):
     """Для загрузки файла работы фрилансером"""
-
+    file = serializers.FileField(source="completed_order")
     class Meta:
         model = RespondingFreelancers
-        fields = ['completed_order']
-        extra_kwargs = {'completed_order': {
+        fields = ['file']
+        extra_kwargs = {'file': {
             'write_only': True,
             'required': True
         }}

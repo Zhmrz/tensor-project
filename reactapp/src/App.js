@@ -75,22 +75,29 @@ const PageWrapper = styled.div`
 
 function App() {
     const dispatch = useDispatch()
-    const isLoading = useSelector(state => state.user.status.isLoading)
+    let isLoading = useSelector(state => state.user.status.isLoading)
     const id = useSelector(state => state.user.me.id)
     const type = useSelector(state => state.user.me.user_type)
-    const token = localStorage.getItem('token')
-    const successAuth = localStorage.getItem('auth')
+    let token = localStorage.getItem('token')
+    let successAuth = localStorage.getItem('auth')
     useEffect(() => {
         if(token){
             dispatch(getMe())
         }
     }, [])
-
+    useEffect(() => {
+        successAuth = localStorage.getItem('auth')
+    }, [id])
+/*
     useEffect(() => {
         if(successAuth){
-            dispatch(streamConnect())
+            const eventSource = new EventSource('http://127.0.0.1:8000/stream/', {
+            headers: { 'authorization': `Token ${localStorage.getItem('token')}`}})
+            eventSource.onmessage = res => console.log(res)
+            eventSource.onerror = res => console.log(res)
+            //dispatch(streamConnect())
         }
-    }, [successAuth])
+    }, [successAuth])*/
 
 
     //const successAuth = useSelector(state => state.user.status.successAuth)

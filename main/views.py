@@ -1,3 +1,7 @@
+import json
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http.response import HttpResponseBase
 from django.shortcuts import render
 from django.views import View
 from django_filters.rest_framework import DjangoFilterBackend
@@ -176,12 +180,14 @@ class UserRegisterView(ModelViewSet):
             freelancer = Freelancer.objects.create(user_id=user)
             freelancer.first_name = request.data.get("first_name")
             freelancer.last_name = request.data.get("last_name")
+            freelancer.link_to_resume = request.data.get("link_to_resume")
             for topic in topics:
                 freelancer.topics.add(topic)
             freelancer.save()
         else:
             company = Company.objects.create(user_id=user)
             company.name = request.data.get('first_name')
+            company.link_to_resume = request.data.get("link_to_resume")
             for topic in topics:
                 company.topics.add(topic)
             company.save()
@@ -301,24 +307,24 @@ class DownloadFileView(ModelViewSet):
 
 """Server sent events"""
 """Сервер отвечает при изменении статуса отклика либо изменении кол-ва откликов > фронт направляет запрос на API откликов"""
-def event_status(user_id, user_type):
+def event_status(token):
     """Проверка статуса откликов/их количества"""
-
+    token = token[6:]
+    user = Token.objects.get(key=token).user
     initial_statuses = []  # Статусы отклика на момент запроса (исходный список статусов)
     """Фильтрация откликов либо для фрилансера, либо для компании"""
-    if user_type == 0 or user_type == "0":
+    if Freelancer.objects.filter(user_id=user).exists():
         flag = True
-        freelancer = Freelancer.objects.get(pk=user_id)
+        freelancer = Freelancer.objects.get(user_id=user)
         respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
         for responding in respondings:
             initial_statuses.append(responding.status)
     else:
         flag = False
-        company = Company.objects.get(pk=user_id)
+        company = Company.objects.get(user_id=user)
         respondings = RespondingFreelancers.objects.filter(order__customer=company)
         for responding in respondings:
             initial_statuses.append(responding.status)
-
     while True:
 
         current_statuses = []  # Текущий список статусов (обновляется каждую сек.)
@@ -330,20 +336,27 @@ def event_status(user_id, user_type):
 
         for responding in respondings:
             current_statuses.append(responding.status)
+        if not len(initial_statuses) == len(current_statuses):  # Если изменилось кол-во статусов(=откликов)
+            print("Изменилось кол-во откликов")
+            initial_statuses = current_statuses.copy()
+            data = json.dumps(list("1"), cls=DjangoJSONEncoder)
+            print(data)
+            yield data
+        else:
+            for i in range(len(initial_statuses)):  # Иначе сравниваем каждый статус
+                if initial_statuses[i] - current_statuses[i] != 0:
+                    print("Изменился статус отклика")
+                    data = json.dumps(list("1"), cls=DjangoJSONEncoder)
+                    yield data
 
-        if not initial_statuses == current_statuses:  # Если изменилось кол-во статусов(=откликов)
-            yield 1
-
-        for i in range(len(initial_statuses)):  # Иначе сравниваем каждый статус
-            if initial_statuses[i] - current_statuses[i] != 0:
-                yield 1
-
-        time.sleep(1)
+    time.sleep(3)
 
 
 class PostStreamView(View):
     """Возвращает 1 при изменении статуса отклика"""
-    def get(self, request, user_id, user_type):
-        response = StreamingHttpResponse(event_status(user_id, user_type))
+    def get(self, request):
+        response = StreamingHttpResponse(event_status(request.headers["Authorization"]))
         response['Content-Type'] = 'text/event-stream'
         return response
+
+

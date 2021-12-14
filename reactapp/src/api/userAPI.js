@@ -8,6 +8,10 @@ const FREELANCER_PAGE = '/api/freelancer/'
 //получить личную инф-цию фрилансера [GET-запрос]
 const COMPANY_PAGE = '/api/company/'
 //получить личную инф-цию компании   [POST-запрос]
+const ANOTHER_FREELANCER = '/api/freelancers/'
+//получить инф-цию о всех фрилансерах [GET-запрос]   response = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume', 'topics')
+const ANOTHER_COMPANY = '/api/companies/'
+//получить инф-цию о всех компаниях   [GET-запрос]   response = ('id', 'name', 'description', 'image', 'link_to_resume', 'topics')
 const USER = '/api/user/'
 //Загрузить фото (фрилансер) PATCH-запрос
 const PHOTO_FREE = '/api/uploadimagef/'
@@ -22,12 +26,14 @@ export const registerUser = (params) => {
     return instanceAPI.post(API_REGISTER, params)
 }
 
-export const getFreelancerPage = (id) => {
-    return instanceAPI.get(FREELANCER_PAGE + id + '/')
+export const getFreelancerPage = (id, me) => {
+    let url = me ? FREELANCER_PAGE : ANOTHER_FREELANCER
+    return instanceAPI.get(url + id + '/')
 }
 
-export const getCompanyPage = (id) => {
-    return instanceAPI.get(COMPANY_PAGE + id + '/')
+export const getCompanyPage = (id, me) => {
+    let url = me ? COMPANY_PAGE : ANOTHER_COMPANY
+    return instanceAPI.get(url + id + '/')
 }
 
 export const changeFreelancerInfo = (id, data) => {

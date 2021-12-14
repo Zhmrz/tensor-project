@@ -179,8 +179,8 @@ export const downloadFileThunkCreator = (id) => {
         dispatch(setLoading(true))
         downloadFile(id)
             .then(response => {
-                const url = response.completed_order
-                console.log(response)
+                const url = response.data.completed_order
+                console.log(response.data.completed_order)
                 window.open(url)
                 console.log('работа скачана')
             })
@@ -197,6 +197,7 @@ export const streamConnect = () => {
         console.log('creating stream)')
         streamResp().then(response => {
             console.log('get response')
+            console.log(response)
             dispatch(getRespThunkCreator())
             setTimeout(dispatch, 1000, streamConnect())
         }).catch(error => {
