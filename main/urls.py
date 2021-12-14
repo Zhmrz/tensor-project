@@ -22,6 +22,6 @@ urlpatterns = [
     path('', index, name='home'),  # Фронт
     path('api/', include(router.urls)),  # urls API
     path('auth/', UserLogin.as_view()),  # url аутентификации
-    path('stream/<int:user_type>/<int:user_id>/', PostStreamView.as_view()),
+    path('stream/', PostStreamView.as_view()),
     re_path(r'^(?:.*)/?$', index, name='home'),  # Перенаправление на фронт (иначе Django ловит url и не находит его)
 ]

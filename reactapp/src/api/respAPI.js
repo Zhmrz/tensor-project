@@ -56,3 +56,4 @@ export const downloadFile = (id) => {
 export const streamResp = () => {
     return instanceAPI.get(STREAM)
 }
+

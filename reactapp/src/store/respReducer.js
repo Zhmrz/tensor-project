@@ -4,7 +4,7 @@ import {
     createResponse,
     deleteResponse, downloadFile,
     getResponses,
-    loadWork, uploadFile
+    loadWork, streamResp, uploadFile
 } from "../api/respAPI";
 
 const LOAD_RESP = 'LOAD_RESP'
@@ -179,8 +179,8 @@ export const downloadFileThunkCreator = (id) => {
         dispatch(setLoading(true))
         downloadFile(id)
             .then(response => {
-                const url = response.completed_order
-                console.log(url)
+                const url = response.data.completed_order
+                console.log(response.data.completed_order)
                 window.open(url)
                 console.log('работа скачана')
             })
@@ -189,5 +189,25 @@ export const downloadFileThunkCreator = (id) => {
                 console.log('error on download operations with resp')
             })
         dispatch(setLoading(false))
+    }
+}
+
+export const streamConnect = () => {
+    return (dispatch) => {
+        console.log('creating stream)')
+        streamResp().then(response => {
+            console.log('get response')
+            console.log(response)
+            dispatch(getRespThunkCreator())
+            setTimeout(dispatch, 1000, streamConnect())
+        }).catch(error => {
+            if(error.response.status === 502) {
+                setTimeout(dispatch, 1000, streamConnect())
+                //dispatch(streamConnect())
+            } else {
+                console.log('another error on stream connection')
+                console.log(error)
+            }
+        })
     }
 }

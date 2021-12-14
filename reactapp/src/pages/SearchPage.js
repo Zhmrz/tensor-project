@@ -23,7 +23,7 @@ const SearchPage = () => {
     //настройка пагинации
     const pageLimit = useSelector(state => state.tasks.search.pageLimit)
     const [page, setPage] = useState(1)
-    const pageTotal = useSelector(state => state.tasks.search.totalPage)
+    //const pageTotal = useSelector(state => state.tasks.search.totalPage)
     //настройка фильтрации
     const [filterActive, setFilterActive] = useState(false)
     const [sortType, setSortType] = useState('price')
@@ -73,7 +73,7 @@ const SearchPage = () => {
         //response = ('id', 'customer', 'title', 'description', 'price','deadline', 'status', 'performer', 'publication_date', 'topic')
     }, [durationLims, dateLims, priceLims, topicString, query]);
 
-    const sortedData = useMemo(() => {
+    let sortedData = useMemo(() => {
         return data.sort((a, b) => {
             if(up){
                 if(sortType === 'publication_date'){
@@ -90,8 +90,8 @@ const SearchPage = () => {
             }
         })
     }, [up, sortType, data])
-
-    const pageItems = useMemo(() => {
+    let pageTotal = Math.ceil(data.length/pageLimit)
+    let pageItems = useMemo(() => {
         return sortedData.slice((page - 1)*pageLimit, page*pageLimit)
     }, [sortedData, pageLimit, page, sortType, up])
 

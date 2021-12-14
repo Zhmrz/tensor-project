@@ -14,39 +14,34 @@ const FileInput  = styled.input`
 `
 
 
-const CustomFileInput = ({mainLabel, action, actionLabel, withClear, formData1}) => {
-    let formData = new FormData()
+const CustomFileInput = ({action, actionLabel, withInput, formData, forImg}) => {
     const dispatch = useDispatch()
-    const [loaded, setLoaded] = useState(false)
+    const [file, setFile] = useState('')
+    //const [loaded, setLoaded] = useState(false)
+    /*
     const cancel = (e) => {
         e.preventDefault()
         formData.delete('file')
-        setLoaded(false)
-    }
-    console.log(formData)
+        setFile('')
+    }*/
+    formData.set('file', file)
+    console.log(formData.has('file'))
+    console.log(file)
     return (
-        <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: '8px 16px'}}>
-            {withClear &&
-            <Box>
-                <Box sx={{display: 'inline-block', mr: '10px'}}>
-                    <input
-                        type="file"
-                        onChange={(e, value) => {
-                            dispatch(setUserError(false))
-                            console.log(e.target.files[0])
-                            formData.set('file', e.target.files[0])
-                            setLoaded(true)
-                        }}
-                    />
-                </Box>
-
+        <Box sx={{display: 'flex', justifyContent: withInput ? 'space-between' : 'flex-end', alignItems: 'center', p: '8px 16px'}}>
+            {withInput &&
+            <Box sx={{mr: '10px'}}>
+                <FileInput
+                    type="file"
+                    accept={forImg ? "image/*" : '*'}
+                    onChange={(e, value) => {
+                        dispatch(setUserError(false))
+                        setFile(e.target.files[0])
+                    }}
+                />
             </Box>
             }
-            <Box sx={{display: "flex", justifyContent: 'flex-end', alignItems: "center", width: '40%', mx: '10px'}}>
-                {withClear &&
-                <Button variant="outlined" startIcon={<DeleteIcon sx={{fontSize: '24px', mr: '10px'}}/>} onClick={(e) => cancel(e)}>
-                    Очистить
-                </Button>}
+            <Box sx={{ml: '10px'}}>
                 <Button variant="outlined" startIcon={<SendIcon sx={{fontSize: '24px'}}/>} onClick={(e) => action(e, formData)}>
                     {actionLabel}
                 </Button>
