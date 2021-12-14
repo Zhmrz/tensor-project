@@ -41,7 +41,7 @@ const Main = () => {
                 <Typography sx={{color: "white", textDecoration: 'none', fontSize: '36px'}}>
                     Хотите узнать больше?
                 </Typography>
-                <Typography variant='span' sx={{color: 'success.main', fontSize: '36px', ":hover": {color: 'secondary.main'}}}>
+                <Typography variant='span' sx={{color: 'primary.light', fontSize: '36px', ":hover": {color: 'secondary.main'}}}>
                     <MyLink to={'/login'} onClick={() => dispatch(setHasAccount(false))}>
                         Зарегистрируйтесь
                     </MyLink>
@@ -49,7 +49,7 @@ const Main = () => {
                 <Typography variant='span' sx={{color: 'white', fontSize: '36px'}}>
                     &#160;или&#160;
                 </Typography>
-                <Typography variant='span' sx={{color: 'success.main', fontSize: '36px', ":hover": {color: 'secondary.main'}}}>
+                <Typography variant='span' sx={{color: 'primary.light', fontSize: '36px', ":hover": {color: 'secondary.main'}}}>
                     <MyLink to={'/login'} onClick={() => dispatch(setHasAccount(true))}>
                         Войдите
                     </MyLink>
@@ -77,7 +77,7 @@ const Main = () => {
                     <Typography variant='span' sx={{color: 'white', fontSize: '36px'}}>
                         Посетите нашу&#160;
                     </Typography>
-                    <Typography variant='span' sx={{color: 'success.main', fontSize: '36px', ":hover": {color: 'secondary.main'}}}>
+                    <Typography variant='span' sx={{color: 'primary.light', fontSize: '36px', ":hover": {color: 'secondary.main'}}}>
                         <MyLink to={'/help'}>
                             страницу помощи
                         </MyLink>

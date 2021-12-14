@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views import View
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -11,7 +12,8 @@ from rest_framework.permissions import IsAuthenticated
 from .filters import OrderFilter
 from .serializers import *
 from rest_framework.authtoken.models import Token
-from django.core import serializers as ser
+from django.http import StreamingHttpResponse
+import time
 
 
 def index(request):  # Возвращает index с React
@@ -196,8 +198,10 @@ class UserLogin(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         if Freelancer.objects.filter(user_id=user).exists():
             userData = FreelancerSerializer(Freelancer.objects.get(user_id=user)).data
+            userData["user_type"] = 0
         else:
             userData = CompanySerializer(Company.objects.get(user_id=user)).data
+            userData["user_type"] = 1
         return Response({'token': token.key, 'userData': userData})
 
 
@@ -251,16 +255,17 @@ class RespondingFreelancersView(ModelViewSet):
         """Взаимодействие будет осуществляться посредством изменения статуса отклика"""
 
         """Компания одобряет отклик"""
-        if self.request.user == serializer.instance.order.customer and serializer.validated_data.get("status", False) \
-                and serializer.validated_data["status"] == 1:
+        if serializer.validated_data.get("status", False) and serializer.validated_data["status"] == 1 and \
+                self.request.user.company_info.id == serializer.instance.order.customer.id:
+
             serializer.instance.order.status = 1  # Заказ занят и не будет появляться в поиске
             serializer.instance.order.performer = serializer.instance.freelancer  # Назначается исполнитель заказа
             serializer.instance.adoption_date = datetime.date.today()
             serializer.instance.order.save()
 
         """Компания принимает работу (осуществляется перевод денег)"""
-        if self.request.user == serializer.instance.order.customer and serializer.validated_data.get("status", False) \
-                and serializer.validated_data["status"] == 3:  # Если компания принимает работу (=меняет статус отклика на 3)
+        if serializer.validated_data.get("status", False) and serializer.validated_data["status"] == 3 and \
+                self.request.user.company_info.id == serializer.instance.order.customer.id:  # Если компания принимает работу (=меняет статус отклика на 3)
             if serializer.instance.order.status != 2:  # Для предотвращения повторного перевода
                 freelancer = serializer.instance.freelancer  # Определяем фрилансера
                 company = serializer.instance.order.customer  # Определяем компанию
@@ -292,3 +297,53 @@ class DownloadFileView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     parser_classes = [MultiPartParser]
+
+
+"""Server sent events"""
+"""Сервер отвечает при изменении статуса отклика либо изменении кол-ва откликов > фронт направляет запрос на API откликов"""
+def event_status(user_id, user_type):
+    """Проверка статуса откликов/их количества"""
+
+    initial_statuses = []  # Статусы отклика на момент запроса (исходный список статусов)
+    """Фильтрация откликов либо для фрилансера, либо для компании"""
+    if user_type == 0 or user_type == "0":
+        flag = True
+        freelancer = Freelancer.objects.get(pk=user_id)
+        respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
+        for responding in respondings:
+            initial_statuses.append(responding.status)
+    else:
+        flag = False
+        company = Company.objects.get(pk=user_id)
+        respondings = RespondingFreelancers.objects.filter(order__customer=company)
+        for responding in respondings:
+            initial_statuses.append(responding.status)
+
+    while True:
+
+        current_statuses = []  # Текущий список статусов (обновляется каждую сек.)
+
+        if flag:
+            respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
+        else:
+            respondings = RespondingFreelancers.objects.filter(order__customer=company)
+
+        for responding in respondings:
+            current_statuses.append(responding.status)
+
+        if not initial_statuses == current_statuses:  # Если изменилось кол-во статусов(=откликов)
+            yield 1
+
+        for i in range(len(initial_statuses)):  # Иначе сравниваем каждый статус
+            if initial_statuses[i] - current_statuses[i] != 0:
+                yield 1
+
+        time.sleep(1)
+
+
+class PostStreamView(View):
+    """Возвращает 1 при изменении статуса отклика"""
+    def get(self, request, user_id, user_type):
+        response = StreamingHttpResponse(event_status(user_id, user_type))
+        response['Content-Type'] = 'text/event-stream'
+        return response

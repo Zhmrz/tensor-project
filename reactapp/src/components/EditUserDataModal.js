@@ -151,9 +151,10 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
                         <CustomFileInput
                             mainLabel='Загрузить файл'
                             actionLabel='Отправить'
-                            withClear={true}
+                            withInput={true}
                             action={changeUserPhoto}
                             formData={new FormData()}
+                            forImg={true}
                         />
                     </Box>
                     <Box sx={{p: '0', mt: '10px'}}>

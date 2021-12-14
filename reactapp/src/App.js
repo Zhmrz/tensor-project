@@ -19,7 +19,7 @@ import {Navigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {getMe, loadingData, resetUserData} from "./store/userReducer";
 import DataLoading from './components/DataLoading'
-import {getRespThunkCreator} from "./store/respReducer";
+import {getRespThunkCreator, streamConnect} from "./store/respReducer";
 
 const AppWrapper = styled.div`
   width: 100vw;
@@ -87,18 +87,8 @@ function App() {
     }, [])
 
     useEffect(() => {
-        let eventSource
         if(successAuth){
-            eventSource = new EventSource('http://127.0.0.1:8000/stream/' + type + '/' + id + '/')
-            eventSource.onmessage = e => {
-                if(e.data == 1){
-                    dispatch(getRespThunkCreator())
-                }
-            }
-        } else {
-            if(typeof eventSource == 'EventSource'){
-                eventSource.close()
-            }
+            dispatch(streamConnect())
         }
     }, [successAuth])
 

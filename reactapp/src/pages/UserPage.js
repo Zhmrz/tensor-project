@@ -142,7 +142,7 @@ const UserPage = ({type}) => {
                             NoIcon={DoNotDisturbOnIcon}
                             yesAction={userType ? payForWork : undefined}
                             noAction={userType ? returnInWork : undefined}
-                            withAction={userType}
+                            withAction={userType === 1}
                             userType={userType}
                         />
                         <OrdersModal

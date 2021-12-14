@@ -17,8 +17,7 @@ import {variants} from "../data/commonData";
 const InfoCard = ({item, liked, setLiked, row, column}) => {
     let navigate = useNavigate();
     const spec = item.topics.map(item => variants[item - 1].label).join()
-    const [min, max] = [1, 125000]
-    const likes = item.likes || Math.floor(Math.random() * (max - min)) + min;
+    const likes = item.likes || 100//Math.floor(Math.random() * (max - min)) + min;
     return (
         <Card elevation={6} sx={{ height: '100%', width: '100%', minHeight: '100%', gridRow: row, gridColumn: column}}>
             <CardHeader

@@ -17,10 +17,10 @@ import CreateIcon from "@mui/icons-material/Create";
 
 //Main page data
 export const cards = [
-    {id: 1, avatar: 'D', topics: [1,3,5], date: '22 ноября, 2021', link: '/login', image: dzyuba, alt: 'Счастливый Дзюба', likes: 2521, desc: 'Шикарная обработка видео! Спасибо большое @handmaker за то, что он сделал меня самым популярным футболистом всея Руси!!!! Сразу видно профессионализм!!!'},
-    {id: 2, avatar: 'E', topics: [1,2,3], date: '20 ноября, 2021', link: '/login', image: heroes, alt: 'Счастливая лига', likes: 4872, desc: 'Заказывала 3D-модели на 20%!'},
-    {id: 3, avatar: 'S', topics: [2,3,4], date: '14 ноября, 2021', link: '/login', image: oneHome, alt: 'Счастливый программист', likes: 360001, desc: 'Заработал больше, чем сын маминой подруги, и при этом даже не вспотел. И да, я на коне, но при этом не выхожу из своего коттеджа.'},
-    {id: 4, avatar: 'I', topics: [2], date: '11 ноября, 2021', link: '/login', image: insta, alt: 'Счастливая Инстасамка', likes: 1248, desc: 'Пипец текст агонь, очуметь, они мне платят и платят скоро новый альбом! ДАВАЙ МНЕ ДЕНЬГИ НЕСИ!!!'},
+    {id: 1, avatar: 'D', topics: [1,3,5], date: '22 ноября, 2021', link: '/login', image: dzyuba, alt: 'Счастливый Дзюба', likes: 2521, description: 'Я рад, что могу показать всем свое мастерство!'},
+    {id: 2, avatar: 'E', topics: [1,2,3], date: '20 ноября, 2021', link: '/login', image: heroes, alt: 'Счастливая Лига', likes: 4872, description: 'Одобряем справедливую оплату за труд!'},
+    {id: 3, avatar: 'S', topics: [2,3,4], date: '14 ноября, 2021', link: '/login', image: oneHome, alt: 'Счастливый парень', likes: 360001, description: 'Можно просто сидеть дома и зарабатывать столько, сколько хочешь!'},
+    {id: 4, avatar: 'I', topics: [2], date: '11 ноября, 2021', link: '/login', image: insta, alt: 'Счастливая Инстасамка', likes: 1248, description: 'Любые навыки могут приносить стабильный доход!'},
 ]
 
 export const controls = [
