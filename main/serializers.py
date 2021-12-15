@@ -90,6 +90,13 @@ class CompaniesSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'image', 'link_to_resume', 'topics')
 
 
+class FreelancersSerializer(serializers.ModelSerializer):
+    """Для просмотра инф-ции о фрилансерах"""
+    class Meta:
+        model = Freelancer
+        fields = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume', 'topics')
+
+
 class UserViewSerializer(serializers.ModelSerializer):
     """Для просмотра личной информации пользователя (фрилансера либо компании)"""
     freelancer_info = FreelancerSerializer()
@@ -103,10 +110,11 @@ class UserViewSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
 
     customer = serializers.ReadOnlyField(source='customer.name')
+    customer_id = serializers.ReadOnlyField(source='customer.id')
 
     class Meta:
         model = Order
-        fields = ('id', 'customer', 'title', 'description', 'price',
+        fields = ('id', 'customer', 'customer_id', 'title', 'description', 'price',
                   'deadline', 'status', 'performer', 'publication_date', 'topic')
 
 
@@ -132,16 +140,18 @@ class RespondingFreelancersSerializer(serializers.ModelSerializer):
     freelancer = serializers.StringRelatedField(many=False, read_only=True)  # Строковое представление фрилансера
     id_freelancer = serializers.ReadOnlyField(source='freelancer.id')
     order_title = serializers.ReadOnlyField(source='order.title')
+    id_company = serializers.ReadOnlyField(source='order.customer.id')
 
     class Meta:
         model = RespondingFreelancers
         fields = ('id', 'id_freelancer', 'freelancer', 'order', 'order_title',
-                  'responding_date', 'status')
+                  'responding_date', 'status', 'id_company')
 
 
 class UploadFileSerializer(serializers.ModelSerializer):
     """Для загрузки файла работы фрилансером"""
     file = serializers.FileField(source="completed_order")
+
     class Meta:
         model = RespondingFreelancers
         fields = ['file']
@@ -153,7 +163,6 @@ class UploadFileSerializer(serializers.ModelSerializer):
 
 class DownloadFileSerializer(serializers.ModelSerializer):
     """Для скачивания файла работы компанией"""
-
     class Meta:
         model = RespondingFreelancers
         fields = ['completed_order']

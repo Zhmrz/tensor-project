@@ -1,9 +1,4 @@
-import json
-
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http.response import HttpResponseBase
 from django.shortcuts import render
-from django.views import View
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import status
 from rest_framework.authentication import TokenAuthentication
@@ -16,8 +11,6 @@ from rest_framework.permissions import IsAuthenticated
 from .filters import OrderFilter
 from .serializers import *
 from rest_framework.authtoken.models import Token
-from django.http import StreamingHttpResponse
-import time
 
 
 def index(request):  # Возвращает index с React
@@ -103,7 +96,7 @@ class UserView(ReadOnlyModelViewSet):
 class AllFreelancerView(ReadOnlyModelViewSet):
     """Инф-ция о всех фрилансерах"""
     queryset = Freelancer.objects.all()
-    serializer_class = FreelancerSerializer
+    serializer_class = FreelancersSerializer
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
 
@@ -124,7 +117,7 @@ class AllOrderView(ReadOnlyModelViewSet):
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title', 'description']  # Поиск в названии и описании заказа
-    filterset_class = OrderFilter
+    filterset_class = OrderFilter  # Фильтрация по цене, срокам, темам и датам публикации
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -303,60 +296,3 @@ class DownloadFileView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     parser_classes = [MultiPartParser]
-
-
-"""Server sent events"""
-"""Сервер отвечает при изменении статуса отклика либо изменении кол-ва откликов > фронт направляет запрос на API откликов"""
-def event_status(token):
-    """Проверка статуса откликов/их количества"""
-    token = token[6:]
-    user = Token.objects.get(key=token).user
-    initial_statuses = []  # Статусы отклика на момент запроса (исходный список статусов)
-    """Фильтрация откликов либо для фрилансера, либо для компании"""
-    if Freelancer.objects.filter(user_id=user).exists():
-        flag = True
-        freelancer = Freelancer.objects.get(user_id=user)
-        respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
-        for responding in respondings:
-            initial_statuses.append(responding.status)
-    else:
-        flag = False
-        company = Company.objects.get(user_id=user)
-        respondings = RespondingFreelancers.objects.filter(order__customer=company)
-        for responding in respondings:
-            initial_statuses.append(responding.status)
-    while True:
-
-        current_statuses = []  # Текущий список статусов (обновляется каждую сек.)
-
-        if flag:
-            respondings = RespondingFreelancers.objects.filter(freelancer=freelancer)
-        else:
-            respondings = RespondingFreelancers.objects.filter(order__customer=company)
-
-        for responding in respondings:
-            current_statuses.append(responding.status)
-        if not len(initial_statuses) == len(current_statuses):  # Если изменилось кол-во статусов(=откликов)
-            print("Изменилось кол-во откликов")
-            initial_statuses = current_statuses.copy()
-            data = json.dumps(list("1"), cls=DjangoJSONEncoder)
-            print(data)
-            yield data
-        else:
-            for i in range(len(initial_statuses)):  # Иначе сравниваем каждый статус
-                if initial_statuses[i] - current_statuses[i] != 0:
-                    print("Изменился статус отклика")
-                    data = json.dumps(list("1"), cls=DjangoJSONEncoder)
-                    yield data
-
-    time.sleep(3)
-
-
-class PostStreamView(View):
-    """Возвращает 1 при изменении статуса отклика"""
-    def get(self, request):
-        response = StreamingHttpResponse(event_status(request.headers["Authorization"]))
-        response['Content-Type'] = 'text/event-stream'
-        return response
-
-

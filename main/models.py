@@ -9,14 +9,12 @@ class Freelancer(models.Model):
     user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE, related_name="freelancer_info")
     first_name = models.CharField(max_length=100, verbose_name='Имя пользователя')
     last_name = models.CharField(max_length=100, verbose_name='Фамилия пользователя')
-    # rating
     personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=0)
     description = models.TextField(verbose_name='О себе', null=True, blank=True)
     image = models.ImageField(verbose_name='Аватар', null=True, blank=True)
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме', null=True, blank=True)
     completed_orders = models.PositiveIntegerField(verbose_name="Кол-во выполненных заказов", default=0)
-
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -26,8 +24,7 @@ class Company(models.Model):
     """Компания"""
     user_id = models.OneToOneField(User, verbose_name="id аккаунта", on_delete=models.CASCADE, related_name="company_info")
     name = models.CharField(max_length=100, verbose_name='Название компании')
-    # rating
-    personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=0)
+    personal_account = models.DecimalField(verbose_name='Лицевой счет', max_digits=9, decimal_places=2, default=1000000)
     description = models.TextField(verbose_name='Описание компании', null=True, blank=True)
     image = models.ImageField(verbose_name='Аватар', null=True, blank=True)
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления", blank=True)
