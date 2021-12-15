@@ -17,6 +17,7 @@ const defaultState = {
         link_to_resume: undefined,
         email: undefined,
         topics: [],
+        personal_account: 0,
         user_type: 0
     },
     current: {
@@ -53,6 +54,7 @@ const PAGE_EXIST = 'PAGE_EXIST'
 const SET_ME = 'SET_ME'
 const UPDATE_SUCCESS = 'UPDATE_SUCCESS'
 const PHOTO_SUCCESS = 'PHOTO_SUCCESS'
+const SET_MONEY = 'SET_MONEY'
 
 export const userReducer = (state = defaultState, action) => {
     switch(action.type){
@@ -78,6 +80,8 @@ export const userReducer = (state = defaultState, action) => {
             return {...state, current: {...state.current, currentPageExist: action.payload}}
         case SET_ME:
             return {...state, me: action.payload}
+        case SET_MONEY:
+            return {...state, me: {...state.me, personal_account: action.payload}}
         default:
             return state
     }
@@ -92,6 +96,7 @@ export const regSuccess = (value) => ({type: REG_SUCCESS, payload: value})
 export const updSuccess = (value) => ({type: UPDATE_SUCCESS, payload: value})
 export const pageExist = (value) => ({type: PAGE_EXIST, payload: value})
 export const setMe = (value) => ({type: SET_ME, payload: value})
+export const setMoney = (value) => ({type: SET_MONEY, payload: value})
 
 
 export const getMe = () => {

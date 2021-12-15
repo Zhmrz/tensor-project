@@ -161,6 +161,7 @@ const UserPage = ({type}) => {
                             NoIcon={ThumbDownIcon}
                             yesAction={userType ? approveFree : undefined}
                             noAction={userType ? cancelFree : delResp} //нужна операция на отколнение отклика компанией
+                            userType={userType}
                         />
                         <OrdersModal
                             labels={userType ? ['', ''] : ['', 'Отменить работу']}

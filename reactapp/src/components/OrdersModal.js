@@ -69,8 +69,8 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
                         <Box sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
                             <ListItem key={item.id} sx={{width: '100%'}}>
                                 <ListItemIcon>
-                                    <Tooltip title="На страницу фрилансера" placement="bottom">
-                                        <Link to={'/freelancer/' + item.id_freelancer}>
+                                    <Tooltip title={userType ? "На страницу заказчика" : "На страницу исполнителя"} placement="bottom">
+                                        <Link to={userType ? '/company/' + item.id_company : '/freelancer/' + item.id_freelancer}>
                                             <BusinessIcon sx={{fontSize: '28px'}} />
                                         </Link>
                                     </Tooltip>

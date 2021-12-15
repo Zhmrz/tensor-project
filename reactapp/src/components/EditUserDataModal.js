@@ -26,6 +26,7 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
     const dispatch = useDispatch();
     //const [newUserData, setNewUserData] = useState(userData);
     const [newUserData, setNewUserData] = useState(userData)
+    const [money, setMoney] = useState(0)
     useEffect(() => {
         setNewUserData(userData)
     }, [userData])
@@ -54,6 +55,12 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
     const changeUserPhoto = (e, data) => {
         e.preventDefault()
         dispatch(changePhoto(userData.user_type, userData.id, data))
+    }
+
+    const changeMoney = (e) => {
+        e.preventDefault()
+        setNewUserData({...newUserData, personal_account: newUserData.personal_account + money})
+        sendForm(e)
     }
     return (
         <Modal
@@ -158,6 +165,53 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
                             forImg={true}
                         />
                     </Box>
+                    <Box sx={{p: '0', mt: '10px'}}>
+                        <Typography variant="h2" component="h2" sx={{fontSize: '24px'}}>
+                            Операции со счетом:
+                        </Typography>
+                        <Box sx={{display: "flex", justifyContent: 'space-between', alignItems: 'center'}}>
+                            <TextField
+                                InputLabelProps={{ shrink: true }}
+                                required
+                                name='price'
+                                label='Текущий баланс(р)'
+                                value={newUserData.personal_account}
+                                defaultValue={newUserData.personal_account}
+                                margin="dense"
+                                sx={{width: '50%'}}
+                                type='number'
+                                InputProps={{
+                                    readOnly: true,
+                                }}
+                            />
+                            <TextField
+                                InputLabelProps={{ shrink: true }}
+                                required
+                                name='price'
+                                label='Сколько снять/положить (р)'
+                                value={money}
+                                onChange={(e) => setMoney(e.target.value)}
+                                defaultValue={0}
+                                margin="dense"
+                                sx={{width: '50%'}}
+                                type='number'
+                                InputProps={{
+                                    readOnly: false,
+                                    min: -newUserData.personal_account,
+                                }}
+                            />
+                        </Box>
+                        <TextField
+                            required
+                            value='Изменить баланс счета'
+                            id="submit"
+                            type="submit"
+                            fullWidth
+                            margin="dense"
+                            onClick={changeMoney}
+                        />
+                    </Box>
+                        personal_account
                     <Box sx={{p: '0', mt: '10px'}}>
                         {error && <Typography sx={{color: 'red', textAlign: 'center'}}>Ошибка при обновлении данных пользователя!</Typography>}
                         {success && <Typography sx={{color: 'success.main', textAlign: 'center'}}>Данные успешно обновлены!</Typography>}

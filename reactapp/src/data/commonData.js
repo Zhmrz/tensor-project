@@ -100,3 +100,12 @@ export const statusDict = {
     '4': 'Работа возвращена на доработку',
     '5': 'Отлик отменен',
 }
+
+//TaskModal
+export const itemDetails = [
+    {id: 1, label: 'Название:', field: 'title'},
+    {id: 2, label: 'Дата публикации:', field: 'publication_date'},
+    {id: 3, label: 'Описание:', field: 'description'},
+    {id: 4, label: 'Стоимость:', field: 'price'},
+    {id: 5, label: 'Сроки выполнения:', field: 'deadline'},
+]

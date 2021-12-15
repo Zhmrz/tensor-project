@@ -58,3 +58,91 @@
   font-family: 'Yanone Kaffeesatz', sans-serif;
   font-weight: 500;
 }
+
+
+/* Анимация элементов списка */
+.task-item-enter {
+  opacity: 0;
+  transform: translateY(15px);
+}
+.task-item-enter-active {
+  opacity: 1;
+  transform: translateY(0px);
+  transition: all 500ms ease-in;
+}
+.task-item-exit {
+  opacity: 1;
+  transform: translateY(-15px);
+}
+.task-item-exit-active {
+  opacity: 0;
+  transform: translateY(0px);
+  transition: all 500ms ease-in;
+}
+
+/* Анимация перехода страниц */
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+.page {
+  position: absolute;
+}
+
+.page-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 500ms ease-in;
+}
+
+.page-exit {
+  opacity: 0;
+  transform: translateX(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 500ms ease-in;
+}
+
+/*
+.page-enter-active {
+  animation: fade-in 500ms ease-in;
+  /*opacity: 1;
+  transform: translateX(0);
+  transition: all 500ms ease-in;
+}
+
+.page-exit-active {
+  animation: fade-out 500ms ease-in;
+
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 500ms ease-in;
+  animation: fade-out 500ms ease-in;
+}
+*/

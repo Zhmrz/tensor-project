@@ -19,8 +19,8 @@ const TaskItem = ({item, setVisibleTask}) => {
 
             <ListItemIcon>
                 <Tooltip title="На страницу компании" placement="bottom">
-                    <Link to={'/company/' + 0}>
-                        <BusinessIcon sx={{fontSize: '28px'}} />
+                    <Link to={'/company/' + item.customer_id}>
+                        <BusinessIcon sx={{fontSize: '28px', color: 'primary.main'}} />
                     </Link>
                 </Tooltip>
             </ListItemIcon>

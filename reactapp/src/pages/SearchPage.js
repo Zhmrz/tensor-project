@@ -48,6 +48,7 @@ const SearchPage = () => {
         setPriceLims(['', ''])
         setDateLims(['', ''])
         setFilterActive(false)
+        setQuery('')
     }
 
     const [filterVisible, setFilterVisible] = useState(false)
