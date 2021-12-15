@@ -31,25 +31,32 @@ const UserPage = ({type}) => {
     const md_up = useMediaQuery(theme.breakpoints.between("sm", "md"));
     const sm_md = useMediaQuery(theme.breakpoints.up("md"));
     const sm_down = useMediaQuery(theme.breakpoints.down("sm"));
-
-    const dispatch = useDispatch()
-    useEffect(() => {
-        dispatch(loadingData(true))
-        if(type){
-            dispatch(getCompanyData(id))
-            dispatch(getRespThunkCreator())
-            dispatch(getCompanyOrdersThunkCreator())
-        } else {
-            dispatch(getUserData(id))
-            dispatch(getRespThunkCreator())
-        }
-    },[])
-
     let { id } = useParams();
-
     let buttons = type ? buttonsComp : buttonsFree
     let user = useSelector(state => state.user)
-    console.log(user)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(loadingData(true))
+        console.log('curr id' + id)
+        console.log('my id' + user.me.id)
+        if(type){
+            dispatch(getCompanyData(id, id === user.me.id))
+            if(Number(id) === user.me.id){
+                dispatch(getRespThunkCreator())
+                dispatch(getCompanyOrdersThunkCreator())
+            }
+        } else {
+            dispatch(getUserData(id, id === user.me.id))
+            if(Number(id) === user.me.id){
+                dispatch(getRespThunkCreator())
+            }
+        }
+    },[user.me.id])
+
+
+
+
     //заказы
     let orders = useSelector(state => state.tasks.company.orders)
     //отклики
@@ -75,7 +82,6 @@ const UserPage = ({type}) => {
     const userType = userMe.user_type
     const isMyPage = Number(id) === myId
 
-
     //коллбеки в OrderModal
     const returnInWork = (item) => {
         dispatch(changeRespStatusThunkCreator(item.id, 4))
@@ -93,7 +99,6 @@ const UserPage = ({type}) => {
         dispatch(changeRespStatusThunkCreator(item.id, 5))
     }
     return (
-        //!currentPageExist
         <>
             {isLoading ?
                 <DataLoading />
@@ -156,6 +161,7 @@ const UserPage = ({type}) => {
                             NoIcon={ThumbDownIcon}
                             yesAction={userType ? approveFree : undefined}
                             noAction={userType ? cancelFree : delResp} //нужна операция на отколнение отклика компанией
+                            userType={userType}
                         />
                         <OrdersModal
                             labels={userType ? ['', ''] : ['', 'Отменить работу']}

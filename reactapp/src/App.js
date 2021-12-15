@@ -8,7 +8,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import styled from 'styled-components';
-import {Route, Routes, NavLink} from "react-router-dom";
+import {Route, Routes, NavLink, useLocation} from "react-router-dom";
 import Main from "./pages/Main";
 import Help from "./pages/Help";
 import NotFound from "./pages/NotFound";
@@ -20,6 +20,8 @@ import {useDispatch, useSelector} from "react-redux";
 import {getMe, loadingData, resetUserData} from "./store/userReducer";
 import DataLoading from './components/DataLoading'
 import {getRespThunkCreator, streamConnect} from "./store/respReducer";
+import {CSSTransition, TransitionGroup} from "react-transition-group";
+import './styles/index.css'
 
 const AppWrapper = styled.div`
   width: 100vw;
@@ -30,6 +32,7 @@ const AppWrapper = styled.div`
   grid-column-gap: 10px;
   grid-row-gap: 10px;
   padding: 64px 0;
+  overflow: hidden;
 `
 
 const BarWrapper = styled.div`
@@ -74,6 +77,7 @@ const PageWrapper = styled.div`
 `
 
 function App() {
+    const location = useLocation()
     const dispatch = useDispatch()
     let isLoading = useSelector(state => state.user.status.isLoading)
     const id = useSelector(state => state.user.me.id)
@@ -156,17 +160,27 @@ function App() {
                             </RightBar>
                         </ToolbarWrapper>
                     </BarWrapper>
-                    <PageWrapper>
-                        <Routes>
-                            <Route exact path="/" element={<Main />}/>
-                            <Route exact path="/help" element={<Help />}/>
-                            <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={(type ? '/company/' : '/freelancer/') + id + '/'} replace={true}/>}/>
-                            <Route path="/freelancer/:id" element={successAuth ? <UserPage type={0}/> : <Navigate to="/login" replace={true}/>} />
-                            <Route path="/company/:id" element={successAuth ? <UserPage type={1}/> : <Navigate to="/login" replace={true}/>} />
-                            <Route exact path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
-                            <Route path="*" element={<NotFound />}/>
-                        </Routes>
-                    </PageWrapper>
+                        <TransitionGroup component={null}>
+                            <CSSTransition
+                                timeout={500}
+                                classNames='page'
+                                key={location.key}
+                                unmountOnExit
+                                mountOnEnter
+                            >
+                                <PageWrapper>
+                                    <Routes>
+                                        <Route exact path="/" element={<Main />}/>
+                                        <Route exact path="/help" element={<Help />}/>
+                                        <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={(type ? '/company/' : '/freelancer/') + id + '/'} replace={true}/>}/>
+                                        <Route path="/freelancer/:id" element={successAuth ? <UserPage type={0}/> : <Navigate to="/login" replace={true}/>} />
+                                        <Route path="/company/:id" element={successAuth ? <UserPage type={1}/> : <Navigate to="/login" replace={true}/>} />
+                                        <Route exact path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
+                                        <Route path="*" element={<NotFound />}/>
+                                    </Routes>
+                                </PageWrapper>
+                            </CSSTransition>
+                        </TransitionGroup>
                 </>
             }
         </AppWrapper>

@@ -3,6 +3,8 @@ import {Box, Button, Modal, Typography} from "@mui/material";
 import PanToolIcon from '@mui/icons-material/PanTool';
 import {createRespThunkCreator, setRespCreated, setRespError} from "../store/respReducer";
 import {useDispatch, useSelector} from "react-redux";
+import {itemDetails} from '../data/commonData';
+
 
 //item = ('id', 'customer', 'title', 'description', 'price','deadline', 'status', 'performer', 'publication_date', 'topic')
 const TaskModal = ({item, visibleTask, setVisibleTask}) => {
@@ -30,33 +32,16 @@ const TaskModal = ({item, visibleTask, setVisibleTask}) => {
                         Информация о заказе № {task.id}
                     </Typography>
                 </Box>
-                <Typography variant="p" component="p">
-                    Дата публикации: {task.publication_date}
-                </Typography>
-                <Typography variant="h3" component="h3" sx={{ mt: 2 }}>
-                    Название:
-                </Typography>
-                <Typography variant="p" component="p" sx={{ mt: 2 }}>
-                    {task.title}
-                </Typography>
-                <Typography variant="h3" component="h3" sx={{ mt: 2 }}>
-                    Описание:
-                </Typography>
-                <Typography sx={{ mt: 2 }}>
-                    {task.description}
-                </Typography>
-                <Typography variant="h3" component="h3" sx={{ mt: 2 }}>
-                    Стоимость выполнения:
-                </Typography>
-                <Typography sx={{ mt: 2 }}>
-                    {task.price}
-                </Typography>
-                <Typography variant="h3" component="h3" sx={{ mt: 2 }}>
-                    Сроки выполнения:
-                </Typography>
-                <Typography sx={{ mt: 2 }}>
-                    {task.deadline}
-                </Typography>
+                {itemDetails.map(item => (
+                    <Box key={item.id} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid grey', mb: '10px'}}>
+                        <Typography variant="h3" component="h3" sx={{fontSize: '20px', width: '150px', mr: '10px'}}>
+                            {item.label}
+                        </Typography>
+                        <Typography variant="p" component="p" sx={{fontSize: '20px', fontWeight: '400', overflow: 'hidden', wordBreak: 'break-all'}}>
+                            {task[item.field]}
+                        </Typography>
+                    </Box>
+                ))}
                 <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2}}>
                     {!userType &&
                     <Button variant="outlined" startIcon={<PanToolIcon sx={{fontSize: '36px', mr: 2}}/>} onClick={() => dispatch(createRespThunkCreator(item.id))}>

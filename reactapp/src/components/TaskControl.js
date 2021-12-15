@@ -32,11 +32,11 @@ const SortWrapper = styled.div`
 `
 const categories = [
     {id: 1, value: 'code', label: 'Программирование'},
-    {id: 1, value: 'model', label: '3D-моделирование'},
-    {id: 1, value: 'photo', label: 'Фотография'},
-    {id: 1, value: 'typo', label: 'Типографика'},
-    {id: 1, value: 'edu', label: 'Образование'},
-    {id: 1, value: 'img', label: 'Графика'},
+    {id: 2, value: 'model', label: '3D-моделирование'},
+    {id: 3, value: 'photo', label: 'Фотография'},
+    {id: 4, value: 'typo', label: 'Типографика'},
+    {id: 5, value: 'edu', label: 'Образование'},
+    {id: 6, value: 'img', label: 'Графика'},
 ]
 
 const TaskControl = ({up, setUp, setFilterVisible, sortType, setSort, checked, setChecked, filterActive, resetFilter, query, setQuery}) => {
@@ -90,6 +90,7 @@ const TaskControl = ({up, setUp, setFilterVisible, sortType, setSort, checked, s
                         <FormControlLabel
                             id={item.id}
                             value={item.value}
+                            checked={checked[item.value]}
                             control={<Checkbox />}
                             label={item.label}
                             labelPlacement="end"

@@ -9,7 +9,7 @@ import {
     ListItemText,
     Modal,
     Typography,
-    Tooltip
+    Tooltip, ListItemIcon
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import CustomFileInput from "./CustomFileInput";
@@ -17,6 +17,8 @@ import {downloadFileThunkCreator, uploadFileThunkCreator} from "../store/respRed
 import {useDispatch} from "react-redux";
 import {updSuccess} from "../store/userReducer";
 import {statusDict} from "../data/commonData";
+import {Link} from "react-router-dom";
+import BusinessIcon from "@mui/icons-material/Business";
 
 
 const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAction, yesAction, orders, withAction, userType}) => {
@@ -66,13 +68,16 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
                         //{"id":9,"id_freelancer":14,"freelancer":"Marat Sabitov","order":3,"order_title":"Windows 12","responding_date":"2021-12-10","status":0,"completed_order":null}
                         <Box sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
                             <ListItem key={item.id} sx={{width: '100%'}}>
-                                <ListItemAvatar>
-                                    <Avatar>
-                                    </Avatar>
-                                </ListItemAvatar>
-                                <ListItemText primary={item.order_title} secondary={item.freelancer}/>
-                                <Typography sx={{mr: '10px'}}>Дата отклика: {item.responding_date}</Typography>
-                                <Typography sx={{mr: '10px'}}>Статус: {statusDict[String(item.status)]}</Typography>
+                                <ListItemIcon>
+                                    <Tooltip title={userType ? "На страницу заказчика" : "На страницу исполнителя"} placement="bottom">
+                                        <Link to={userType ? '/company/' + item.id_company : '/freelancer/' + item.id_freelancer}>
+                                            <BusinessIcon sx={{fontSize: '28px'}} />
+                                        </Link>
+                                    </Tooltip>
+                                </ListItemIcon>
+                                <ListItemText primary={item.order_title} secondary={item.freelancer} sx={{height: '100%', minWidth: '70px', ml: '10px'}}/>
+                                <ListItemText primary={'Дата отклика:'} secondary={item.responding_date} sx={{height: '100%', minWidth: '50px', ml: '10px'}}/>
+                                <ListItemText primary={'Статус:'} secondary={statusDict[String(item.status)]} sx={{height: '100%', minWidth: '70px', mx: '10px'}}/>
                                 {labels[0] && item.status !== 3 &&
                                 <Tooltip title={labels[0]} placement="bottom">
                                     <IconButton onClick={(e) => yesHandler(e, item)}>
@@ -89,7 +94,7 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
                             {withAction &&
                             <Box sx={{width: '100%'}}>
                                 <CustomFileInput
-                                    actionLabel={userType ? 'Скачать' : 'Загрузить'}
+                                    actionLabel={userType ? 'Скачать работу' : 'Отправить работу на проверку'}
                                     withInput={!userType}
                                     action={userType ? download(item.id) : upload(item.id)}
                                     formData={new FormData()}

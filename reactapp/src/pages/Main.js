@@ -30,7 +30,7 @@ const Main = () => {
         setCard(card === 3 ? 0 : card + 1)
     }
     useEffect(() => {
-        let timerID = setTimeout(nextCard, 10000)
+        let timerID = setTimeout(nextCard, 3000)
         return () => {
             clearTimeout(timerID)
         }
