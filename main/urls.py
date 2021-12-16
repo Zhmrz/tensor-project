@@ -17,6 +17,8 @@ router.register('uploadimagef', UploadImageFreelancerView, basename='uploadimage
 router.register('uploadimagec', UploadImageCompanyView, basename='uploadimagec')  # Загрузка аватара фрилансера
 router.register('uploadfile', UploadFileView, basename='uploadfile')  # Загрузка файла работы фрилансером
 router.register('downloadfile', DownloadFileView, basename='downloadfile')  # Скачивание файла работы компанией
+router.register('accountf', PersonalAccountFreelancerView, basename='accountf')  # Личный счет
+router.register('accountc', PersonalAccountCompanyView, basename='accountc')
 
 urlpatterns = [
     path('', index, name='home'),  # Фронт

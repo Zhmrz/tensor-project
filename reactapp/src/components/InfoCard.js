@@ -10,9 +10,11 @@ import SendIcon from "@mui/icons-material/Send";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import {Box, Card, Tooltip} from "@mui/material";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import NoPhoto from '../img/nophoto.jpg';
 import {variants} from "../data/commonData";
+import { Link as MUILink} from '@mui/material';
+
 
 const InfoCard = ({item, liked, setLiked, row, column}) => {
     let navigate = useNavigate();
@@ -28,9 +30,13 @@ const InfoCard = ({item, liked, setLiked, row, column}) => {
                     </Avatar>
                 }
                 action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon sx={{fontSize: '24px'}}/>
-                    </IconButton>
+                    <Tooltip title={'Написать через эл. почту'} placement="bottom">
+                        <MUILink href={`mailto:${item.email}`}>
+                            <IconButton aria-label="settings">
+                                <MoreVertIcon sx={{fontSize: '24px'}}/>
+                            </IconButton>
+                        </MUILink>
+                    </Tooltip>
                 }
                 title={spec || 'Специализация не указана'}
                 subheader={item.date || new Date().toLocaleString().split(',')[0]}
@@ -45,9 +51,13 @@ const InfoCard = ({item, liked, setLiked, row, column}) => {
                             </IconButton>
                         </Tooltip>
                     </span>
-                <IconButton aria-label="send" onClick={() => navigate(item.link || '', { replace: false })}>
-                    <SendIcon sx={{fontSize: '24px'}}/>
-                </IconButton>
+                <Tooltip title={'Перейти на сайт пользователя'} placement="bottom">
+                    <MUILink href={item.link} target='_blank'>
+                        <IconButton aria-label="send">
+                            <SendIcon sx={{fontSize: '24px'}}/>
+                        </IconButton>
+                    </MUILink>
+                </Tooltip>
             </CardActions>
             <CardContent sx={{ height: "20%" }}>
                 <Typography variant="body2" color="text.secondary">

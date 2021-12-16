@@ -63,3 +63,11 @@ export const uploadPhoto = (type, id, data) => {
             }})
     }
 }
+
+export const changeCashAPI = (type, id, data) => {
+    if(type){
+        return instanceAPI.patch('/api/accountc/' + id + '/', {personal_account: data})
+    } else {
+        return instanceAPI.patch('/api/accountf/' + id + '/', {personal_account: data})
+    }
+}

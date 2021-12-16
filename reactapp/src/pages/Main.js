@@ -7,6 +7,8 @@ import InfoCard from "../components/InfoCard";
 import {setHasAccount} from "../store/userReducer";
 import {useDispatch} from "react-redux";
 import {cards, controls} from '../data/commonData'
+import {TransitionGroup, CSSTransition, SwitchTransition} from "react-transition-group";
+import '../styles/index.css'
 
 const MyLink = styled(Link)`
     text-decoration: none;
@@ -25,9 +27,9 @@ const Main = () => {
         3: false,
         4: false,
     })
-
+    console.log(card)
     const nextCard = () => {
-        setCard(card === 3 ? 0 : card + 1)
+        setCard(card === 4 ? 1 : card + 1)
     }
     useEffect(() => {
         let timerID = setTimeout(nextCard, 3000)
@@ -64,7 +66,7 @@ const Main = () => {
                 p: '20px 0'
             }}>
                 {controls.map(item => (
-                    <Button key={item.id} variant="outlined" startIcon={item.icon} sx={{width: mdUp ? '45%' : '100%', height: mdUp ? '40%' : '20%', fontSize: '18px', backgroundColor: card === (item.id - 1)? 'secondary.main' : 'none' }} onClick={() => setCard(item.id - 1)}>
+                    <Button key={item.id} variant="outlined" startIcon={item.icon} sx={{width: mdUp ? '45%' : '100%', height: mdUp ? '40%' : '20%', fontSize: '18px', backgroundColor: card === (item.id)? 'secondary.main' : 'none' }} onClick={() => setCard(item.id)}>
                         {item.text}
                     </Button>
                 ))}
@@ -84,7 +86,17 @@ const Main = () => {
                     </Typography>
                 </Box>
             </Paper>
-            <InfoCard row='2 / span 8' column='8 / span 5' item={cards[card]} liked={liked[card+1]} setLiked={(value) => setLiked({...liked, [card+1]: value})}/>
+            <SwitchTransition mode={'out-in'}>
+                    <CSSTransition
+                        timeout={500}
+                        classNames='card'
+                        key={card}
+                        unmountOnExit
+                        mountOnEnter
+                    >
+                        <InfoCard row='2 / span 8' column='8 / span 5' item={cards.filter(item => item.id === card)[0]} liked={liked[card+1]} setLiked={(value) => setLiked({...liked, [card+1]: value})}/>
+                    </CSSTransition>
+            </SwitchTransition>
         </>
     );
 };

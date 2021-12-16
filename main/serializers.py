@@ -20,34 +20,6 @@ class FreelancerSerializer(serializers.ModelSerializer):
             'read_only': True
         }}
 
-    """Добавим логику пополнения счета"""
-
-    def update(self, instance, validated_data):
-        raise_errors_on_nested_writes('update', self, validated_data)
-        info = model_meta.get_field_info(instance)
-        m2m_fields = []
-
-        """Пополнение счета"""
-        if validated_data.get("personal_account", False):
-            sum_amount = Decimal(validated_data.get("personal_account", False))
-            instance.personal_account += sum_amount
-            instance.save()
-            return instance
-
-        for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
-            else:
-                setattr(instance, attr, value)
-
-        instance.save()
-
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
-
-        return instance
-
 
 class UploadImageFreelancerSerializer(serializers.ModelSerializer):
     """Для загрузки аватара фрилансером"""
@@ -76,6 +48,7 @@ class UploadImageCompanySerializer(serializers.ModelSerializer):
 class CompanySerializer(serializers.ModelSerializer):
 
     first_name = serializers.CharField(source='name')
+    email = serializers.ReadOnlyField()
 
     class Meta:
         model = Company
@@ -83,33 +56,6 @@ class CompanySerializer(serializers.ModelSerializer):
         extra_kwargs = {'image': {
             'read_only': True
         }}
-
-    """Добавим логику пополнения счета"""
-    def update(self, instance, validated_data):
-        raise_errors_on_nested_writes('update', self, validated_data)
-        info = model_meta.get_field_info(instance)
-        m2m_fields = []
-
-        """Пополнение счета"""
-        if validated_data.get("personal_account", False):
-            sum_amount = Decimal(validated_data.get("personal_account", False))
-            instance.personal_account += sum_amount
-            instance.save()
-            return instance
-
-        for attr, value in validated_data.items():
-            if attr in info.relations and info.relations[attr].to_many:
-                m2m_fields.append((attr, value))
-            else:
-                setattr(instance, attr, value)
-
-        instance.save()
-
-        for attr, value in m2m_fields:
-            field = getattr(instance, attr)
-            field.set(value)
-
-        return instance
 
 
 class CompaniesSerializer(serializers.ModelSerializer):
@@ -199,3 +145,69 @@ class DownloadFileSerializer(serializers.ModelSerializer):
             'read_only': True,
             'required': True
         }}
+
+
+class PersonalAccountFSerializer(serializers.ModelSerializer):
+    """Работа с ЛС фрилансера"""
+    class Meta:
+        model = Freelancer
+        fields = ['personal_account']
+
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        m2m_fields = []
+
+        """Пополнение счета"""
+        if validated_data.get("personal_account", False):
+            sum_amount = Decimal(validated_data.get("personal_account", False))
+            instance.personal_account += sum_amount
+            instance.save()
+            return instance
+
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                setattr(instance, attr, value)
+
+        instance.save()
+
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance
+
+
+class PersonalAccountCSerializer(serializers.ModelSerializer):
+    """Работа с ЛС компании"""
+    class Meta:
+        model = Company
+        fields = ['personal_account']
+
+    def update(self, instance, validated_data):
+        raise_errors_on_nested_writes('update', self, validated_data)
+        info = model_meta.get_field_info(instance)
+        m2m_fields = []
+
+        """Пополнение счета"""
+        if validated_data.get("personal_account", False):
+            sum_amount = Decimal(validated_data.get("personal_account", False))
+            instance.personal_account += sum_amount
+            instance.save()
+            return instance
+
+        for attr, value in validated_data.items():
+            if attr in info.relations and info.relations[attr].to_many:
+                m2m_fields.append((attr, value))
+            else:
+                setattr(instance, attr, value)
+
+        instance.save()
+
+        for attr, value in m2m_fields:
+            field = getattr(instance, attr)
+            field.set(value)
+
+        return instance

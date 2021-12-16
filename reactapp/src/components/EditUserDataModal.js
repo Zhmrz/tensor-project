@@ -16,7 +16,7 @@ import Collapse from "@mui/material/Collapse";
 import CustomForm from "./CustomForm";
 import {useDispatch, useSelector} from "react-redux";
 import DoneOutlineIcon from '@mui/icons-material/DoneOutline';
-import {changeCompanyData, changePhoto, changeUserData} from "../store/userReducer";
+import {changeCash, changeCompanyData, changePhoto, changeUserData} from "../store/userReducer";
 import CustomCheckbox from "./CustomCheckbox";
 import CustomFileInput from "./CustomFileInput";
 import {compSections, userSections, variants} from "../data/commonData";
@@ -59,8 +59,7 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
 
     const changeMoney = (e) => {
         e.preventDefault()
-        setNewUserData({...newUserData, personal_account: newUserData.personal_account + money})
-        sendForm(e)
+        dispatch(changeCash(type, userData.id, money))
     }
     return (
         <Modal
@@ -195,8 +194,7 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
                                 margin="dense"
                                 sx={{width: '50%'}}
                                 type='number'
-                                InputProps={{
-                                    readOnly: false,
+                                inputProps={{
                                     min: -newUserData.personal_account,
                                 }}
                             />
@@ -211,7 +209,6 @@ const EditUserDataModal = ({visible, setVisible, type, userData}) => {
                             onClick={changeMoney}
                         />
                     </Box>
-                        personal_account
                     <Box sx={{p: '0', mt: '10px'}}>
                         {error && <Typography sx={{color: 'red', textAlign: 'center'}}>Ошибка при обновлении данных пользователя!</Typography>}
                         {success && <Typography sx={{color: 'success.main', textAlign: 'center'}}>Данные успешно обновлены!</Typography>}

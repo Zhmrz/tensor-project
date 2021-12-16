@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import InfoCard from "../components/InfoCard";
 import {useDispatch, useSelector} from "react-redux";
 import {getCompanyData, getUserData} from "../store/userReducer";
-import {useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {Box, Button, Paper, Typography, useMediaQuery, useTheme} from "@mui/material";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import OrdersModal from "../components/OrdersModal";
@@ -53,10 +53,7 @@ const UserPage = ({type}) => {
             }
         }
     },[user.me.id])
-
-
-
-
+    const navigate = useNavigate()
     //заказы
     let orders = useSelector(state => state.tasks.company.orders)
     //отклики
@@ -78,9 +75,9 @@ const UserPage = ({type}) => {
     let userData = useSelector(state => state.user.current)
     let userMe = useSelector(state => state.user.me)
     //идентификатор авторизованного пользователя
-    const myId = userMe.id
-    const userType = userMe.user_type
-    const isMyPage = Number(id) === myId
+    let myId = userMe.id
+    let userType = userMe.user_type
+    let isMyPage = (Number(id) === myId) && (type === userType)
 
     //коллбеки в OrderModal
     const returnInWork = (item) => {
@@ -129,13 +126,6 @@ const UserPage = ({type}) => {
                                 </Button>
                             </Box>
                         ))}
-                        {!isMyPage &&
-                        <Box sx={{gridRow: anotherButtons.row, gridColumn: anotherButtons.column, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                            <Button variant={'outlined'} key={anotherButtons.id} sx={{width: '100%', height: '80%', fontSize: '28px'}} onClick={() => setVisibleModal({[anotherButtons.modal]: true})}>
-                                {anotherButtons.text}
-                            </Button>
-                        </Box>
-                        }
                         <OrdersModal
                             labels={userType ? ['Оплатить работу', 'Вернуть на доработку'] : ['', '']}
                             type='check'

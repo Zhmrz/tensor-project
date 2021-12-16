@@ -4,7 +4,7 @@ import {
     getFreelancerPage,
     getCompanyPage,
     registerUser,
-    changeFreelancerInfo, changeCompanyInfo, uploadPhoto
+    changeFreelancerInfo, changeCompanyInfo, uploadPhoto, changeCashAPI
 } from "../api/userAPI";
 
 const defaultState = {
@@ -245,6 +245,23 @@ export const changePhoto = (type, id, data) => {
             })
             .catch(error => {
                 console.log('ошибка при загрузке фото')
+                dispatch(setUserError(true))
+            })
+        dispatch(loadingData(false))
+    }
+}
+
+export const changeCash = (type, id, data) => {
+    return (dispatch) => {
+        dispatch(loadingData(true))
+        changeCashAPI(type, id, data)
+            .then(response => {
+                console.log('обновить счет')
+                console.log(response)
+                dispatch(getMe())
+                dispatch(updSuccess(true))
+            })
+            .catch(error => {
                 dispatch(setUserError(true))
             })
         dispatch(loadingData(false))

@@ -160,27 +160,17 @@ function App() {
                             </RightBar>
                         </ToolbarWrapper>
                     </BarWrapper>
-                        <TransitionGroup component={null}>
-                            <CSSTransition
-                                timeout={500}
-                                classNames='page'
-                                key={location.key}
-                                unmountOnExit
-                                mountOnEnter
-                            >
-                                <PageWrapper>
-                                    <Routes>
-                                        <Route exact path="/" element={<Main />}/>
-                                        <Route exact path="/help" element={<Help />}/>
-                                        <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={(type ? '/company/' : '/freelancer/') + id + '/'} replace={true}/>}/>
-                                        <Route path="/freelancer/:id" element={successAuth ? <UserPage type={0}/> : <Navigate to="/login" replace={true}/>} />
-                                        <Route path="/company/:id" element={successAuth ? <UserPage type={1}/> : <Navigate to="/login" replace={true}/>} />
-                                        <Route exact path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
-                                        <Route path="*" element={<NotFound />}/>
-                                    </Routes>
-                                </PageWrapper>
-                            </CSSTransition>
-                        </TransitionGroup>
+                    <PageWrapper>
+                        <Routes>
+                            <Route exact path="/" element={<Main />}/>
+                            <Route exact path="/help" element={<Help />}/>
+                            <Route path="/login" element={!successAuth ? <LoginPage />  : <Navigate to={(type ? '/company/' : '/freelancer/') + id + '/'} replace={true}/>}/>
+                            <Route path="/freelancer/:id" element={successAuth ? <UserPage type={0}/> : <Navigate to="/login" replace={true}/>} />
+                            <Route path="/company/:id" element={successAuth ? <UserPage type={1}/> : <Navigate to="/login" replace={true}/>} />
+                            <Route exact path="/search" element={successAuth ? <SearchPage /> : <Navigate to="/login" replace={true}/>} />
+                            <Route path="*" element={<NotFound />}/>
+                        </Routes>
+                    </PageWrapper>
                 </>
             }
         </AppWrapper>

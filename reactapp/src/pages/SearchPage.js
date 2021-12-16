@@ -12,14 +12,16 @@ import DataLoading from '../components/DataLoading'
 import {getTasksThunkCreator} from "../store/tasksReducer";
 import {useDispatch, useSelector} from 'react-redux'
 import {defTopics} from "../data/commonData";
+import {useParams} from "react-router-dom";
 
 
 const SearchPage = () => {
+    const {company} = useParams()
     const dispatch = useDispatch()
     const data = useSelector(state => state.tasks.search.tasks) ////[{id: 1, publication_date: '2020-02-06'},{id: 3, publication_date: '2021-02-06'}]//
     const loading = useSelector(state => state.tasks.search.isLoading)
     //поиск по содержанию и названию
-    const [query, setQuery] = useState('')
+    const [query, setQuery] = useState(company ? company : '')
     //настройка пагинации
     const pageLimit = useSelector(state => state.tasks.search.pageLimit)
     const [page, setPage] = useState(1)

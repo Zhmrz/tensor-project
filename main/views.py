@@ -116,7 +116,7 @@ class AllOrderView(ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    search_fields = ['title', 'customer']  # Поиск в названии и описании заказа
+    search_fields = ['title', 'customer__name']  # Поиск в названии заказа
     filterset_class = OrderFilter  # Фильтрация по цене, срокам, темам и датам публикации
 
     def list(self, request, *args, **kwargs):
@@ -298,3 +298,19 @@ class DownloadFileView(ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     parser_classes = [MultiPartParser]
+
+
+class PersonalAccountFreelancerView(ModelViewSet):
+    """Для работы с личным счетом"""
+    queryset = Freelancer.objects.all()
+    serializer_class = PersonalAccountFSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)
+
+
+class PersonalAccountCompanyView(ModelViewSet):
+    """Для работы с личным счетом"""
+    queryset = Company.objects.all()
+    serializer_class = PersonalAccountCSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = (TokenAuthentication,)

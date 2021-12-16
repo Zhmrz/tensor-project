@@ -120,7 +120,7 @@ const LoginPage = () => {
             </Box>
             {loading ? (
                 <Box sx={{
-                    gridRow: '2 / span 8',
+                    gridRow: '2 / span 10',
                     gridColumn: '3 / span 8',
                     display: 'flex',
                     justifyContent: 'center',
@@ -133,7 +133,7 @@ const LoginPage = () => {
                     <Box
                         component="form"
                         sx={{
-                            gridRow: '2 / span 8',
+                            gridRow: '2 / span 10',
                             gridColumn: '3 / span 8',
                             display: 'flex',
                             flexDirection: 'column',
@@ -153,7 +153,6 @@ const LoginPage = () => {
                             fullWidth
                             margin="dense"
                             error={false}
-                            helperText={'Текст'}
                         />
                         <TextField
                             required
@@ -293,7 +292,7 @@ const LoginPage = () => {
                             value="Зарегистрироваться"
                             onClick={sendForm}
                         />
-                        {error && <Typography sx={{color: 'red', textAlign: "center", p: '10px'}}>Проверьте корректность введенных данных!</Typography>}
+                        {error && <Typography sx={{color: 'red', textAlign: "center", p: '10px'}}>Пользователь с такой эл. почтой уже существует!</Typography>}
                         {successReg && <Typography sx={{color: 'green', textAlign: "center", p: '10px'}}>Регистрация успешна! Вы можете войти в систему!</Typography>}
                     </Box>
             }

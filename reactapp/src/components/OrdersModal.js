@@ -17,11 +17,14 @@ import {downloadFileThunkCreator, uploadFileThunkCreator} from "../store/respRed
 import {useDispatch} from "react-redux";
 import {updSuccess} from "../store/userReducer";
 import {statusDict} from "../data/commonData";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import BusinessIcon from "@mui/icons-material/Business";
-
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import { Link as MUILink} from '@mui/material';
+import {BASE_URL} from "../api/API";
 
 const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAction, yesAction, orders, withAction, userType}) => {
+    const navigate = useNavigate()
     const dispatch = useDispatch()
     const noHandler = (e, item) => {
         e.preventDefault()
@@ -41,6 +44,8 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
     const upload = (id) => {
         return (e, data) => dispatch(uploadFileThunkCreator(id, data))
     }
+
+    console.log()
     //формат отклика
     //{"id":9,"id_freelancer":14,"freelancer":"Marat Sabitov","order":3,"order_title":"Windows 12","responding_date":"2021-12-10","status":0,"completed_order":null}
     return (
@@ -67,17 +72,22 @@ const OrdersModal = ({labels, visible, setVisible, title, NoIcon, YesIcon, noAct
                     {orders.length ? orders.map(item => (
                         //{"id":9,"id_freelancer":14,"freelancer":"Marat Sabitov","order":3,"order_title":"Windows 12","responding_date":"2021-12-10","status":0,"completed_order":null}
                         <Box sx={{display: 'flex', flexWrap: 'wrap', alignItems: 'center'}}>
-                            <ListItem key={item.id} sx={{width: '100%'}}>
+                            <ListItem key={item.id} sx={{width: '100%', display: 'flex', justifyContent: 'flex-start', alignItems: 'center'}}>
                                 <ListItemIcon>
-                                    <Tooltip title={userType ? "На страницу заказчика" : "На страницу исполнителя"} placement="bottom">
-                                        <Link to={userType ? '/company/' + item.id_company : '/freelancer/' + item.id_freelancer}>
-                                            <BusinessIcon sx={{fontSize: '28px'}} />
-                                        </Link>
+                                    <Tooltip title={userType ?  "На страницу исполнителя" : "На страницу заказчика"} placement="bottom">
+                                        {userType ?
+                                            <MUILink href={`${BASE_URL}/freelancer/${item.id_freelancer}`} target='_blank'>
+                                                <PersonOutlineIcon sx={{fontSize: '28px', color: 'primary.main'}} />
+                                            </MUILink>
+                                            :
+                                            <MUILink href={`${BASE_URL}/company/${item.id_freelancer}`} target='_blank'>
+                                                <BusinessIcon sx={{fontSize: '28px', color: 'primary.main'}} />
+                                            </MUILink>}
                                     </Tooltip>
                                 </ListItemIcon>
-                                <ListItemText primary={item.order_title} secondary={item.freelancer} sx={{height: '100%', minWidth: '70px', ml: '10px'}}/>
-                                <ListItemText primary={'Дата отклика:'} secondary={item.responding_date} sx={{height: '100%', minWidth: '50px', ml: '10px'}}/>
-                                <ListItemText primary={'Статус:'} secondary={statusDict[String(item.status)]} sx={{height: '100%', minWidth: '70px', mx: '10px'}}/>
+                                <ListItemText primary={item.order_title} secondary={item.freelancer} sx={{height: '100%', width: '20%', minWidth: '70px', ml: '10px'}}/>
+                                <ListItemText primary={'Дата отклика:'} secondary={item.responding_date} sx={{height: '100%', width: '20%',minWidth: '50px', ml: '10px'}}/>
+                                <ListItemText primary={'Статус:'} secondary={statusDict[String(item.status)]} sx={{height: '100%', width: '20%', minWidth: '70px', mx: '10px'}}/>
                                 {labels[0] && item.status !== 3 &&
                                 <Tooltip title={labels[0]} placement="bottom">
                                     <IconButton onClick={(e) => yesHandler(e, item)}>

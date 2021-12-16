@@ -79,8 +79,8 @@ const TaskForm = ({order, setOrder, sendForm, readOnly}) => {
                     <MenuItem value={2}>3D-моделирование</MenuItem>
                     <MenuItem value={3}>Фотография</MenuItem>
                     <MenuItem value={4}>Типографика</MenuItem>
-                    <MenuItem value={5}>Графика</MenuItem>
-                    <MenuItem value={6}>Образование</MenuItem>
+                    <MenuItem value={5}>Образование</MenuItem>
+                    <MenuItem value={6}>Графика</MenuItem>
                 </Select>
             </FormControl>
             <TextField
