@@ -116,7 +116,7 @@ class AllOrderView(ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = (TokenAuthentication,)
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    search_fields = ['title', 'description']  # Поиск в названии и описании заказа
+    search_fields = ['title', 'customer']  # Поиск в названии и описании заказа
     filterset_class = OrderFilter  # Фильтрация по цене, срокам, темам и датам публикации
 
     def list(self, request, *args, **kwargs):
@@ -174,6 +174,7 @@ class UserRegisterView(ModelViewSet):
             freelancer.first_name = request.data.get("first_name")
             freelancer.last_name = request.data.get("last_name")
             freelancer.link_to_resume = request.data.get("link_to_resume")
+            freelancer.email = request.data.get("username")
             for topic in topics:
                 freelancer.topics.add(topic)
             freelancer.save()
@@ -181,6 +182,7 @@ class UserRegisterView(ModelViewSet):
             company = Company.objects.create(user_id=user)
             company.name = request.data.get('first_name')
             company.link_to_resume = request.data.get("link_to_resume")
+            company.email = request.data.get("username")
             for topic in topics:
                 company.topics.add(topic)
             company.save()

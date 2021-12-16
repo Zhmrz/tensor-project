@@ -14,7 +14,8 @@ class FreelancerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Freelancer
-        fields = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume', 'topics', 'personal_account')
+        fields = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume',
+                  'topics', 'personal_account', 'email')
         extra_kwargs = {'image': {
             'read_only': True
         }}
@@ -78,7 +79,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ('id', 'first_name', 'description', 'image', 'link_to_resume', 'topics', 'personal_account')
+        fields = ('id', 'first_name', 'description', 'image', 'link_to_resume', 'topics', 'personal_account', 'email')
         extra_kwargs = {'image': {
             'read_only': True
         }}
@@ -115,14 +116,14 @@ class CompaniesSerializer(serializers.ModelSerializer):
     """Для просмотра инф-ции о компаниях"""
     class Meta:
         model = Company
-        fields = ('id', 'name', 'description', 'image', 'link_to_resume', 'topics')
+        fields = ('id', 'name', 'description', 'image', 'link_to_resume', 'topics', 'email')
 
 
 class FreelancersSerializer(serializers.ModelSerializer):
     """Для просмотра инф-ции о фрилансерах"""
     class Meta:
         model = Freelancer
-        fields = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume', 'topics')
+        fields = ('id', 'first_name', 'last_name', 'description', 'image', 'link_to_resume', 'topics', 'email')
 
 
 class UserViewSerializer(serializers.ModelSerializer):

@@ -15,6 +15,7 @@ class Freelancer(models.Model):
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления")
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме', null=True, blank=True)
     completed_orders = models.PositiveIntegerField(verbose_name="Кол-во выполненных заказов", default=0)
+    email = models.CharField(max_length=200, verbose_name='Почта')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -29,6 +30,7 @@ class Company(models.Model):
     image = models.ImageField(verbose_name='Аватар', null=True, blank=True)
     topics = models.ManyToManyField("Topic", verbose_name="Интересующие направления", blank=True)
     link_to_resume = models.CharField(max_length=200, verbose_name='Ссылка на резюме')
+    email = models.CharField(max_length=200, verbose_name='Почта')
 
     def __str__(self):
         return self.name
